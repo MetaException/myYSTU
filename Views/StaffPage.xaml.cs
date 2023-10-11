@@ -1,14 +1,11 @@
-﻿using MauiApp1.Model;
+using MauiApp1.Model;
 using MauiApp1.Parsers;
-using System.Collections.ObjectModel;
 
 namespace MauiApp1.Views;
 
 public partial class StaffPage : ContentPage
 {
     private Staff _staff;
-
-    public ObservableCollection<Staff> Tasks { get; set; } = new ObservableCollection<Staff>();
 
     public StaffPage()
     {
@@ -27,8 +24,13 @@ public partial class StaffPage : ContentPage
         await foreach (var staffInfo in staffParser)
         {
             _staff.staffList.Add(staffInfo);
-            Tasks.Add(_staff);
+            if (_staff.staffList.Count % 20 == 0)
+            {
+                StaffTable.ItemsSource = null;
+                StaffTable.ItemsSource = _staff.staffList;
+            }
         }
-        Tasks.Add(_staff);
+        StaffTable.ItemsSource = null;
+        StaffTable.ItemsSource = _staff.staffList;
     }
 }
