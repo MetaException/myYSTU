@@ -8,8 +8,8 @@
         <StackLayout VerticalOptions="Fill">
             <Label Text="Сотрудники" FontSize="Title" HorizontalOptions="Center"/>
 
-            <ListView x:Name="StaffTable">
-                <ListView.ItemTemplate>
+            <CollectionView x:Name="StaffTable" ItemsSource="{Binding Tasks}">
+                <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <Grid>
@@ -46,8 +46,8 @@
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
         </StackLayout>
     </ScrollView>

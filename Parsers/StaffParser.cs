@@ -32,16 +32,12 @@ namespace MauiApp1.Parsers
                     var attributeValue = staffDiv[i].SelectSingleNode("span[1]").GetAttributeValue("style", "");
 
                     string avatarUrl = "";
-                    try
+
+                    if (attributeValue != "")
                     {
                         avatarUrl = attributeValue[attributeValue.IndexOf('/')..(attributeValue.Length - 2)];
+                        staffInfo.Avatar = await _netUtil.getImage(avatarUrl);
                     }
-                    catch(Exception ex)
-                    {
-                        int a = 1;
-                    }
-
-                    staffInfo.Avatar = await _netUtil.getImage(avatarUrl);
 
                     yield return staffInfo;
                 }
