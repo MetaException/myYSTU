@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MauiApp1.Views.StaffPage"
@@ -8,8 +8,8 @@
         <StackLayout VerticalOptions="Fill">
             <Label Text="Сотрудники" FontSize="Title" HorizontalOptions="Center"/>
 
-            <CollectionView x:Name="StaffTable" ItemsSource="{Binding Tasks}">
-                <CollectionView.ItemTemplate>
+            <ListView x:Name="StaffTable">
+                <ListView.ItemTemplate>
                     <DataTemplate>
                         <ViewCell>
                             <Grid>
@@ -46,8 +46,8 @@
                             </Grid>
                         </ViewCell>
                     </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                </ListView.ItemTemplate>
+            </ListView>
 
         </StackLayout>
     </ScrollView>
