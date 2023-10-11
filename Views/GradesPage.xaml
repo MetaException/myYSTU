@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.Views.GradesPage"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <StackLayout VerticalOptions="Fill">
+            <Label Text="Оценки" FontSize="Title" HorizontalOptions="Center"/>
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Always">
+                <HorizontalStackLayout x:Name="GradesCategories"/>
+            </ScrollView>
+            
+            <ListView x:Name="GradeTable">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <!-- Первая колонка занимает всю доступную ширину -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- Вторая колонка будет размером по содержимому -->
+                                </Grid.ColumnDefinitions>
+                                <StackLayout Grid.Column="0">
+                                    <Label Text="{Binding Name}" FontSize="Medium"/>
+                                    <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
+                                </StackLayout>
+                                <Label Text="{Binding Grade}" Grid.Column="1" VerticalOptions="Center" FontSize="Title" HorizontalTextAlignment="Center"/>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+                
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

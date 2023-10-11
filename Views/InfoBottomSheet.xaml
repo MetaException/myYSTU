@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<the49:BottomSheet xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
+             x:Class="MauiApp1.Views.InfoBottomSheet">
+    <VerticalStackLayout>
+        <Label 
+            Text="Подробнее"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" 
+            FontAttributes="Bold"
+            TextColor="Black"/>
+
+        <VerticalStackLayout>
+            <Label x:Name="login"/>
+            <Label x:Name="email"/>
+            <Label x:Name="status"/>
+            <Label x:Name="faculty"/>
+            <Label x:Name="studyDirection"/>
+            <Label x:Name="dateOfBirth"/>
+            <Label x:Name="phoneNumber"/>
+            <Label x:Name="sourceOfFunding"/>
+            <Label x:Name="qualification"/>
+            <Label x:Name="formOfEducation"/>
+            <Label x:Name="libraryDept"/>
+            <Label x:Name="moneyDept"/>
+            <Label x:Name="dormitoryDept"/>
+            <Label x:Name="militaryRec"/>
+            <Label x:Name="libaryCard"/>
+        </VerticalStackLayout>
+        
+    </VerticalStackLayout>
+</the49:BottomSheet>

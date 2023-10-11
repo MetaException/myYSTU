@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.Views.StaffPage"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <StackLayout VerticalOptions="Fill">
+            <Label Text="Сотрудники" FontSize="Title" HorizontalOptions="Center"/>
+
+            <ListView x:Name="StaffTable">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <!-- Первая колонка занимает всю доступную ширину -->
+                                    <ColumnDefinition Width="Auto" />
+                                    <!-- Вторая колонка будет размером по содержимому -->
+                                </Grid.ColumnDefinitions>
+                                <StackLayout Grid.Column="0">
+                                    <Label Text="{Binding Name}" FontSize="Medium"/>
+                                    <Label Text="{Binding Post}" FontSize="Small" TextColor="DarkGray"/>
+                                </StackLayout>
+                                <Border Grid.Column="1" 
+                                    HeightRequest="50" 
+                                    WidthRequest="50"
+                                    StrokeShape="RoundRectangle 70,70,70,70"
+                                    HorizontalOptions="Start"
+                                    VerticalOptions="Center"
+                                    x:Name="imgBorder"
+     
+                                    StrokeThickness="2"
+                                    Margin="0,5,10,5">
+
+                                    <Image
+                                        Aspect="AspectFill"
+                                        x:Name="staffAvatar"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="Center" 
+                                        Source="{Binding Avatar}"
+                                        WidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
+                                        HeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
+                                </Border>
+                            </Grid>
+                        </ViewCell>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+
+        </StackLayout>
+    </ScrollView>
+</ContentPage>

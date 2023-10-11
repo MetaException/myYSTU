@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp1.Views.MainPage"
+             Shell.NavBarIsVisible="False"
+             NavigationPage.HasNavigationBar="False">
+
+    <ScrollView>
+        <VerticalStackLayout
+            Padding="10,0" 
+            VerticalOptions="Fill"
+            HorizontalOptions="StartAndExpand">
+
+            <FlexLayout>
+            
+                <Border HeightRequest="90" 
+                        WidthRequest="90"
+                        StrokeShape="RoundRectangle 70,70,70,70"
+                        HorizontalOptions="Start"
+                        VerticalOptions="Center"
+                        x:Name="imgBorder"
+                    
+                        StrokeThickness="2"
+                        Margin="0,10,10,5">
+
+                        <Image
+                            Aspect="AspectFill"
+                            x:Name="avatar"
+                            VerticalOptions="Center"
+                            HorizontalOptions="Center" 
+                            WidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
+                            HeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
+                </Border>
+
+                <StackLayout x:Name="ProfileInfo" Margin="0, 15, 0, 0">
+                    <Label x:Name="Fullname" Text="Имя + фамилия" FontAutoScalingEnabled="True" FontSize="Title"/>
+
+                    <Label x:Name="GroupName" Text="Группа" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
+
+                    <StackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="ProfileInfo_Tapped"/>
+                    </StackLayout.GestureRecognizers>
+                </StackLayout>
+            </FlexLayout>
+
+            <Button x:Name="EnterToGradesPageButton" Text="Оценки" Clicked="EnterToGradesPageButton_Clicked"/>
+            <Button x:Name="EnterToTimeTablePageButton" Text="Расписание" Clicked="EnterToTimeTablePageButton_Clicked"/>
+            <Button x:Name="EnterToStaffPageButton" Text="Сотрудники" Clicked="EnterToStaffPageButton_Clicked"/>
+
+            <Label 
+                x:Name="Debug"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
