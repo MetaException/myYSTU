@@ -6,7 +6,6 @@ namespace MauiApp1.Views;
 
 public partial class StaffPage : ContentPage
 {
-    private Staff _staff;
     private ObservableCollection<Staff> _staffList { get; set; }
 
     public StaffPage()
@@ -14,27 +13,26 @@ public partial class StaffPage : ContentPage
         InitializeComponent();
 
         _staffList = new ObservableCollection<Staff>();
-        initAsync();
+        ParseAsync();
     }
 
 
-    private async void initAsync()
+    private async void ParseAsync()
     {
-        _staff = DependencyService.Get<Staff>();
-
         var staffParser = StaffParser.ParseInfo();
 
         await foreach (var staffInfo in staffParser)
         {
             _staffList.Add(staffInfo);
-            StaffTable.ItemsSource = _staffList;
+            if (string.IsNullOrEmpty(SearchBar.Text))
+                StaffTable.ItemsSource = _staffList;
         }
     }
 
     private ObservableCollection<Staff> GetSearchResults(string query)
     {
         var ret = new ObservableCollection<Staff>();
-        var to_ret = _staffList.Where(x => x.Name.Contains(query));
+        var to_ret = _staffList.Where(x => x.Name.ToLower().Contains(query));
         foreach (var staff in to_ret)
         {
             ret.Add(staff);
@@ -46,14 +44,13 @@ public partial class StaffPage : ContentPage
     {
         SearchBar searchBar = (SearchBar)sender;
 
-        //Если поиск активен,то подгрузка заменит найденные элементы
         if (searchBar.Text == "")
         {
             StaffTable.ItemsSource = _staffList;
         }
         else
         {
-            StaffTable.ItemsSource = GetSearchResults(searchBar.Text);
+            StaffTable.ItemsSource = GetSearchResults(searchBar.Text.ToLower());
         }
     }
 }

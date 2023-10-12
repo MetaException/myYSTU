@@ -1,43 +1,54 @@
 ﻿using MauiApp1.Model;
 using MauiApp1.Parsers;
+using System.Collections.ObjectModel;
 
 namespace MauiApp1.Views;
 
 public partial class GradesPage : ContentPage
 {
-    private Grades _grades;
+    private Dictionary<int, ObservableCollection<Grades>> gradesDict;
 
     int currSemester = 1;
 
     public GradesPage()
     {
         InitializeComponent();
-        initAsync();
+
+        gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
+        ParseAsync();
     }
 
-    private async void initAsync()
+    private async void ParseAsync()
     {
-        await GradesParser.ParseInfo();
-        _grades = DependencyService.Get<Grades>();
+        var gradesParser = GradesParser.ParseInfo();
 
-        foreach (var gradesPerSemester in _grades.Subjects.Keys)
+        await foreach (var gradeInfo in gradesParser)
         {
-            var buttonCategory = new Button() { Text = $"Семестр {gradesPerSemester}", ClassId = gradesPerSemester.ToString() };
-            buttonCategory.Clicked += ButtonCategory_Clicked;
-            GradesCategories.Add(buttonCategory);
-        }
+            if (gradesDict.ContainsKey(gradeInfo.SemesterNumber))
+            {
+                gradesDict[gradeInfo.SemesterNumber].Add(gradeInfo);
+            }
+            else
+            {
+                gradesDict.Add(gradeInfo.SemesterNumber, new ObservableCollection<Grades> { gradeInfo });
 
-        UpdateGradesInfo();
+                var buttonCategory = new Button() { Text = $"Семестр {gradeInfo.SemesterNumber}", ClassId = gradeInfo.SemesterNumber.ToString() };
+                buttonCategory.Clicked += ButtonCategory_Clicked;
+                GradesCategories.Add(buttonCategory);
+            }
+
+            UpdateGradesInfo();
+        }
+    }
+
+    private void UpdateGradesInfo()
+    {
+        GradesTable.ItemsSource = gradesDict[currSemester];
     }
 
     private void ButtonCategory_Clicked(object sender, EventArgs e)
     {
         currSemester = ((Button)sender).ClassId[0] - '0';
         UpdateGradesInfo();
-    }
-
-    private void UpdateGradesInfo()
-    {
-        GradeTable.ItemsSource = _grades.Subjects[currSemester];
     }
 }

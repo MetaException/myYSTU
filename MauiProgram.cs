@@ -27,10 +27,6 @@ public static class MauiProgram
 		DependencyService.Register<INetUtils, NetUtils>();
 #endif
 
-        DependencyService.RegisterSingleton<Person>(null); //Создать интерфейс для каждой группы
-        DependencyService.RegisterSingleton<Grades>(null);
-        DependencyService.RegisterSingleton<Staff>(null);
-
         builder.Services.AddLogging(configure =>
         {
 

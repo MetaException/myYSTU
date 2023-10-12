@@ -5,10 +5,10 @@ namespace MauiApp1.Parsers
 {
     public static class GradesParser
     {
-        public static async Task ParseInfo()
+
+        public static async IAsyncEnumerable<Grades> ParseInfo()
         {
             var _netUtil = DependencyService.Get<INetUtils>();
-            var _grades = DependencyService.Get<Grades>();
 
             var _htmlDoc = await _netUtil.getHtmlDoc("/WPROG/lk/lkstud_oc.php", "windows-1251");
 
@@ -18,7 +18,7 @@ namespace MauiApp1.Parsers
 
             foreach (var grade in gradesTable)
             {
-                Grades.SubjectInfo subjectInfo = new Grades.SubjectInfo();
+                Grades subjectInfo = new Grades();
 
                 subjectInfo.Name = grade.SelectSingleNode("td[4]").InnerText.Trim('*', ' ');
                 subjectInfo.Type = grade.SelectSingleNode("td[5]").InnerText.Trim();
@@ -30,14 +30,9 @@ namespace MauiApp1.Parsers
                 else
                     subjectInfo.Grade = grade.SelectSingleNode("td[7]").InnerText.Trim();
 
-                int SemesterNumber = grade.SelectSingleNode("td[3]").InnerText[0] - '0';
+                subjectInfo.SemesterNumber = grade.SelectSingleNode("td[3]").InnerText[0] - '0';
 
-                if (_grades.Subjects.ContainsKey(SemesterNumber))
-                {
-                    _grades.Subjects[SemesterNumber].Add(subjectInfo);
-                }
-                else
-                    _grades.Subjects.Add(SemesterNumber, new List<Grades.SubjectInfo> { subjectInfo });
+                yield return subjectInfo;
             }
         }
     }

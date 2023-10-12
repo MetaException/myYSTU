@@ -1,28 +1,23 @@
 ﻿//"baranovea.21" "OO5n8n#1NP"
-
-using MauiApp1.Model;
 using MauiApp1.Parsers;
 
 namespace MauiApp1.Views;
 
 public partial class MainPage : ContentPage
 {
-    private Person _person;
-     
     public MainPage()
     {
         InitializeComponent();
-        InitAsync();
+        ParseAsync();
     }
 
-    private async void InitAsync()
+    private async void ParseAsync()
     {
-        await PersonParser.ParseInfo();
-        _person = DependencyService.Get<Person>();
+        var person = await PersonParser.ParseInfo();
 
-        Fullname.Text = _person.Name[.._person.Name.LastIndexOf(' ')];
-        GroupName.Text = _person.Group;
-        avatar.Source = _person.Avatar;
+        Fullname.Text = person.Name[..person.Name.LastIndexOf(' ')];
+        GroupName.Text = person.Group;
+        avatar.Source = person.Avatar;
     }
 
     private void ProfileInfo_Tapped(object sender, TappedEventArgs e)

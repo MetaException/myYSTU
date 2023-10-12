@@ -8,9 +8,9 @@
         <StackLayout VerticalOptions="Fill">
             <Label Text="Сотрудники" FontSize="Title" HorizontalOptions="Center"/>
 
-            <SearchBar Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
+            <SearchBar x:Name="SearchBar" Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
 
-            <CollectionView x:Name="StaffTable" ItemsLayout="VerticalList" ItemsSource="{Binding _staffList}" ItemsUpdatingScrollMode="KeepLastItemInView">
+            <CollectionView x:Name="StaffTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid>
