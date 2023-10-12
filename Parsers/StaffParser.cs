@@ -1,7 +1,6 @@
 ﻿using HtmlAgilityPack;
 using MauiApp1.Model;
 using MauiApp1.Utils;
-using System.Collections.ObjectModel;
 
 namespace MauiApp1.Parsers
 {
@@ -13,7 +12,6 @@ namespace MauiApp1.Parsers
 
             int pageNumber = 1;
             int staffPagesCount = 2;
-            //ObservableCollection<Staff> _staffs = new ObservableCollection<Staff>();
 
             do
             {
@@ -40,7 +38,6 @@ namespace MauiApp1.Parsers
                         avatarUrl = attributeValue[attributeValue.IndexOf('/')..(attributeValue.Length - 2)];
                         staffInfo.Avatar = await _netUtil.getImage(avatarUrl);
                     }
-                    //_staffs.Add(staffInfo);
                     yield return staffInfo;
                 }
 
