@@ -18,7 +18,6 @@ public partial class StaffPage : ContentPage
     }
 
 
-    //TODO: сделать чтобы подгрузка была незаметной
     private async void initAsync()
     {
         _staff = DependencyService.Get<Staff>();
@@ -30,14 +29,17 @@ public partial class StaffPage : ContentPage
             _staffList.Add(staffInfo);
             StaffTable.ItemsSource = _staffList;
         }
-        //StaffTable.ItemsSource = _staffList;
     }
 
-    private List<Staff> GetSearchResults(string query)
+    private ObservableCollection<Staff> GetSearchResults(string query)
     {
-        //var ret = _staff.Where(x => x.Name.Contains(query)).ToList();
-        //return ret;
-        return null;
+        var ret = new ObservableCollection<Staff>();
+        var to_ret = _staffList.Where(x => x.Name.Contains(query));
+        foreach (var staff in to_ret)
+        {
+            ret.Add(staff);
+        }
+        return ret;
     }
 
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
@@ -47,17 +49,11 @@ public partial class StaffPage : ContentPage
         //Если поиск активен,то подгрузка заменит найденные элементы
         if (searchBar.Text == "")
         {
-            //StaffTable.ItemsSource = _staff.staffList;
+            StaffTable.ItemsSource = _staffList;
         }
         else
         {
             StaffTable.ItemsSource = GetSearchResults(searchBar.Text);
         }
-    }
-
-    private async void StaffTable_RemainingItemsThresholdReached(object sender, EventArgs e)
-    {
-        initAsync();
-        //StaffTable.ItemsSource = _staff.staffList;
     }
 }
