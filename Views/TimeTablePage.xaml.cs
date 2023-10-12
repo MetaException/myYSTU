@@ -1,4 +1,4 @@
-﻿namespace MauiApp1.Views;
+﻿namespace myYSTU.Views;
 
 public partial class TimeTablePage : ContentPage
 {

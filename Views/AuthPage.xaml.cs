@@ -1,6 +1,6 @@
-﻿using MauiApp1.Utils;
+﻿using myYSTU.Utils;
 
-namespace MauiApp1.Views;
+namespace myYSTU.Views;
 
 public partial class AuthPage : ContentPage
 {

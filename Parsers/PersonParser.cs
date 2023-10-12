@@ -1,7 +1,7 @@
-﻿using MauiApp1.Model;
-using MauiApp1.Utils;
+﻿using myYSTU.Model;
+using myYSTU.Utils;
 
-namespace MauiApp1.Parsers
+namespace myYSTU.Parsers
 {
     public static class PersonParser
     {

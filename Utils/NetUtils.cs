@@ -3,7 +3,7 @@ using HtmlAgilityPack;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
-namespace MauiApp1.Utils
+namespace myYSTU.Utils
 {
     public class NetUtils : INetUtils
     {

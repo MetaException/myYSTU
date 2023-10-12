@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
 
-namespace MauiApp1.Utils
+namespace myYSTU.Utils
 {
     internal interface INetUtils
     {

@@ -1,18 +1,18 @@
-using MauiApp1.Model;
-using MauiApp1.Parsers;
+using myYSTU.Model;
+using myYSTU.Parsers;
 using System.Collections.ObjectModel;
 
-namespace MauiApp1.Views;
+namespace myYSTU.Views;
 
 public partial class StaffPage : ContentPage
 {
-    private ObservableCollection<Staff> _staffList { get; set; }
+    private readonly ObservableCollection<Staff> staffList;
 
     public StaffPage()
     {
         InitializeComponent();
 
-        _staffList = new ObservableCollection<Staff>();
+        staffList = new ObservableCollection<Staff>();
         ParseAsync();
     }
 
@@ -23,16 +23,16 @@ public partial class StaffPage : ContentPage
 
         await foreach (var staffInfo in staffParser)
         {
-            _staffList.Add(staffInfo);
+            staffList.Add(staffInfo);
             if (string.IsNullOrEmpty(SearchBar.Text))
-                StaffTable.ItemsSource = _staffList;
+                StaffTable.ItemsSource = staffList;
         }
     }
 
     private ObservableCollection<Staff> GetSearchResults(string query)
     {
         var ret = new ObservableCollection<Staff>();
-        var to_ret = _staffList.Where(x => x.Name.ToLower().Contains(query));
+        var to_ret = staffList.Where(x => x.Name.ToLower().Contains(query));
         foreach (var staff in to_ret)
         {
             ret.Add(staff);
@@ -46,7 +46,7 @@ public partial class StaffPage : ContentPage
 
         if (searchBar.Text == "")
         {
-            StaffTable.ItemsSource = _staffList;
+            StaffTable.ItemsSource = staffList;
         }
         else
         {

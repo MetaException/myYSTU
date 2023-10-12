@@ -1,4 +1,4 @@
-﻿namespace MauiApp1.Model
+﻿namespace myYSTU.Model
 {
     public class Person
     {

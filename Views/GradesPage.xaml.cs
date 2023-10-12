@@ -1,12 +1,12 @@
-﻿using MauiApp1.Model;
-using MauiApp1.Parsers;
+﻿using myYSTU.Model;
+using myYSTU.Parsers;
 using System.Collections.ObjectModel;
 
-namespace MauiApp1.Views;
+namespace myYSTU.Views;
 
 public partial class GradesPage : ContentPage
 {
-    private Dictionary<int, ObservableCollection<Grades>> gradesDict;
+    private readonly Dictionary<int, ObservableCollection<Grades>> gradesDict;
 
     int currSemester = 1;
 

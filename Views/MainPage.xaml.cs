@@ -1,7 +1,7 @@
 ﻿//"baranovea.21" "OO5n8n#1NP"
-using MauiApp1.Parsers;
+using myYSTU.Parsers;
 
-namespace MauiApp1.Views;
+namespace myYSTU.Views;
 
 public partial class MainPage : ContentPage
 {

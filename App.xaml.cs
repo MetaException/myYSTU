@@ -1,4 +1,4 @@
-﻿namespace MauiApp1;
+﻿namespace myYSTU;
 
 public partial class App : Application
 {

@@ -2,7 +2,7 @@
 <the49:BottomSheet xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
-             x:Class="MauiApp1.Views.InfoBottomSheet">
+             x:Class="myYSTU.Views.InfoBottomSheet">
     <VerticalStackLayout>
         <Label 
             Text="Подробнее"

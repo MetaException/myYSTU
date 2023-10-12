@@ -1,8 +1,7 @@
-﻿using HtmlAgilityPack;
-using MauiApp1.Model;
-using MauiApp1.Utils;
+﻿using myYSTU.Model;
+using myYSTU.Utils;
 
-namespace MauiApp1.Parsers
+namespace myYSTU.Parsers
 {
     public static class StaffParser
     {
@@ -31,7 +30,7 @@ namespace MauiApp1.Parsers
                     staffInfo.Post = staffDiv[i].SelectSingleNode("span[2]/span[2]").InnerText.Trim();
                     var attributeValue = staffDiv[i].SelectSingleNode("span[1]").GetAttributeValue("style", "");
 
-                    string avatarUrl = "";
+                    string avatarUrl;
 
                     if (attributeValue != "")
                     {

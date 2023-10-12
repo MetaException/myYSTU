@@ -1,11 +1,11 @@
 ﻿using CommunityToolkit.Maui.Converters;
 using HtmlAgilityPack;
-using MauiApp1.Views;
+using myYSTU.Views;
 using Microsoft.Extensions.Logging;
 using System.Text;
 using Xamarin.Android.Net;
 
-namespace MauiApp1.Utils
+namespace myYSTU.Utils
 {
     public class NetUtilAndroid : INetUtils
     {

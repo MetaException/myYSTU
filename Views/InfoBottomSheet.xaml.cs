@@ -1,6 +1,6 @@
 using The49.Maui.BottomSheet;
 
-namespace MauiApp1.Views;
+namespace myYSTU.Views;
 
 public partial class InfoBottomSheet : BottomSheet
 {

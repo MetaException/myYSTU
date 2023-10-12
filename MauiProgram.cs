@@ -1,11 +1,9 @@
 ﻿using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
-using MauiApp1.Model;
 using The49.Maui.BottomSheet;
-using MauiApp1.Utils;
-using MauiApp1.Parsers;
+using myYSTU.Utils;
 
-namespace MauiApp1;
+namespace myYSTU;
 
 public static class MauiProgram
 {
