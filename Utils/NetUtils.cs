@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Maui.Converters;
 using HtmlAgilityPack;
-using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace myYSTU.Utils
@@ -32,7 +31,7 @@ namespace myYSTU.Utils
                 // Отправляем первый POST-запрос и получаем ответ
                 var loginResponse = await _client.PostAsync(loginUrl, loginContent);
 
-                var responseContent = await loginResponse.Content.ReadAsStringAsync();
+                var responseContent = await loginResponse.Content.ReadAsStringAsync(); //TODO: обработать переадресацию
 
                 //Возврат - всегда переадресация, кроме неправильного логина или пароля
                 if (_handler.CookieContainer.Count == 0 || responseContent.Contains("Вы ввели неправильный логин или пароль. попробуйте еще раз"))
@@ -89,6 +88,37 @@ namespace myYSTU.Utils
         {
             var byteImage = await GetWebData(url);
             return new ByteArrayToImageSourceConverter().ConvertFrom(byteImage);
+        }
+
+        public async Task<HtmlDocument> getTimeTableByWeek(string url, string enc, MultipartFormDataContent content)
+        {
+            try
+            {
+                HttpResponseMessage response = await _client.PostAsync(url, content);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsByteArrayAsync();
+
+                    HtmlDocument doc = new HtmlDocument();
+
+                    // Определите кодировку HTML-страницы (например, windows-1251)
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                    Encoding encoding = Encoding.GetEncoding(enc);
+
+                    doc.LoadHtml(encoding.GetString(responseContent));
+
+                    return doc;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
     }
 }

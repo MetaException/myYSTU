@@ -11,5 +11,7 @@ namespace myYSTU.Utils
         public Task<HtmlDocument> getHtmlDoc(string url, string enc);
 
         public Task<ImageSource> getImage(string url);
+
+        public Task<HtmlDocument> getTimeTableByWeek(string url, string enc, MultipartFormDataContent content);
     }
 }

@@ -8,10 +8,36 @@
         <VerticalStackLayout
             Spacing="25"
             Padding="30,0"
-            VerticalOptions="Center">
+            VerticalOptions="Start">
 
-            <Label 
-                x:Name="errorLabel"/>
+            <Label Text="Расписание" FontSize="Title" HorizontalOptions="Center"/>
+
+            <Label x:Name="currentDayLabel" />
+
+            <CollectionView x:Name="Dates" ItemsLayout="HorizontalList">
+                
+            </CollectionView>
+
+            <CollectionView x:Name="TimeTable" HorizontalOptions="FillAndExpand" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame>
+                            <HorizontalStackLayout>
+                                <StackLayout Margin="0,0,5,0">
+                                    <Label Text="{Binding StartTime}" FontSize="Medium"/>
+                                    <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
+                                </StackLayout>
+                                <StackLayout>
+                                    <Label Text="{Binding Name}" FontSize="Medium"/>
+                                    <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
+                                    <Label Text="{Binding Audithory}" FontSize="Small" TextColor="DarkGray"/>
+                                    <Label Text="{Binding Lecturer}" FontSize="Small" TextColor="DarkGray"/>
+                                </StackLayout>
+                            </HorizontalStackLayout>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
         </VerticalStackLayout>
     </ScrollView>
