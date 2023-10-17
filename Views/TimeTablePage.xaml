@@ -1,22 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="myYSTU.Views.TimeTablePage"
-             Shell.NavBarIsVisible="False">
+             x:Class="myYSTU.Views.TimeTablePage">
+
+    <NavigationPage.TitleView>
+        <StackLayout>
+            <Label Text="Расписание" TextColor="White" HorizontalTextAlignment="Center" FontSize="20"/>
+        </StackLayout>
+    </NavigationPage.TitleView>
 
     <ScrollView>
-        <VerticalStackLayout
+        <StackLayout
             Spacing="25"
             Padding="30,0"
             VerticalOptions="Start">
 
-            <Label Text="Расписание" FontSize="Title" HorizontalOptions="Center"/>
+            <HorizontalStackLayout HorizontalOptions="FillAndExpand" Spacing="25">
+                <Label x:Name="crday"/>
+                <Label x:Name="crweek"/>
+                <Button x:Name="GoBackWeek" Text="&lt;" Clicked="GoBackWeek_Clicked"/>
+                <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="GoNextWeek_Clicked"/>
+            </HorizontalStackLayout>
 
-            <Label x:Name="currentDayLabel" />
-
-            <CollectionView x:Name="Dates" ItemsLayout="HorizontalList">
-                
-            </CollectionView>
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Always">
+                <HorizontalStackLayout x:Name="DateList"/>
+            </ScrollView>
 
             <CollectionView x:Name="TimeTable" HorizontalOptions="FillAndExpand" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
                 <CollectionView.ItemTemplate>
@@ -39,7 +47,7 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-        </VerticalStackLayout>
+        </StackLayout>
     </ScrollView>
 
 </ContentPage>

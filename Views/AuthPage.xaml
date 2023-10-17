@@ -4,33 +4,31 @@
              x:Class="myYSTU.Views.AuthPage"
              Shell.NavBarIsVisible="False">
 
-    <ScrollView>
-        <VerticalStackLayout
+    <VerticalStackLayout
             Spacing="25"
             Padding="30,0"
             VerticalOptions="Center">
 
-            <Label 
+        <Label 
                 x:Name="errorLabel"/>
 
-            <Entry
+        <Entry
                 x:Name="LoginEntry"
                 MaxLength="20"
                 Placeholder="Логин" />
 
-            <Entry
+        <Entry
                 x:Name="PasswordEntry"
                 MaxLength="100"
                 Placeholder="Пароль" 
                 IsPassword="True" />
 
-            <Button
+        <Button
                 x:Name="LoginBtn"
                 Text="Войти"
                 Clicked="OnLoginClicked"
                 HorizontalOptions="Center" />
 
-        </VerticalStackLayout>
-    </ScrollView>
+    </VerticalStackLayout>
 
 </ContentPage>
