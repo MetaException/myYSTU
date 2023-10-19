@@ -22,10 +22,14 @@
                 <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="GoNextWeek_Clicked"/>
             </HorizontalStackLayout>
 
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Always">
-                <HorizontalStackLayout x:Name="DateList"/>
-            </ScrollView>
-
+            <CollectionView x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepItemsInView">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <RadioButton Content="{Binding Day}" IsChecked="{Binding isChecked}" CheckedChanged="Rb_CheckedChanged"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+            
             <CollectionView x:Name="TimeTable" HorizontalOptions="FillAndExpand" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>

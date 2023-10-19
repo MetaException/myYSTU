@@ -10,7 +10,7 @@ namespace myYSTU.Parsers
         {
             var _netUtil = DependencyService.Get<INetUtils>();
 
-            var _htmlDoc = await _netUtil.getHtmlDoc("/WPROG/lk/lkstud_oc.php", "windows-1251");
+            var _htmlDoc = await _netUtil.GetHtmlDoc("/WPROG/lk/lkstud_oc.php");
 
             var gradesTable = _htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
 

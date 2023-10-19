@@ -11,7 +11,7 @@ namespace myYSTU.Parsers
 
             Person student = new Person();
 
-            var _htmlDoc = await _netUtil.getHtmlDoc("/WPROG/lk/lkstud.php", "windows-1251");
+            var _htmlDoc = await _netUtil.GetHtmlDoc("/WPROG/lk/lkstud.php");
 
             //Получение ФИО
             student.Name = _htmlDoc.DocumentNode.SelectSingleNode("//h1").InnerText;
@@ -21,7 +21,7 @@ namespace myYSTU.Parsers
 
             //Получееие аватарки
             string imageUrl = _htmlDoc.DocumentNode.SelectSingleNode("/html[1]/body[1]/div[1]/div[1]/div[4]/div[1]/div[1]/table[1]/tr[1]/td[1]/img[1]").GetAttributeValue("src", "");
-            student.Avatar = await _netUtil.getImage(imageUrl);
+            student.Avatar = await _netUtil.GetImage(imageUrl);
 
             return student;
         }

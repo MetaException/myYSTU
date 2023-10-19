@@ -9,4 +9,10 @@
         public string StartTime { get; set; }
         public string EndTime { get; set; }
     }
+
+    public class RadioButtonTemplate
+    {
+        public int Day { get; set; }
+        public bool isChecked { get; set; }
+    }
 }

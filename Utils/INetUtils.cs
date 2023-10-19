@@ -8,10 +8,10 @@ namespace myYSTU.Utils
 
         public Task<byte[]> GetWebData(string url);
 
-        public Task<HtmlDocument> getHtmlDoc(string url, string enc);
+        public Task<HtmlDocument> GetHtmlDoc(string url);
 
-        public Task<ImageSource> getImage(string url);
+        public Task<ImageSource> GetImage(string url);
 
-        public Task<HtmlDocument> getTimeTableByWeek(string url, string enc, MultipartFormDataContent content);
+        public Task<HtmlDocument> PostWebData(string url, StringContent stringContent = null, MultipartFormDataContent multipartFormDataContent = null);
     }
 }

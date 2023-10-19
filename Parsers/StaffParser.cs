@@ -14,7 +14,7 @@ namespace myYSTU.Parsers
 
             do
             {
-                var _htmlDoc = await _netUtil.getHtmlDoc($"/users/?PAGEN_1={pageNumber}", "utf-8");
+                var _htmlDoc = await _netUtil.GetHtmlDoc($"/users/?PAGEN_1={pageNumber}");
 
                 if (pageNumber == 1)
                 {
@@ -35,7 +35,7 @@ namespace myYSTU.Parsers
                     if (attributeValue != "")
                     {
                         avatarUrl = attributeValue[attributeValue.IndexOf('/')..(attributeValue.Length - 2)];
-                        staffInfo.Avatar = await _netUtil.getImage(avatarUrl);
+                        staffInfo.Avatar = await _netUtil.GetImage(avatarUrl);
                     }
                     yield return staffInfo;
                 }

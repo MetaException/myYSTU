@@ -5,18 +5,17 @@ namespace myYSTU.Parsers
 {
     public static class TimeTableParser
     {
-        private static INetUtils _netUtil;
+        private static INetUtils _netUtil = DependencyService.Get<INetUtils>();
 
         private static string IDraspz;
         private static string idgr;
+        private static string timeTableLink;
 
-        public static async Task<DateTime[]> ParseWeekList()
+        private static async Task ParseTimeTableParameters()
         {
-            _netUtil = DependencyService.Get<INetUtils>();
-
             //Получаем ссылку на расписание
-            var _htmlDoc = await _netUtil.getHtmlDoc("/WPROG/lk/lkstud.php", "windows-1251");
-            var timeTableLink = _htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
+            var _htmlDoc = await _netUtil.GetHtmlDoc("/WPROG/lk/lkstud.php");
+            timeTableLink = _htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
 
             //Получаем параметры для запроса расписания
             var timeTableLinq = timeTableLink[(timeTableLink.IndexOf('=') + 1)..];
@@ -24,9 +23,17 @@ namespace myYSTU.Parsers
             IDraspz = timeTableLinq[..timeTableLinq.IndexOf('&')];
             timeTableLinq = timeTableLinq[(timeTableLinq.IndexOf('=') + 1)..];
             idgr = timeTableLinq[..timeTableLinq.IndexOf('&')];
+        }
+
+        public static async Task<DateTime[]> ParseWeekList()
+        {
+            if (timeTableLink == null)
+            {
+                await ParseTimeTableParameters();
+            }
 
             //Получаем расписание на семестр
-            _htmlDoc = await _netUtil.getHtmlDoc(timeTableLink, "windows-1251");
+            var _htmlDoc = await _netUtil.GetHtmlDoc(timeTableLink);
 
             //Получаем список неделей с датами
             var weeks = _htmlDoc.DocumentNode.SelectNodes("//option");
@@ -41,41 +48,26 @@ namespace myYSTU.Parsers
             return w.ToArray();
         }
 
-        public static async IAsyncEnumerable<TimeTableSubject> ParseInfoByWeek(string date)
+
+        /*
+        //Получение на неделю
+        var content = new MultipartFormDataContent
         {
-            //Получение на неделю
-            var content = new MultipartFormDataContent
-            {
-                { new StringContent(date), "nned" },
-                { new StringContent("-->"), "rgrweek" },
-                //{ new StringContent("19.10.2023"), "dat1day" },
-                { new StringContent(IDraspz), "IDraspz" },
-                { new StringContent(idgr), "idgr" },
-                //{ new StringContent("-35"), "namegr" }
-            };
-
-            var timeTableHtmlByWeek = await _netUtil.getTimeTableByWeek("/wprog/rasp/raspz1day.php", "windows-1251", content);
-
-            var subjectsData = timeTableHtmlByWeek.DocumentNode.SelectSingleNode("//table").SelectNodes("tr");
-
-            foreach (var t in subjectsData)
-            {
-                var subjectInfo = new TimeTableSubject();
-
-                var interval = t.ChildNodes[0].InnerText[3..];
-                subjectInfo.StartTime = interval[..5];
-                subjectInfo.EndTime = interval[6..];
-                subjectInfo.Name = t.ChildNodes[1].InnerText;
-                subjectInfo.Type = t.ChildNodes[2].InnerText;
-                subjectInfo.Audithory = t.ChildNodes[3].InnerText.Trim('*', ' ');
-                subjectInfo.Lecturer = t.ChildNodes[4].InnerText.Trim();
-
-                yield return subjectInfo;
-            }
-        }
+            { new StringContent(date), "nned" },
+            { new StringContent("-->"), "rgrweek" },
+            //{ new StringContent("19.10.2023"), "dat1day" },
+            { new StringContent(IDraspz), "IDraspz" },
+            { new StringContent(idgr), "idgr" },
+            //{ new StringContent("-35"), "namegr" }
+        };*/
 
         public static async IAsyncEnumerable<TimeTableSubject> ParseInfoByDay(string date)
         {
+            if (IDraspz == null || idgr == null)
+            {
+                await ParseTimeTableParameters();
+            }
+
             //Получение на день
             var content = new MultipartFormDataContent
             {
@@ -87,7 +79,7 @@ namespace myYSTU.Parsers
                 //{ new StringContent("-35"), "namegr" }
             };
 
-            var timeTableHtmlByDay = await _netUtil.getTimeTableByWeek("/wprog/rasp/raspz1day.php", "windows-1251", content);
+            var timeTableHtmlByDay = await _netUtil.PostWebData("/wprog/rasp/raspz1day.php", multipartFormDataContent: content);
 
             var subjectsData = timeTableHtmlByDay.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
 

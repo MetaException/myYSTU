@@ -15,6 +15,9 @@ namespace myYSTU.Utils
             _client = new HttpClient(_handler) { BaseAddress = new Uri("https://www.ystu.ru") };
         }
 
+
+        //TODO: пределать чтобы при первой авторизации происходило получение страницы с личным кабинетом
+        //Получать encoding из запроса
         public async Task<int> Authorize(string login, string password)
         {
             try
@@ -46,6 +49,49 @@ namespace myYSTU.Utils
             return 1;
         }
 
+        public async Task<HtmlDocument> PostWebData(string url, StringContent stringContent = null, MultipartFormDataContent multipartFormDataContent = null)
+        {
+            try
+            {
+                HttpResponseMessage response;
+                if (stringContent != null)
+                {
+                    response = await _client.PostAsync(url, stringContent);
+                }
+                else
+                    response = await _client.PostAsync(url, multipartFormDataContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsByteArrayAsync();
+
+                    HtmlDocument doc = new HtmlDocument();
+
+                    //Личный кабиент имеет кодировку: windows-1251
+                    if (url.ToLower().Contains("wprog"))
+                    {
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                        Encoding w1251_enc = Encoding.GetEncoding("windows-1251");
+
+                        responseContent = Encoding.Convert(w1251_enc, Encoding.UTF8, responseContent);
+                    }
+
+
+                    doc.LoadHtml(Encoding.UTF8.GetString(responseContent));
+
+                    return doc;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public async Task<byte[]> GetWebData(string url)
         {
             try
@@ -69,56 +115,30 @@ namespace myYSTU.Utils
             }
         }
 
-        public async Task<HtmlDocument> getHtmlDoc(string url, string enc)
+        public async Task<HtmlDocument> GetHtmlDoc(string url)
         {
             var htmlDoc = await GetWebData(url);
 
             HtmlDocument doc = new HtmlDocument();
 
-            // Определите кодировку HTML-страницы (например, windows-1251)
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Encoding encoding = Encoding.GetEncoding(enc);
+            //Личный кабиент имеет кодировку: windows-1251
+            if (url.ToLower().Contains("wprog"))
+            {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                Encoding w1251_enc = Encoding.GetEncoding("windows-1251");
 
-            doc.LoadHtml(encoding.GetString(htmlDoc));
+                htmlDoc = Encoding.Convert(w1251_enc, Encoding.UTF8, htmlDoc);
+            }
+
+            doc.LoadHtml(Encoding.UTF8.GetString(htmlDoc));
 
             return doc;
         }
 
-        public async Task<ImageSource> getImage(string url)
+        public async Task<ImageSource> GetImage(string url)
         {
             var byteImage = await GetWebData(url);
             return new ByteArrayToImageSourceConverter().ConvertFrom(byteImage);
-        }
-
-        public async Task<HtmlDocument> getTimeTableByWeek(string url, string enc, MultipartFormDataContent content)
-        {
-            try
-            {
-                HttpResponseMessage response = await _client.PostAsync(url, content);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseContent = await response.Content.ReadAsByteArrayAsync();
-
-                    HtmlDocument doc = new HtmlDocument();
-
-                    // Определите кодировку HTML-страницы (например, windows-1251)
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    Encoding encoding = Encoding.GetEncoding(enc);
-
-                    doc.LoadHtml(encoding.GetString(responseContent));
-
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
-            {
-                return null;
-            }
         }
     }
 }

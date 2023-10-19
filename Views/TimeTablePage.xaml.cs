@@ -7,6 +7,7 @@ namespace myYSTU.Views;
 public partial class TimeTablePage : ContentPage
 {
     private readonly ObservableCollection<TimeTableSubject> subjectList;
+    private readonly ObservableCollection<RadioButtonTemplate> radioButtons;
 
     private DateTime currDay;
     private DateTime firstDayOfWeek;
@@ -21,6 +22,8 @@ public partial class TimeTablePage : ContentPage
         InitializeComponent();
 
         subjectList = new ObservableCollection<TimeTableSubject>();
+        radioButtons = new ObservableCollection<RadioButtonTemplate>();
+
         currDay = DateTime.Now;
 
         ParseAsync();
@@ -46,31 +49,36 @@ public partial class TimeTablePage : ContentPage
         currDay = currentDay;
 
         UpdateDaysList();
-        UpdateTimeTable(currDay);
+        await UpdateTimeTable(currDay);
     }
 
-    private void Rb_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    private async void Rb_CheckedChanged(object sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
         {
             var date = new DateTime(currDay.Year, currDay.Month, int.Parse(((RadioButton)sender).ContentAsString()));
             currDay = date;
             //Изменять неделю тоже??
-            UpdateTimeTable(date);
+            await UpdateTimeTable(date);
         }
     }
 
     private async void UpdateDaysList()
     {
+        radioButtons.Clear();
         for (int i = 0; i < 7; i++)
         {
-            var rb = new RadioButton() { Content = firstDayOfWeek.AddDays(i).Day, IsChecked = firstDayOfWeek.AddDays(i).Day == currDay.Day };
-            rb.CheckedChanged += Rb_CheckedChanged;
-            DateList.Add(rb);
+            RadioButtonTemplate rb = new RadioButtonTemplate()
+            {
+                Day = firstDayOfWeek.AddDays(i).Day,
+                isChecked = firstDayOfWeek.AddDays(i).Day == currDay.Day
+            };
+            radioButtons.Add(rb);
         }
+        DaysList.ItemsSource = radioButtons;
     }
 
-    private async void UpdateTimeTable(DateTime date)
+    private async Task UpdateTimeTable(DateTime date)
     {
         subjectList.Clear();
         TimeTable.ItemsSource = subjectList;
@@ -88,7 +96,7 @@ public partial class TimeTablePage : ContentPage
         TimeTable.ItemsSource = subjectList;
     }
 
-    private void GoBackWeek_Clicked(object sender, EventArgs e)
+    private async void GoBackWeek_Clicked(object sender, EventArgs e)
     {
         if (currWeekNumber <= 1)
             return;
@@ -97,13 +105,11 @@ public partial class TimeTablePage : ContentPage
         firstDayOfWeek = firstDayOfWeek.AddDays(-7);
         currWeekNumber--;
 
-        DateList.Clear();
-
         UpdateDaysList();
-        UpdateTimeTable(currDay);
+        await UpdateTimeTable(currDay);
     }
 
-    private void GoNextWeek_Clicked(object sender, EventArgs e)
+    private async void GoNextWeek_Clicked(object sender, EventArgs e)
     {
         if (currWeekNumber >= 34)
             return;
@@ -112,9 +118,7 @@ public partial class TimeTablePage : ContentPage
         firstDayOfWeek = firstDayOfWeek.AddDays(7);
         currWeekNumber++;
 
-        DateList.Clear();
-
         UpdateDaysList();
-        UpdateTimeTable(currDay);
+        await UpdateTimeTable(currDay);
     }
 }
