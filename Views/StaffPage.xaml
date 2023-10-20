@@ -4,19 +4,19 @@
              x:Class="myYSTU.Views.StaffPage">
 
     <NavigationPage.TitleView>
-        <StackLayout>
+        <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
             <Label Text="Сотрудники" TextColor="White" HorizontalTextAlignment="Center" FontSize="20"/>
         </StackLayout>
     </NavigationPage.TitleView>
 
     <ScrollView>
-        <StackLayout VerticalOptions="Fill">
+        <StackLayout  VerticalOptions="Fill">
             <SearchBar x:Name="SearchBar" Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
 
             <CollectionView x:Name="StaffTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid>
+                        <Grid Padding="10">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <!-- Первая колонка занимает всю доступную ширину -->

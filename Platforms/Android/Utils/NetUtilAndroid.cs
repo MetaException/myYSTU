@@ -1,25 +1,24 @@
 ﻿using CommunityToolkit.Maui.Converters;
 using HtmlAgilityPack;
-using myYSTU.Views;
-using Microsoft.Extensions.Logging;
 using System.Text;
 using Xamarin.Android.Net;
 
 namespace myYSTU.Utils
 {
-    public class NetUtilAndroid : INetUtils
+    public class NetUtilsAndroid : INetUtils
     {
         private readonly HttpClient _client;
         private readonly AndroidMessageHandler _handler;
-        private readonly ILogger _logger;
 
-        public NetUtilAndroid()
+        public NetUtilsAndroid()
         {
             _handler = new AndroidMessageHandler();
             _client = new HttpClient(_handler) { BaseAddress = new Uri("https://www.ystu.ru") };
-            _logger = DependencyService.Get<ILogger<NetUtilAndroid>>();
         }
 
+
+        //TODO: пределать чтобы при первой авторизации происходило получение страницы с личным кабинетом
+        //Получать encoding из запроса
         public async Task<int> Authorize(string login, string password)
         {
             try
@@ -36,7 +35,7 @@ namespace myYSTU.Utils
                 // Отправляем первый POST-запрос и получаем ответ
                 var loginResponse = await _client.PostAsync(loginUrl, loginContent);
 
-                var responseContent = await loginResponse.Content.ReadAsStringAsync();
+                var responseContent = await loginResponse.Content.ReadAsStringAsync(); //TODO: обработать переадресацию
 
                 //Возврат - всегда переадресация, кроме неправильного логина или пароля
                 if (_handler.CookieContainer.Count == 0 || responseContent.Contains("Вы ввели неправильный логин или пароль. попробуйте еще раз"))
@@ -46,10 +45,52 @@ namespace myYSTU.Utils
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
                 return -1;
             }
             return 1;
+        }
+
+        public async Task<HtmlDocument> PostWebData(string url, StringContent stringContent = null, MultipartFormDataContent multipartFormDataContent = null)
+        {
+            try
+            {
+                HttpResponseMessage response;
+                if (stringContent != null)
+                {
+                    response = await _client.PostAsync(url, stringContent);
+                }
+                else
+                    response = await _client.PostAsync(url, multipartFormDataContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseContent = await response.Content.ReadAsByteArrayAsync();
+
+                    HtmlDocument doc = new HtmlDocument();
+
+                    //Личный кабиент имеет кодировку: windows-1251
+                    if (url.ToLower().Contains("wprog"))
+                    {
+                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                        Encoding w1251_enc = Encoding.GetEncoding("windows-1251");
+
+                        responseContent = Encoding.Convert(w1251_enc, Encoding.UTF8, responseContent);
+                    }
+
+
+                    doc.LoadHtml(Encoding.UTF8.GetString(responseContent));
+
+                    return doc;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         public async Task<byte[]> GetWebData(string url)
@@ -65,34 +106,37 @@ namespace myYSTU.Utils
                 }
                 else
                 {
-                    _logger.LogError(lkResponse.Content.ReadAsStringAsync().Result); //Нужно ли?
                     return null;
                 }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.ToString());
                 //TODO: Сделать вывод что нет интернета
                 return null;
             }
         }
 
-        public async Task<HtmlDocument> getHtmlDoc(string url, string enc)
+        public async Task<HtmlDocument> GetHtmlDoc(string url)
         {
             var htmlDoc = await GetWebData(url);
 
             HtmlDocument doc = new HtmlDocument();
 
-            // Определите кодировку HTML-страницы (например, windows-1251)
-            Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Encoding encoding = Encoding.GetEncoding(enc);
+            //Личный кабиент имеет кодировку: windows-1251
+            if (url.ToLower().Contains("wprog"))
+            {
+                Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                Encoding w1251_enc = Encoding.GetEncoding("windows-1251");
 
-            doc.LoadHtml(encoding.GetString(htmlDoc));
+                htmlDoc = Encoding.Convert(w1251_enc, Encoding.UTF8, htmlDoc);
+            }
+
+            doc.LoadHtml(Encoding.UTF8.GetString(htmlDoc));
 
             return doc;
         }
 
-        public async Task<ImageSource> getImage(string url)
+        public async Task<ImageSource> GetImage(string url)
         {
             var byteImage = await GetWebData(url);
             return new ByteArrayToImageSourceConverter().ConvertFrom(byteImage);

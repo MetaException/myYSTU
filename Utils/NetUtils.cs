@@ -120,7 +120,7 @@ namespace myYSTU.Utils
             var htmlDoc = await GetWebData(url);
 
             HtmlDocument doc = new HtmlDocument();
-
+            
             //Личный кабиент имеет кодировку: windows-1251
             if (url.ToLower().Contains("wprog"))
             {

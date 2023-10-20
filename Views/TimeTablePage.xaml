@@ -4,7 +4,7 @@
              x:Class="myYSTU.Views.TimeTablePage">
 
     <NavigationPage.TitleView>
-        <StackLayout>
+        <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
             <Label Text="Расписание" TextColor="White" HorizontalTextAlignment="Center" FontSize="20"/>
         </StackLayout>
     </NavigationPage.TitleView>

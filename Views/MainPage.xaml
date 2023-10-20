@@ -7,16 +7,16 @@
 
     <ScrollView>
         <VerticalStackLayout
-            Padding="10,0" 
+            Padding="30,0" 
+            Spacing="2"
             VerticalOptions="Fill"
-            HorizontalOptions="StartAndExpand">
+            HorizontalOptions="CenterAndExpand">
 
             <FlexLayout>
             
                 <Border HeightRequest="90" 
                         WidthRequest="90"
                         StrokeShape="RoundRectangle 70,70,70,70"
-                        HorizontalOptions="Start"
                         VerticalOptions="Center"
                         x:Name="imgBorder"
                     
@@ -33,7 +33,7 @@
                 </Border>
 
                 <StackLayout x:Name="ProfileInfo" Margin="0, 15, 0, 0">
-                    <Label x:Name="Fullname" Text="Имя + фамилия" FontAutoScalingEnabled="True" FontSize="Title"/>
+                    <Label x:Name="Fullname" Text="Имя" FontAutoScalingEnabled="True" FontSize="Title"/>
 
                     <Label x:Name="GroupName" Text="Группа" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
 

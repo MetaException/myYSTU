@@ -20,7 +20,7 @@ public static class MauiProgram
 				fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
 			});
 #if ANDROID
-		DependencyService.Register<INetUtils, NetUtilAndroid>();
+		DependencyService.Register<INetUtils, NetUtilsAndroid>();
 #else
 		DependencyService.Register<INetUtils, NetUtils>();
 #endif
