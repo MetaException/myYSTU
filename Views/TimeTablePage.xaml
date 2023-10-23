@@ -18,14 +18,14 @@
             <HorizontalStackLayout HorizontalOptions="FillAndExpand" Spacing="25">
                 <Label x:Name="crday"/>
                 <Label x:Name="crweek"/>
-                <Button x:Name="GoBackWeek" Text="&lt;" Clicked="GoBackWeek_Clicked"/>
-                <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="GoNextWeek_Clicked"/>
+                <Button x:Name="GoBackWeek" Text="&lt;" Clicked="weekSwitchHandler" ClassId="goBackButton"/>
+                <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="weekSwitchHandler" ClassId="goNextButton"/>
             </HorizontalStackLayout>
 
             <CollectionView x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepItemsInView">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <RadioButton Content="{Binding Day}" IsChecked="{Binding isChecked}" CheckedChanged="Rb_CheckedChanged"/>
+                        <RadioButton Content="{Binding Day}" ClassId="{Binding Date}" IsChecked="{Binding isChecked}" CheckedChanged="timeTableUpdateHandler"/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

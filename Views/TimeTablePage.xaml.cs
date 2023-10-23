@@ -6,8 +6,8 @@ namespace myYSTU.Views;
 
 public partial class TimeTablePage : ContentPage
 {
-    private readonly ObservableCollection<TimeTableSubject> subjectList;
-    private readonly ObservableCollection<RadioButtonTemplate> radioButtons;
+    private ObservableCollection<TimeTableSubject> subjectList = new ObservableCollection<TimeTableSubject>();
+    private ObservableCollection<RadioButtonTemplate> radioButtons = new ObservableCollection<RadioButtonTemplate>();
 
     private DateTime currDay;
     private DateTime firstDayOfWeek;
@@ -15,17 +15,11 @@ public partial class TimeTablePage : ContentPage
 
     //Добавить кнопку для возврата в текущий день
 
-    private string currWeek;
-
     public TimeTablePage()
     {
         InitializeComponent();
 
-        subjectList = new ObservableCollection<TimeTableSubject>();
-        radioButtons = new ObservableCollection<RadioButtonTemplate>();
-
-        currDay = DateTime.Now;
-
+        currDay = DateTime.Today;
         ParseAsync();
     }
 
@@ -33,11 +27,11 @@ public partial class TimeTablePage : ContentPage
     {
         var weekList = await TimeTableParser.ParseWeekList();
 
-        DateTime currentDay = DateTime.Now.Date;
+        currDay = DateTime.Today.Date;
 
         for (int i = 0; i < weekList.Length; i++)
         {
-            if (weekList[i].Date > currentDay)
+            if (weekList[i] > currDay)
             {
                 firstDayOfWeek = weekList[i - 1];
                 currWeekNumber = i;
@@ -45,80 +39,67 @@ public partial class TimeTablePage : ContentPage
             }
         }
 
-        currWeek = $"{currWeekNumber} - {firstDayOfWeek.Year}/{firstDayOfWeek.Month}/{firstDayOfWeek.Day}";
-        currDay = currentDay;
-
         UpdateDaysList();
-        await UpdateTimeTable(currDay);
     }
 
-    private async void Rb_CheckedChanged(object sender, CheckedChangedEventArgs e)
+    //Выполняется при изменении выбранного дня (программно тоже считается)
+    private async void timeTableUpdateHandler(object sender, CheckedChangedEventArgs e)
     {
         if (e.Value)
         {
-            var date = new DateTime(currDay.Year, currDay.Month, int.Parse(((RadioButton)sender).ContentAsString()));
-            currDay = date;
-            //Изменять неделю тоже??
-            await UpdateTimeTable(date);
+            var date = ((RadioButton)sender).ClassId;
+            currDay = DateTime.Parse(date, new System.Globalization.CultureInfo("ru-RU"));
+
+            //Обновляем расписание
+            crday.Text = date;
+            crweek.Text = currWeekNumber.ToString();
+
+            subjectList.Clear();
+
+            var timeTableParser = TimeTableParser.ParseInfoByDay(date);
+            await foreach (var subjectInfo in timeTableParser)
+            {
+                subjectList.Add(subjectInfo);
+            }
+            TimeTable.ItemsSource = subjectList;
         }
     }
 
-    private async void UpdateDaysList()
+    private void UpdateDaysList()
     {
         radioButtons.Clear();
         for (int i = 0; i < 7; i++)
         {
-            RadioButtonTemplate rb = new RadioButtonTemplate()
+            var d = firstDayOfWeek.AddDays(i);
+            var rb  = new RadioButtonTemplate()
             {
-                Day = firstDayOfWeek.AddDays(i).Day,
-                isChecked = firstDayOfWeek.AddDays(i).Day == currDay.Day
+                Date = d.ToString("d", new System.Globalization.CultureInfo("ru-RU")),
+                Day = d.Day,
+                isChecked = d.Day == currDay.Day
             };
             radioButtons.Add(rb);
         }
         DaysList.ItemsSource = radioButtons;
     }
 
-    private async Task UpdateTimeTable(DateTime date)
+    private void weekSwitchHandler(object sender, EventArgs e)
     {
-        subjectList.Clear();
-        TimeTable.ItemsSource = subjectList;
-        crday.Text = currDay.ToString();
-        crweek.Text = currWeekNumber.ToString();
+        var classId = ((Button)sender).ClassId;
 
-        var timeTableParser = TimeTableParser.ParseInfoByDay(date.ToShortDateString());
+        int k = 1;
+        if (classId == "goBackButton")
+            k = -1;
 
-        //var timeTableParser = TimeTableParser.ParseInfoByWeek(currWeek);
-
-        await foreach (var subjectInfo in timeTableParser)
-        {
-            subjectList.Add(subjectInfo);
-        }
-        TimeTable.ItemsSource = subjectList;
-    }
-
-    private async void GoBackWeek_Clicked(object sender, EventArgs e)
-    {
-        if (currWeekNumber <= 1)
+        if (k == 1 && currWeekNumber >= 34)
             return;
 
-        currDay = currDay.AddDays(-7);
-        firstDayOfWeek = firstDayOfWeek.AddDays(-7);
-        currWeekNumber--;
-
-        UpdateDaysList();
-        await UpdateTimeTable(currDay);
-    }
-
-    private async void GoNextWeek_Clicked(object sender, EventArgs e)
-    {
-        if (currWeekNumber >= 34)
+        if (k == -1 && currWeekNumber <= 1)
             return;
 
-        currDay = currDay.AddDays(7);
-        firstDayOfWeek = firstDayOfWeek.AddDays(7);
-        currWeekNumber++;
+        currDay = currDay.AddDays(7 * k);
+        firstDayOfWeek = firstDayOfWeek.AddDays(7 * k);
+        currWeekNumber += k;
 
         UpdateDaysList();
-        await UpdateTimeTable(currDay);
     }
 }
