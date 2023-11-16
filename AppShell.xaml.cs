@@ -1,9 +1,10 @@
-﻿namespace myYSTU;
-
-public partial class AppShell : Shell
+﻿namespace myYSTU
 {
-	public AppShell()
-	{
-        InitializeComponent();
+    public partial class AppShell : Shell
+    {
+        public AppShell()
+        {
+            InitializeComponent();
+        }
     }
 }

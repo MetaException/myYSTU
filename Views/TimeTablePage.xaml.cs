@@ -19,7 +19,6 @@ public partial class TimeTablePage : ContentPage
     {
         InitializeComponent();
 
-        currDay = DateTime.Today;
         ParseAsync();
     }
 

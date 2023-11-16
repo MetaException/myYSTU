@@ -4,8 +4,8 @@
              x:Class="myYSTU.Views.GradesPage">
 
     <NavigationPage.TitleView>
-        <StackLayout HorizontalOptions="FillAndExpand" VerticalOptions="CenterAndExpand">
-            <Label Text="Оценки" TextColor="White" FontSize="20"/>
+        <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
+            <Label Text="Оценки" HorizontalTextAlignment="Center" FontSize="20"/>
         </StackLayout>
     </NavigationPage.TitleView>
 

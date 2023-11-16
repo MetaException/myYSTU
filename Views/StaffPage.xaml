@@ -5,7 +5,7 @@
 
     <NavigationPage.TitleView>
         <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
-            <Label Text="Сотрудники" TextColor="White" HorizontalTextAlignment="Center" FontSize="20"/>
+            <Label Text="Сотрудники" HorizontalTextAlignment="Center" FontSize="20"/>
         </StackLayout>
     </NavigationPage.TitleView>
 

@@ -7,10 +7,10 @@
 
     <ScrollView>
         <VerticalStackLayout
-            Padding="30,0" 
-            Spacing="2"
+            Padding="10,0" 
+            Spacing="5"
             VerticalOptions="Fill"
-            HorizontalOptions="CenterAndExpand">
+            HorizontalOptions="FillAndExpand">
 
             <FlexLayout>
             
