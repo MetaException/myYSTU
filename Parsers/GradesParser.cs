@@ -25,7 +25,11 @@ namespace myYSTU.Parsers
 
                 if (subjectInfo.Type == "зачет")
                 {
-                    subjectInfo.Grade = grade.SelectSingleNode("td[8]").InnerText.Trim();
+                    string t = grade.SelectSingleNode("td[8]").InnerText.Trim();
+                    if (!string.IsNullOrEmpty(t))
+                        subjectInfo.Grade = "×";
+                    if (t == "зачет")
+                        subjectInfo.Grade = "✓";
                 }
                 else
                     subjectInfo.Grade = grade.SelectSingleNode("td[7]").InnerText.Trim();

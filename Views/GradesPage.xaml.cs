@@ -13,7 +13,7 @@ public partial class GradesPage : ContentPage
     public GradesPage()
     {
         InitializeComponent();
-
+        //CollectionView Размещение внутри VerticalStackLayout может остановить прокрутку CollectionView и может ограничить количество отображаемых элементов. В этой ситуации замените VerticalStackLayout элементом Grid.
         gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
         ParseAsync();
     }

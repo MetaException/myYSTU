@@ -17,6 +17,8 @@ public partial class AuthPage : ContentPage
 
     private async void OnLoginClicked(object sender, EventArgs e)
     {
+        LoginBtn.IsEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
+
         Login = LoginEntry.Text;
         Password = PasswordEntry.Text;
 
@@ -33,13 +35,16 @@ public partial class AuthPage : ContentPage
         }
         else if (authResult == 0)
         {
-            App.Current.MainPage = new NavigationPage(new MainPage());
-            errorLabel.Text = "Неправильный логин или пароль";
             errorLabel.TextColor = Colors.Red;
+            errorLabel.Text = "Неправильный логин или пароль";
         }
         else
         {
-            //TODO: Сделать оповещение на экране об ошибке
+            //TODO: Сделать оповещение на экране об ошибке (всплывающий элемент для всех окон)
+            errorLabel.TextColor = Colors.Red;
+            errorLabel.Text = "Произошла ошибка / отсутствует подключение к интернету";
         }
+
+        LoginBtn.IsEnabled = true;
     }
 }

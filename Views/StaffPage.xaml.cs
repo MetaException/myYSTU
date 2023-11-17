@@ -6,14 +6,11 @@ namespace myYSTU.Views;
 
 public partial class StaffPage : ContentPage
 {
-    private readonly ObservableCollection<Staff> staffList;
+    private readonly ObservableCollection<Staff> staffList = new ObservableCollection<Staff>();
 
     public StaffPage()
     {
         InitializeComponent();
-
-        staffList = new ObservableCollection<Staff>();
-        ParseAsync();
     }
 
 
@@ -23,21 +20,11 @@ public partial class StaffPage : ContentPage
 
         await foreach (var staffInfo in staffParser)
         {
+            //TODO: если во время загрузки выйти, то приложение выкинет исключение
             staffList.Add(staffInfo);
             if (string.IsNullOrEmpty(SearchBar.Text))
                 StaffTable.ItemsSource = staffList;
         }
-    }
-
-    private ObservableCollection<Staff> GetSearchResults(string query)
-    {
-        var ret = new ObservableCollection<Staff>();
-        var to_ret = staffList.Where(x => x.Name.ToLower().Contains(query));
-        foreach (var staff in to_ret)
-        {
-            ret.Add(staff);
-        }
-        return ret;
     }
 
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
@@ -50,7 +37,12 @@ public partial class StaffPage : ContentPage
         }
         else
         {
-            StaffTable.ItemsSource = GetSearchResults(searchBar.Text.ToLower());
+            StaffTable.ItemsSource = staffList.Where(x => x.Name.ToLower().Contains(searchBar.Text));
         }
+    }
+
+    private void SearchBar_Loaded(object sender, EventArgs e)
+    {
+        ParseAsync();
     }
 }

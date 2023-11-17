@@ -12,12 +12,11 @@
             VerticalOptions="Fill"
             HorizontalOptions="FillAndExpand">
 
-            <FlexLayout>
+            <HorizontalStackLayout HorizontalOptions="Center">
             
                 <Border HeightRequest="90" 
                         WidthRequest="90"
                         StrokeShape="RoundRectangle 70,70,70,70"
-                        VerticalOptions="Center"
                         x:Name="imgBorder"
                     
                         StrokeThickness="2"
@@ -28,11 +27,11 @@
                             x:Name="avatar"
                             VerticalOptions="Center"
                             HorizontalOptions="Center" 
-                            WidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
-                            HeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
+                            MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
+                            MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
                 </Border>
 
-                <StackLayout x:Name="ProfileInfo" Margin="0, 15, 0, 0">
+                <StackLayout VerticalOptions="CenterAndExpand" x:Name="ProfileInfo" Margin="0, 15, 0, 0">
                     <Label x:Name="Fullname" Text="Имя" FontAutoScalingEnabled="True" FontSize="Title"/>
 
                     <Label x:Name="GroupName" Text="Группа" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
@@ -41,7 +40,8 @@
                         <TapGestureRecognizer Tapped="ProfileInfo_Tapped"/>
                     </StackLayout.GestureRecognizers>
                 </StackLayout>
-            </FlexLayout>
+                
+            </HorizontalStackLayout>
 
             <Button x:Name="EnterToGradesPageButton" Text="Оценки" Clicked="EnterToGradesPageButton_Clicked"/>
             <Button x:Name="EnterToTimeTablePageButton" Text="Расписание" Clicked="EnterToTimeTablePageButton_Clicked"/>

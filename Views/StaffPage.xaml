@@ -11,43 +11,37 @@
 
     <ScrollView>
         <StackLayout  VerticalOptions="Fill">
-            <SearchBar x:Name="SearchBar" Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
+            <SearchBar x:Name="SearchBar" Placeholder="Поиск" Loaded="SearchBar_Loaded" TextChanged="SearchBar_TextChanged"/>
 
-            <CollectionView x:Name="StaffTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
+            <CollectionView x:Name="StaffTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Padding="10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <!-- Первая колонка занимает всю доступную ширину -->
-                                <ColumnDefinition Width="Auto" />
-                                <!-- Вторая колонка будет размером по содержимому -->
-                            </Grid.ColumnDefinitions>
-                            <StackLayout Grid.Column="0">
+                        <HorizontalStackLayout Padding="10">
+                            <Border 
+                                HeightRequest="50" 
+                                WidthRequest="50"
+                                StrokeShape="RoundRectangle 70,70,70,70"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="FillAndExpand"
+                                x:Name="imgBorder"
+     
+                                StrokeThickness="2"
+                                Margin="0,5,10,5">
+
+                                <Image
+                                    Aspect="AspectFill"
+                                    x:Name="staffAvatar"
+                                    VerticalOptions="Center"
+                                    HorizontalOptions="Center" 
+                                    Source="{Binding Avatar}"
+                                    MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
+                                    MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
+                            </Border>
+                            <StackLayout>
                                 <Label Text="{Binding Name}" FontSize="Medium"/>
                                 <Label Text="{Binding Post}" FontSize="Small" TextColor="DarkGray"/>
                             </StackLayout>
-                            <Border Grid.Column="1" 
-                                    HeightRequest="50" 
-                                    WidthRequest="50"
-                                    StrokeShape="RoundRectangle 70,70,70,70"
-                                    HorizontalOptions="Start"
-                                    VerticalOptions="Center"
-                                    x:Name="imgBorder"
-     
-                                    StrokeThickness="2"
-                                    Margin="0,5,10,5">
-
-                                <Image
-                                        Aspect="AspectFill"
-                                        x:Name="staffAvatar"
-                                        VerticalOptions="Center"
-                                        HorizontalOptions="Center" 
-                                        Source="{Binding Avatar}"
-                                        WidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
-                                        HeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
-                            </Border>
-                        </Grid>
+                        </HorizontalStackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

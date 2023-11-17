@@ -9,28 +9,33 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <ScrollView>
+    <ScrollView VerticalScrollBarVisibility="Never">
         <StackLayout Padding="5" VerticalOptions="Fill">
             <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="5" x:Name="GradesCategories"/>
             </ScrollView>
 
-            <CollectionView x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
+            <CollectionView x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <Grid Padding="5">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <!-- Первая колонка занимает всю доступную ширину -->
-                                <ColumnDefinition Width="Auto" />
-                                <!-- Вторая колонка будет размером по содержимому -->
-                            </Grid.ColumnDefinitions>
-                            <StackLayout Grid.Column="0">
+                        <HorizontalStackLayout>
+                            <Border 
+                                HeightRequest="50" 
+                                WidthRequest="50"
+                                StrokeShape="RoundRectangle 70,70,70,70"
+                                HorizontalOptions="Fill"
+                                VerticalOptions="FillAndExpand"
+     
+                                StrokeThickness="2"
+                                Margin="0,5,10,5">
+                                
+                                <Label Text="{Binding Grade}" VerticalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
+                            </Border>
+                            <StackLayout VerticalOptions="Center">
                                 <Label Text="{Binding Name}" FontSize="Medium"/>
                                 <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
                             </StackLayout>
-                            <Label Text="{Binding Grade}" Grid.Column="1" VerticalOptions="Center" FontSize="Large" HorizontalTextAlignment="Center"/>
-                        </Grid>
+                        </HorizontalStackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

@@ -26,7 +26,7 @@ public partial class TimeTablePage : ContentPage
     {
         var weekList = await TimeTableParser.ParseWeekList();
 
-        currDay = DateTime.Today.Date;
+        currDay = DateTime.Today.Date; //TODO: Получать данные из интернета (например если по умолчанию дата стоит не другой год)
 
         for (int i = 0; i < weekList.Length; i++)
         {

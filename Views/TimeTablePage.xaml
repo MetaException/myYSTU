@@ -11,18 +11,18 @@
 
     <ScrollView>
         <StackLayout
-            Spacing="25"
-            Padding="30,0"
+            Spacing="10"
+            Padding="10,0"
             VerticalOptions="Start">
 
-            <HorizontalStackLayout HorizontalOptions="FillAndExpand" Spacing="25">
-                <Label x:Name="crday"/>
-                <Label x:Name="crweek"/>
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="25">
                 <Button x:Name="GoBackWeek" Text="&lt;" Clicked="weekSwitchHandler" ClassId="goBackButton"/>
+                <Label x:Name="crday" VerticalOptions="Center" FontSize="Medium"/>
+                <Label x:Name="crweek" VerticalOptions="Center" FontSize="Medium"/>
                 <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="weekSwitchHandler" ClassId="goNextButton"/>
             </HorizontalStackLayout>
 
-            <CollectionView x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepItemsInView">
+            <CollectionView HorizontalScrollBarVisibility="Never" x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <RadioButton Content="{Binding Day}" ClassId="{Binding Date}" IsChecked="{Binding isChecked}" CheckedChanged="timeTableUpdateHandler"/>
@@ -30,12 +30,15 @@
                 </CollectionView.ItemTemplate>
             </CollectionView>
             
-            <CollectionView x:Name="TimeTable" HorizontalOptions="FillAndExpand" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepLastItemInView">
+            <CollectionView x:Name="TimeTable" HorizontalOptions="FillAndExpand" ItemsUpdatingScrollMode="KeepScrollOffset">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Frame>
                             <HorizontalStackLayout>
-                                <StackLayout Margin="0,0,5,0">
+                                <StackLayout Margin="0,0,10,0">
                                     <Label Text="{Binding StartTime}" FontSize="Medium"/>
                                     <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
                                 </StackLayout>
