@@ -3,31 +3,37 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:the49="https://schemas.the49.com/dotnet/2023/maui"
              x:Class="myYSTU.Views.InfoBottomSheet">
-    <VerticalStackLayout>
+    <StackLayout>
         <Label 
             Text="Подробнее"
             VerticalOptions="Center" 
             HorizontalOptions="Center" 
             FontAttributes="Bold"
-            TextColor="Black"/>
+            TextColor="Black"
+            FontSize="Medium"/>
 
-        <VerticalStackLayout>
-            <Label x:Name="login"/>
-            <Label x:Name="email"/>
-            <Label x:Name="status"/>
-            <Label x:Name="faculty"/>
-            <Label x:Name="studyDirection"/>
-            <Label x:Name="dateOfBirth"/>
-            <Label x:Name="phoneNumber"/>
-            <Label x:Name="sourceOfFunding"/>
-            <Label x:Name="qualification"/>
-            <Label x:Name="formOfEducation"/>
-            <Label x:Name="libraryDept"/>
-            <Label x:Name="moneyDept"/>
-            <Label x:Name="dormitoryDept"/>
-            <Label x:Name="militaryRec"/>
-            <Label x:Name="libaryCard"/>
-        </VerticalStackLayout>
-        
-    </VerticalStackLayout>
+        <StackLayout x:Name="PersonData" BindableLayout.ItemsSource="{Binding Model.Person}">
+            <BindableLayout.ItemTemplate>
+                <DataTemplate>
+                    <StackLayout>
+                        <Label x:Name="Login" Text="{Binding Login}" />
+                        <Label x:Name="Email" Text="{Binding Email}"/>
+                        <Label x:Name="Status" Text="{Binding Status}"/>
+                        <Label x:Name="Faculty" Text="{Binding Faculty}"/>
+                        <Label x:Name="StudyDirection" Text="{Binding StudyDirection}"/>
+                        <Label x:Name="DateOfBirth" Text="{Binding DateOfBirth}"/>
+                        <Label x:Name="PhoneNumber" Text="{Binding PhoneNumber}"/>
+                        <Label x:Name="SourceOfFunding" Text="{Binding SourceOfFunding}"/>
+                        <Label x:Name="Qualification" Text="{Binding Qualification}"/>
+                        <Label x:Name="FormOfEducation" Text="{Binding FormOfEducation}"/>
+                        <Label x:Name="LibraryDept" Text="{Binding LibaryDept}"/>
+                        <Label x:Name="MoneyDept" Text="{Binding MoneyDept}"/>
+                        <Label x:Name="DormitoryDept" Text="{Binding DormitoryDept}"/>
+                        <Label x:Name="MilitaryRec" Text="{Binding MilitaryRec}"/>
+                        <Label x:Name="LibaryCard" Text="{Binding LibraryCard}"/>
+                    </StackLayout>
+                </DataTemplate>
+            </BindableLayout.ItemTemplate>
+        </StackLayout>
+    </StackLayout>
 </the49:BottomSheet>

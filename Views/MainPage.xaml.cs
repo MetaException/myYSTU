@@ -1,10 +1,10 @@
-﻿//"baranovea.21" "OO5n8n#1NP"
-using myYSTU.Parsers;
+﻿using myYSTU.Parsers;
 
 namespace myYSTU.Views;
 
 public partial class MainPage : ContentPage
 {
+    private Model.Person person;
     public MainPage()
     {
         InitializeComponent();
@@ -13,7 +13,7 @@ public partial class MainPage : ContentPage
 
     private async void ParseAsync()
     {
-        var person = await PersonParser.ParseInfo();
+        person = await PersonParser.ParseInfo();
 
         Fullname.Text = person.Name[..person.Name.LastIndexOf(' ')];
         GroupName.Text = person.Group;
@@ -22,8 +22,10 @@ public partial class MainPage : ContentPage
 
     private void ProfileInfo_Tapped(object sender, TappedEventArgs e)
     {
-        var sheet = new InfoBottomSheet();
-
+        InfoBottomSheet sheet = new InfoBottomSheet(); //Пока автор библиотеки не пофиксит ошибку
+        sheet.HasBackdrop = true;
+        //TODO: переделать
+        sheet.setInfo(person);
         sheet.ShowAsync();
     }
 
