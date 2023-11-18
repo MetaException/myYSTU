@@ -9,26 +9,28 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <ScrollView VerticalScrollBarVisibility="Never">
-        <StackLayout Padding="5" VerticalOptions="Fill">
+    <Grid Padding="5" VerticalOptions="Fill">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
+        <CollectionView Grid.Row="0" HorizontalOptions="CenterAndExpand" HorizontalScrollBarVisibility="Never" x:Name="GradesCategories">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Button Clicked="ButtonCategory_Clicked" Text="{Binding Path=SemesterNumber, StringFormat='Семестр {0}'}"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-            <!-- CollectionView Размещение внутри VerticalStackLayout может остановить прокрутку CollectionView и может ограничить количество отображаемых элементов. В этой ситуации замените VerticalStackLayout элементом Grid. -->
-            <CollectionView HorizontalOptions="CenterAndExpand" HorizontalScrollBarVisibility="Never" x:Name="GradesCategories">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Button Clicked="ButtonCategory_Clicked" Text="{Binding Path=SemesterNumber, StringFormat='Семестр {0}'}"/>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-
-            <CollectionView x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <HorizontalStackLayout>
-                            <Border 
+        <CollectionView Grid.Row="1" x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <HorizontalStackLayout>
+                        <Border 
                                 HeightRequest="50" 
                                 WidthRequest="50"
                                 StrokeShape="RoundRectangle 70,70,70,70"
@@ -37,18 +39,17 @@
      
                                 StrokeThickness="2"
                                 Margin="0,5,10,5">
-                                
-                                <Label Text="{Binding Grade}" VerticalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
-                            </Border>
-                            <StackLayout VerticalOptions="Center">
-                                <Label Text="{Binding Name}" FontSize="Medium"/>
-                                <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
-                            </StackLayout>
-                        </HorizontalStackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-                
-        </StackLayout>
-    </ScrollView>
+
+                            <Label Text="{Binding Grade}" VerticalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
+                        </Border>
+                        <StackLayout VerticalOptions="Center">
+                            <Label Text="{Binding Name}" FontSize="Medium"/>
+                            <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
+                        </StackLayout>
+                    </HorizontalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
 </ContentPage>

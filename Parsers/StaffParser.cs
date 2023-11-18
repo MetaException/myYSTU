@@ -35,7 +35,7 @@ namespace myYSTU.Parsers
                     if (attributeValue != "")
                     {
                         avatarUrl = attributeValue[attributeValue.IndexOf('/')..(attributeValue.Length - 2)];
-                        staffInfo.Avatar = await _netUtil.GetImage(avatarUrl);
+                        staffInfo.Avatar = await _netUtil.GetImage(avatarUrl); //Аватар подгружается синхронно с остальными данными
                     }
                     yield return staffInfo;
                 }

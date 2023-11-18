@@ -9,53 +9,56 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <ScrollView>
-        <StackLayout
-            Spacing="10"
+    <Grid
             Padding="10,0"
             VerticalOptions="Start">
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
 
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="25">
-                <Button x:Name="GoBackWeek" Text="&lt;" Clicked="weekSwitchHandler" ClassId="goBackButton"/>
-                <Label x:Name="crday" VerticalOptions="Center" FontSize="Medium"/>
-                <Label x:Name="crweek" VerticalOptions="Center" FontSize="Medium"/>
-                <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="weekSwitchHandler" ClassId="goNextButton"/>
-            </HorizontalStackLayout>
-            
-            <CollectionView HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepScrollOffset">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <RadioButton Content="{Binding Day}" ClassId="{Binding Date}" IsChecked="{Binding isChecked}" CheckedChanged="timeTableUpdateHandler"/>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
-            
-            <CollectionView x:Name="TimeTable" HorizontalOptions="Center" ItemsUpdatingScrollMode="KeepScrollOffset">
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
-                </CollectionView.ItemsLayout>
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Frame HorizontalOptions="FillAndExpand">
-                            <HorizontalStackLayout>
-                                <StackLayout Margin="0,0,10,0">
-                                    <Label Text="{Binding StartTime}" FontSize="Medium"/>
-                                    <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
-                                </StackLayout>
-                                <StackLayout x:Name="stack">
-                                    <Label Text="{Binding Name}" FontSize="Medium" LineBreakMode="TailTruncation"/>
-                                    <!-- Из-за бага в maui, label во frame не уменьшаются при изменении окна -->
-                                    <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
-                                    <Label Text="{Binding Audithory}" FontSize="Small" TextColor="DarkGray"/>
-                                    <Label Text="{Binding Lecturer}" FontSize="Small" TextColor="DarkGray"/>
-                                </StackLayout>
-                            </HorizontalStackLayout>
-                        </Frame>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+        <HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Spacing="25">
+            <Button x:Name="GoBackWeek" Text="&lt;" Clicked="weekSwitchHandler" ClassId="goBackButton"/>
+            <Label x:Name="crday" VerticalOptions="Center" FontSize="Medium"/>
+            <Label x:Name="crweek" VerticalOptions="Center" FontSize="Medium"/>
+            <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="weekSwitchHandler" ClassId="goNextButton"/>
+        </HorizontalStackLayout>
 
-        </StackLayout>
-    </ScrollView>
+        <CollectionView Grid.Row="1" HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <RadioButton Content="{Binding Day}" ClassId="{Binding Date}" IsChecked="{Binding isChecked}" CheckedChanged="timeTableUpdateHandler"/>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <CollectionView Grid.Row="2" x:Name="TimeTable" HorizontalOptions="Center" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame HorizontalOptions="FillAndExpand">
+                        <HorizontalStackLayout>
+                            <StackLayout Margin="0,0,10,0">
+                                <Label Text="{Binding StartTime}" FontSize="Medium"/>
+                                <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
+                            </StackLayout>
+                            <StackLayout x:Name="stack">
+                                <Label Text="{Binding Name}" FontSize="Medium" LineBreakMode="TailTruncation"/>
+                                <!-- Из-за бага в maui, label во frame не уменьшаются при изменении окна -->
+                                <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
+                                <Label Text="{Binding Audithory}" FontSize="Small" TextColor="DarkGray"/>
+                                <Label Text="{Binding Lecturer}" FontSize="Small" TextColor="DarkGray"/>
+                            </StackLayout>
+                        </HorizontalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </Grid>
 
 </ContentPage>

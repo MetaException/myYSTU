@@ -37,7 +37,7 @@ public partial class StaffPage : ContentPage
         }
         else
         {
-            StaffTable.ItemsSource = staffList.Where(x => x.Name.ToLower().Contains(searchBar.Text));
+            StaffTable.ItemsSource = staffList.Where(x => x.Name.ToLower().Contains(searchBar.Text.ToLower()));
         }
     }
 

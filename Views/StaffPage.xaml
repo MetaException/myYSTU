@@ -9,15 +9,18 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <ScrollView>
-        <StackLayout  VerticalOptions="Fill">
-            <SearchBar x:Name="SearchBar" Placeholder="Поиск" Loaded="SearchBar_Loaded" TextChanged="SearchBar_TextChanged"/>
+    <Grid VerticalOptions="FillAndExpand">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <SearchBar Grid.Row="0" x:Name="SearchBar" Placeholder="Поиск" Loaded="SearchBar_Loaded" TextChanged="SearchBar_TextChanged"/>
 
-            <CollectionView x:Name="StaffTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <HorizontalStackLayout Padding="10">
-                            <Border 
+        <CollectionView Grid.Row="1" x:Name="StaffTable" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Never" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <HorizontalStackLayout Padding="10">
+                        <Border 
                                 HeightRequest="50" 
                                 WidthRequest="50"
                                 StrokeShape="RoundRectangle 70,70,70,70"
@@ -28,7 +31,7 @@
                                 StrokeThickness="2"
                                 Margin="0,5,10,5">
 
-                                <Image
+                            <Image
                                     Aspect="AspectFill"
                                     x:Name="staffAvatar"
                                     VerticalOptions="Center"
@@ -36,16 +39,15 @@
                                     Source="{Binding Avatar}"
                                     MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
                                     MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
-                            </Border>
-                            <StackLayout>
-                                <Label Text="{Binding Name}" FontSize="Medium"/>
-                                <Label Text="{Binding Post}" FontSize="Small" TextColor="DarkGray"/>
-                            </StackLayout>
-                        </HorizontalStackLayout>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                        </Border>
+                        <StackLayout>
+                            <Label Text="{Binding Name}" FontSize="Medium"/>
+                            <Label Text="{Binding Post}" FontSize="Small" TextColor="DarkGray"/>
+                        </StackLayout>
+                    </HorizontalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-        </StackLayout>
-    </ScrollView>
+    </Grid>
 </ContentPage>
