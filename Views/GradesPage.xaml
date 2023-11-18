@@ -11,9 +11,18 @@
 
     <ScrollView VerticalScrollBarVisibility="Never">
         <StackLayout Padding="5" VerticalOptions="Fill">
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
-                <HorizontalStackLayout Spacing="5" x:Name="GradesCategories"/>
-            </ScrollView>
+
+            <!-- CollectionView Размещение внутри VerticalStackLayout может остановить прокрутку CollectionView и может ограничить количество отображаемых элементов. В этой ситуации замените VerticalStackLayout элементом Grid. -->
+            <CollectionView HorizontalOptions="CenterAndExpand" HorizontalScrollBarVisibility="Never" x:Name="GradesCategories">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Button Clicked="ButtonCategory_Clicked" Text="{Binding Path=SemesterNumber, StringFormat='Семестр {0}'}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
             <CollectionView x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>

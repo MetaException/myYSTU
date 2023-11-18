@@ -6,19 +6,20 @@ namespace myYSTU.Views;
 
 public partial class GradesPage : ContentPage
 {
-    private readonly Dictionary<int, ObservableCollection<Grades>> gradesDict;
+    private readonly Dictionary<int, ObservableCollection<Grades>> gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
+    private readonly List<Grades> gradesCategories = new List<Grades>();
 
     int currSemester = 1;
 
     public GradesPage()
     {
+        Task.Run(async () => await ParseAsync()).Wait();
         InitializeComponent();
-        //CollectionView Размещение внутри VerticalStackLayout может остановить прокрутку CollectionView и может ограничить количество отображаемых элементов. В этой ситуации замените VerticalStackLayout элементом Grid.
-        gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
-        ParseAsync();
+        SetGradesCategories();
+        UpdateGradesInfo();
     }
 
-    private async void ParseAsync()
+    private async Task ParseAsync()
     {
         var gradesParser = GradesParser.ParseInfo();
 
@@ -31,14 +32,14 @@ public partial class GradesPage : ContentPage
             else
             {
                 gradesDict.Add(gradeInfo.SemesterNumber, new ObservableCollection<Grades> { gradeInfo });
-
-                var buttonCategory = new Button() { Text = $"Семестр {gradeInfo.SemesterNumber}", ClassId = gradeInfo.SemesterNumber.ToString() };
-                buttonCategory.Clicked += ButtonCategory_Clicked;
-                GradesCategories.Add(buttonCategory);
+                gradesCategories.Add(gradeInfo);
             }
-
-            UpdateGradesInfo();
         }
+    }
+
+    private void SetGradesCategories()
+    {
+        GradesCategories.ItemsSource = gradesCategories;
     }
 
     private void UpdateGradesInfo()
@@ -48,7 +49,7 @@ public partial class GradesPage : ContentPage
 
     private void ButtonCategory_Clicked(object sender, EventArgs e)
     {
-        currSemester = ((Button)sender).ClassId[0] - '0';
+        currSemester = ((Button)sender).Text.Last() - '0';
         UpdateGradesInfo();
     }
 }

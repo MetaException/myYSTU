@@ -17,12 +17,12 @@ public partial class TimeTablePage : ContentPage
 
     public TimeTablePage()
     {
+        Task.Run(async () => await ParseAsync()).Wait();
         InitializeComponent();
-
-        ParseAsync();
+        UpdateDaysList();
     }
 
-    private async void ParseAsync()
+    private async Task ParseAsync()
     {
         var weekList = await TimeTableParser.ParseWeekList();
 
@@ -37,8 +37,6 @@ public partial class TimeTablePage : ContentPage
                 break;
             }
         }
-
-        UpdateDaysList();
     }
 
     //Выполняется при изменении выбранного дня (программно тоже считается)

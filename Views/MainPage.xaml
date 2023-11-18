@@ -32,9 +32,9 @@
                 </Border>
 
                 <StackLayout VerticalOptions="CenterAndExpand" x:Name="ProfileInfo" Margin="0, 15, 0, 0">
-                    <Label x:Name="Fullname" Text="Имя" FontAutoScalingEnabled="True" FontSize="Title"/>
+                    <Label x:Name="Fullname" FontAutoScalingEnabled="True" FontSize="Title"/>
 
-                    <Label x:Name="GroupName" Text="Группа" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
+                    <Label x:Name="GroupName" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
 
                     <StackLayout.GestureRecognizers>
                         <TapGestureRecognizer Tapped="ProfileInfo_Tapped"/>
