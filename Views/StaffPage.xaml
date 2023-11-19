@@ -19,8 +19,13 @@
         <CollectionView Grid.Row="1" x:Name="StaffTable" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Never" ItemsUpdatingScrollMode="KeepScrollOffset">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <HorizontalStackLayout Padding="10">
-                        <Border 
+                    <Grid Padding="10">
+                        <!-- в horizontalstacklayout не переносятся слова -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0"
                                 HeightRequest="50" 
                                 WidthRequest="50"
                                 StrokeShape="RoundRectangle 70,70,70,70"
@@ -40,11 +45,11 @@
                                     MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
                                     MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
                         </Border>
-                        <StackLayout>
+                        <StackLayout Grid.Column="1">
                             <Label Text="{Binding Name}" FontSize="Medium"/>
                             <Label Text="{Binding Post}" FontSize="Small" TextColor="DarkGray"/>
                         </StackLayout>
-                    </HorizontalStackLayout>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

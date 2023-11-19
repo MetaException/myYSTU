@@ -29,8 +29,13 @@
         <CollectionView Grid.Row="1" x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
             <CollectionView.ItemTemplate>
                 <DataTemplate>
-                    <HorizontalStackLayout>
-                        <Border 
+                    <Grid>
+                        <!-- в horizontalstacklayout не переносятся слова -->
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Grid.Column="0"
                                 HeightRequest="50" 
                                 WidthRequest="50"
                                 StrokeShape="RoundRectangle 70,70,70,70"
@@ -42,11 +47,11 @@
 
                             <Label Text="{Binding Grade}" VerticalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
                         </Border>
-                        <StackLayout VerticalOptions="Center">
+                        <StackLayout Grid.Column="1" VerticalOptions="Center">
                             <Label Text="{Binding Name}" FontSize="Medium"/>
                             <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
                         </StackLayout>
-                    </HorizontalStackLayout>
+                    </Grid>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>

@@ -9,8 +9,6 @@ public partial class GradesPage : ContentPage
     private readonly Dictionary<int, ObservableCollection<Grades>> gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
     private readonly List<Grades> gradesCategories = new List<Grades>();
 
-    int currSemester = 1;
-
     public GradesPage()
     {
         Task.Run(async () => await ParseAsync()).Wait();
@@ -42,14 +40,13 @@ public partial class GradesPage : ContentPage
         GradesCategories.ItemsSource = gradesCategories;
     }
 
-    private void UpdateGradesInfo()
+    private void UpdateGradesInfo(int currSemester = 1)
     {
         GradesTable.ItemsSource = gradesDict[currSemester];
     }
 
     private void ButtonCategory_Clicked(object sender, EventArgs e)
     {
-        currSemester = ((Button)sender).Text.Last() - '0';
-        UpdateGradesInfo();
+        UpdateGradesInfo(((Button)sender).Text.Last() - '0');
     }
 }

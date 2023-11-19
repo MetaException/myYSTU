@@ -41,19 +41,23 @@
             <CollectionView.ItemTemplate>
                 <DataTemplate>
                     <Frame HorizontalOptions="FillAndExpand">
-                        <HorizontalStackLayout>
-                            <StackLayout Margin="0,0,10,0">
+                        <Grid>
+                            <!-- в horizontalstacklayout не переносятся слова -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackLayout Grid.Column="0" Margin="0,0,10,0">
                                 <Label Text="{Binding StartTime}" FontSize="Medium"/>
                                 <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
                             </StackLayout>
-                            <StackLayout x:Name="stack">
-                                <Label Text="{Binding Name}" FontSize="Medium" LineBreakMode="TailTruncation"/>
-                                <!-- Из-за бага в maui, label во frame не уменьшаются при изменении окна -->
+                            <StackLayout Grid.Column="1">
+                                <Label Text="{Binding Name}" FontSize="Medium"/>
                                 <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
                                 <Label Text="{Binding Audithory}" FontSize="Small" TextColor="DarkGray"/>
                                 <Label Text="{Binding Lecturer}" FontSize="Small" TextColor="DarkGray"/>
                             </StackLayout>
-                        </HorizontalStackLayout>
+                        </Grid>
                     </Frame>
                 </DataTemplate>
             </CollectionView.ItemTemplate>

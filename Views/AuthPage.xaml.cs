@@ -4,9 +4,6 @@ namespace myYSTU.Views;
 
 public partial class AuthPage : ContentPage
 {
-    string Login = "";
-    string Password = "";
-
     private readonly INetUtils _netUtil;
 
     public AuthPage()
@@ -19,8 +16,8 @@ public partial class AuthPage : ContentPage
     {
         LoginBtn.IsEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
 
-        Login = LoginEntry.Text;
-        Password = PasswordEntry.Text;
+        string Login = LoginEntry.Text;
+        string Password = PasswordEntry.Text;
 
         //Для отладки
         //TODO: убрать
