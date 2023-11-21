@@ -8,8 +8,6 @@ public partial class AuthPage : ContentPage
 
     public AuthPage()
     {
-        InitializeComponent();
-
         TryAuthorizeWithSavedCredentials();
     }
 
@@ -20,12 +18,12 @@ public partial class AuthPage : ContentPage
 
         if (login != null && password != null)
             await handleAuthorization(login, password);
+        else
+            InitializeComponent();
     }
 
     private async Task handleAuthorization(string Login, string Password)
     {
-        LoginBtn.IsEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
-
         var authResult = await _netUtil.Authorize(Login, Password);
 
         if (authResult == 1)
@@ -49,9 +47,6 @@ public partial class AuthPage : ContentPage
             errorLabel.TextColor = Colors.Red;
             errorLabel.Text = "Произошла ошибка / отсутствует подключение к интернету";
         }
-
-
-        LoginBtn.IsEnabled = true;
     }
 
     private async void OnLoginClicked(object sender, EventArgs e)
@@ -59,6 +54,8 @@ public partial class AuthPage : ContentPage
         string Login = LoginEntry.Text;
         string Password = PasswordEntry.Text;
 
+        LoginBtn.IsEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
         await handleAuthorization(Login, Password);
+        LoginBtn.IsEnabled = true;
     }
 }
