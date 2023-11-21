@@ -15,9 +15,6 @@ namespace myYSTU.Utils
             _client = new HttpClient(_handler) { BaseAddress = new Uri("https://www.ystu.ru") };
         }
 
-
-        //TODO: пределать чтобы при первой авторизации происходило получение страницы с личным кабинетом
-        //Получать encoding из запроса
         public async Task<int> Authorize(string login, string password)
         {
             try
@@ -34,10 +31,8 @@ namespace myYSTU.Utils
                 // Отправляем первый POST-запрос и получаем ответ
                 var loginResponse = await _client.PostAsync(loginUrl, loginContent);
 
-                var responseContent = await loginResponse.Content.ReadAsStringAsync(); //TODO: обработать переадресацию
-
                 //Возврат - всегда переадресация, кроме неправильного логина или пароля
-                if (_handler.CookieContainer.Count == 0 || responseContent.Contains("Вы ввели неправильный логин или пароль. попробуйте еще раз"))
+                if (_handler.CookieContainer.Count == 0 || loginResponse.IsSuccessStatusCode)
                 {
                     return 0;
                 }

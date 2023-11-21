@@ -18,8 +18,9 @@ public partial class AuthPage : ContentPage
 
         if (login != null && password != null)
             await handleAuthorization(login, password);
-        else
-            InitializeComponent();
+
+        //TODO: если сохранённый пароль станет неверным, то плашка о неправильном пароле не появится
+        InitializeComponent();
     }
 
     private async Task handleAuthorization(string Login, string Password)
