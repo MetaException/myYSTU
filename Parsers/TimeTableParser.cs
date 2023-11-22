@@ -9,14 +9,10 @@ namespace myYSTU.Parsers
 
         private static string IDraspz;
         private static string idgr;
-        private static string timeTableLink;
+        private static string timeTableLink = Links.TimeTableLinkParams;
 
-        private static async Task ParseTimeTableParameters()
+        private static async Task GetTimeTableParameters()
         {
-            //Получаем ссылку на расписание
-            var _htmlDoc = await _netUtil.GetHtmlDoc("/WPROG/lk/lkstud.php");
-            timeTableLink = _htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
-
             //Получаем параметры для запроса расписания
             var timeTableLinq = timeTableLink[(timeTableLink.IndexOf('=') + 1)..];
 
@@ -29,7 +25,7 @@ namespace myYSTU.Parsers
         {
             if (timeTableLink == null)
             {
-                await ParseTimeTableParameters();
+                await GetTimeTableParameters();
             }
 
             //Получаем расписание на семестр
@@ -65,7 +61,7 @@ namespace myYSTU.Parsers
         {
             if (IDraspz == null || idgr == null)
             {
-                await ParseTimeTableParameters();
+                await GetTimeTableParameters();
             }
 
             //Получение на день
@@ -79,7 +75,7 @@ namespace myYSTU.Parsers
                 //{ new StringContent("-35"), "namegr" }
             };
 
-            var timeTableHtmlByDay = await _netUtil.PostWebData("/wprog/rasp/raspz1day.php", multipartFormDataContent: content);
+            var timeTableHtmlByDay = await _netUtil.PostWebData(Links.TimeTableLink, multipartFormDataContent: content);
 
             var subjectsData = timeTableHtmlByDay.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
 

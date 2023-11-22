@@ -14,7 +14,7 @@ namespace myYSTU.Parsers
 
             do
             {
-                var _htmlDoc = await _netUtil.GetHtmlDoc($"/users/?PAGEN_1={pageNumber}");
+                var _htmlDoc = await _netUtil.GetHtmlDoc($"{Links.StaffLink}{pageNumber}");
 
                 if (pageNumber == 1)
                 {

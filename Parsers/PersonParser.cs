@@ -11,7 +11,7 @@ namespace myYSTU.Parsers
 
             Person student = new Person();
 
-            var _htmlDoc = await _netUtil.GetHtmlDoc("/WPROG/lk/lkstud.php");
+            var _htmlDoc = await _netUtil.GetHtmlDoc(Links.AccountInfoLink);
 
             //Получение ФИО
             student.Name = _htmlDoc.DocumentNode.SelectSingleNode("//h1").InnerText;
@@ -42,6 +42,8 @@ namespace myYSTU.Parsers
             student.Email = _htmlDoc.DocumentNode.SelectSingleNode("//table[1]/tbody[1]/tr[6]/td[1]").InnerText;
 
             student.PhoneNumber = _htmlDoc.DocumentNode.SelectSingleNode("//table[1]/tbody[1]/tr[7]/td[1]").InnerText;
+
+            Links.TimeTableLinkParams = _htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
 
             return student;
         }
