@@ -1,5 +1,6 @@
 ﻿using myYSTU.Model;
 using myYSTU.Utils;
+using System.Text.RegularExpressions;
 
 namespace myYSTU.Parsers
 {
@@ -9,7 +10,9 @@ namespace myYSTU.Parsers
 
         private static string IDraspz;
         private static string idgr;
+        private static int currWeekNumber;
         private static string timeTableLink = Links.TimeTableLinkParams;
+        
 
         private static async Task GetTimeTableParameters()
         {
@@ -31,6 +34,10 @@ namespace myYSTU.Parsers
             //Получаем расписание на семестр
             var _htmlDoc = await _netUtil.GetHtmlDoc(timeTableLink);
 
+            string currWeekString = _htmlDoc.DocumentNode.SelectSingleNode("//center[2]/table[1]").InnerText;
+
+            currWeekNumber = int.Parse(new Regex(@"\b\d+\b").Match(currWeekString).Value);
+
             //Получаем список неделей с датами
             var weeks = _htmlDoc.DocumentNode.SelectNodes("//option");
 
@@ -44,6 +51,10 @@ namespace myYSTU.Parsers
             return w.ToArray();
         }
 
+        public static int GetCurrWeekNumber()
+        {
+            return currWeekNumber;
+        }
 
         /*
         //Получение на неделю

@@ -26,17 +26,13 @@ public partial class TimeTablePage : ContentPage
     {
         var weekList = await TimeTableParser.ParseWeekList();
 
-        currDay = DateTime.Today.Date; //TODO: Получать данные из интернета (например если по умолчанию дата стоит не другой год)
+        currDay = DateTime.Today.Date; //Число в системе может быть отличным от настоящей текущей даты
+        currWeekNumber = TimeTableParser.GetCurrWeekNumber();
+        firstDayOfWeek = weekList[currWeekNumber - 1];
 
-        for (int i = 0; i < weekList.Length; i++)
-        {
-            if (weekList[i] > currDay)
-            {
-                firstDayOfWeek = weekList[i - 1];
-                currWeekNumber = i;
-                break;
-            }
-        }
+        //Если дата системы не находится в текущей неделе, то устанавливаем первый день по умолчанию
+        if (currDay > firstDayOfWeek.AddDays(7))
+            currDay = firstDayOfWeek;
     }
 
     //Выполняется при изменении выбранного дня (программно тоже считается)
