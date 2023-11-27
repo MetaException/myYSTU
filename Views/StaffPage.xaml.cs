@@ -27,6 +27,8 @@ public partial class StaffPage : ContentPage
         }
     }
 
+
+
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
     {
         SearchBar searchBar = (SearchBar)sender;
