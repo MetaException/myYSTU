@@ -8,23 +8,21 @@ public partial class AuthPage : ContentPage
 
     public AuthPage()
     {
-        TryAuthorizeWithSavedCredentials();
-    }
-
-    private async void TryAuthorizeWithSavedCredentials()
-    {
-        string login = await SecureStorage.Default.GetAsync("login");
-        string password = await SecureStorage.Default.GetAsync("password");
-
-        if (login != null && password != null)
-            await handleAuthorization(login, password);
-
-        //TODO: если сохранённый пароль станет неверным, то плашка о неправильном пароле не появится
         InitializeComponent();
+        handleAuthorization();
     }
 
-    private async Task handleAuthorization(string Login, string Password)
+    private async Task handleAuthorization(string Login = "", string Password = "")
     {
+        string savedLogin = await SecureStorage.Default.GetAsync("login");
+        string savedPassword = await SecureStorage.Default.GetAsync("password");
+
+        if (savedLogin is not null && savedPassword is not null)
+        {
+            Login = savedLogin;
+            Password = savedPassword;
+        }
+
         var authResult = await _netUtil.Authorize(Login, Password);
 
         if (authResult == 1)
@@ -39,14 +37,14 @@ public partial class AuthPage : ContentPage
             SecureStorage.Default.Remove("login");
             SecureStorage.Default.Remove("password");
 
-            errorLabel.TextColor = Colors.Red;
             errorLabel.Text = "Неправильный логин или пароль";
+            errorLabel.TextColor = Colors.Red;
         }
         else
         {
             //TODO: Сделать оповещение на экране об ошибке (всплывающий элемент для всех окон)
-            errorLabel.TextColor = Colors.Red;
             errorLabel.Text = "Произошла ошибка / отсутствует подключение к интернету";
+            errorLabel.TextColor = Colors.Red;
         }
     }
 
