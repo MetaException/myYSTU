@@ -1,13 +1,16 @@
 ﻿using myYSTU.Model;
 using myYSTU.Utils;
+using System.Collections.Concurrent;
 
 namespace myYSTU.Parsers
 {
     public static class StaffParser
     {
-        public static async IAsyncEnumerable<Staff> ParseInfo()
+        private static INetUtils _netUtil;
+
+        public static async IAsyncEnumerable<ConcurrentBag<Staff>> ParseInfo()
         {
-            var _netUtil = DependencyService.Get<INetUtils>();
+            _netUtil = DependencyService.Get<INetUtils>();
 
             int pageNumber = 1;
             int staffPagesCount = 2;
@@ -23,6 +26,7 @@ namespace myYSTU.Parsers
                 }
                 var staffDiv = _htmlDoc.DocumentNode.SelectNodes("//a[@class='user user--big']");
 
+                var staffList = new ConcurrentBag<Staff>();
                 for (int i = 0; i < staffDiv.Count; i++)
                 {
                     Staff staffInfo = new Staff();
@@ -35,13 +39,20 @@ namespace myYSTU.Parsers
                     if (attributeValue != "")
                     {
                         avatarUrl = attributeValue[attributeValue.IndexOf('/')..(attributeValue.Length - 2)];
-                        Task.Run(async () => staffInfo.Avatar = await _netUtil.GetImage(avatarUrl));
+                        staffInfo.AvatarUrl = avatarUrl;
                     }
-                    yield return staffInfo;
+
+                    staffList.Add(staffInfo);
                 }
+                yield return staffList;
 
                 pageNumber++;
             } while (pageNumber <= staffPagesCount);
+        }
+
+        public static async Task<ImageSource> ParseAvatar(string avatarURL)
+        {
+            return await _netUtil.GetImage(avatarURL);
         }
     }
 }

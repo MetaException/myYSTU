@@ -5,23 +5,21 @@ namespace myYSTU.Views;
 public partial class MainPage : ContentPage
 {
     private Model.Person person;
+
     public MainPage()
     {
-        Task.Run( async () => await ParseAsync()).Wait();
         InitializeComponent();
-        UpdateProfileInfo();
+        ParseAsync();
     }
 
     private async Task ParseAsync()
     {
         person = await PersonParser.ParseInfo();
-    }
 
-    private void UpdateProfileInfo()
-    {
         Fullname.Text = person.Name[..person.Name.LastIndexOf(' ')];
         GroupName.Text = person.Group;
-        avatar.Source = person.Avatar;
+
+        avatar.Source = await PersonParser.ParseAvatar(person.AvatarUrl);
     }
 
     private void ProfileInfo_Tapped(object sender, TappedEventArgs e)

@@ -5,9 +5,11 @@ namespace myYSTU.Parsers
 {
     public static class PersonParser
     {
+        private static INetUtils _netUtil;
+
         public static async Task<Person> ParseInfo()
         {
-            var _netUtil = DependencyService.Get<INetUtils>();
+            _netUtil = DependencyService.Get<INetUtils>();
 
             Person student = new Person();
 
@@ -20,8 +22,7 @@ namespace myYSTU.Parsers
             student.Group = _htmlDoc.DocumentNode.SelectSingleNode("//table[1]/tr[1]/td[2]/table[1]/tr[4]/td[2]").InnerText;
 
             //Получееие аватарки
-            string imageUrl = _htmlDoc.DocumentNode.SelectSingleNode("/html[1]/body[1]/div[1]/div[1]/div[4]/div[1]/div[1]/table[1]/tr[1]/td[1]/img[1]").GetAttributeValue("src", "");
-            student.Avatar = await _netUtil.GetImage(imageUrl);
+            student.AvatarUrl = _htmlDoc.DocumentNode.SelectSingleNode("/html[1]/body[1]/div[1]/div[1]/div[4]/div[1]/div[1]/table[1]/tr[1]/td[1]/img[1]").GetAttributeValue("src", "");
 
             student.Status = _htmlDoc.DocumentNode.SelectSingleNode("//table[1]/tr[1]/td[2]/table[1]/tr[2]/td[2]").InnerText;
 
@@ -46,6 +47,11 @@ namespace myYSTU.Parsers
             Links.TimeTableLinkParams = _htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
 
             return student;
+        }
+
+        public static async Task<ImageSource> ParseAvatar(string avatarURL)
+        {
+            return await _netUtil.GetImage(avatarURL);
         }
     }
 }
