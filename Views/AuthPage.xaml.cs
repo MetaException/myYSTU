@@ -14,6 +14,8 @@ public partial class AuthPage : ContentPage
 
     private async Task handleAuthorization(string Login = "", string Password = "")
     {
+        LoginBtn.IsEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
+
         string savedLogin = await SecureStorage.Default.GetAsync("login");
         string savedPassword = await SecureStorage.Default.GetAsync("password");
 
@@ -46,6 +48,8 @@ public partial class AuthPage : ContentPage
             errorLabel.Text = "Произошла ошибка / отсутствует подключение к интернету";
             errorLabel.TextColor = Colors.Red;
         }
+
+        LoginBtn.IsEnabled = true;
     }
 
     private async void OnLoginClicked(object sender, EventArgs e)
@@ -53,8 +57,6 @@ public partial class AuthPage : ContentPage
         string Login = LoginEntry.Text;
         string Password = PasswordEntry.Text;
 
-        LoginBtn.IsEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
         await handleAuthorization(Login, Password);
-        LoginBtn.IsEnabled = true;
     }
 }
