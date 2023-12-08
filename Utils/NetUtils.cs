@@ -1,17 +1,31 @@
 ﻿using CommunityToolkit.Maui.Converters;
 using HtmlAgilityPack;
 using System.Text;
+#if ANDROID
+    using Xamarin.Android.Net;
+#endif
 
 namespace myYSTU.Utils
 {
     public class NetUtils : INetUtils
     {
-        private readonly HttpClient _client;
+
+#if ANDROID
+        private readonly AndroidMessageHandler _handler;
+#else
         private readonly HttpClientHandler _handler;
+#endif
+        private readonly HttpClient _client;
 
         public NetUtils()
         {
-            _handler = new HttpClientHandler();
+
+#if ANDROID
+        _handler = new AndroidMessageHandler();
+#else
+        _handler = new HttpClientHandler();
+#endif
+
             _client = new HttpClient(_handler) { BaseAddress = new Uri("https://www.ystu.ru") };
         }
 
@@ -31,8 +45,10 @@ namespace myYSTU.Utils
                 // Отправляем первый POST-запрос и получаем ответ
                 var loginResponse = await _client.PostAsync(loginUrl, loginContent);
 
-                //Возврат - всегда переадресация, кроме неправильного логина или пароля
-                if (_handler.CookieContainer.Count == 0 || loginResponse.IsSuccessStatusCode)
+                var responseContent = await loginResponse.Content.ReadAsStringAsync(); //TODO: обработать переадресацию
+
+                //На Windows - возврат 302, на Android - 200
+                if (_handler.CookieContainer.Count == 0 || responseContent.Contains("Вы ввели неправильный логин или пароль. попробуйте еще раз"))
                 {
                     return 0;
                 }

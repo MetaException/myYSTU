@@ -20,11 +20,7 @@ namespace myYSTU
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-#if ANDROID
-		DependencyService.Register<INetUtils, NetUtilsAndroid>();
-#else
-        DependencyService.Register<INetUtils, NetUtils>();
-#endif
+            DependencyService.Register<INetUtils, NetUtils>();
 
 #if DEBUG
             builder.Logging.AddDebug();
