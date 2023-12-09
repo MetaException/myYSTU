@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui.Converters;
 using HtmlAgilityPack;
+using myYSTU.Model;
 using System.Text;
 #if ANDROID
     using Xamarin.Android.Net;
@@ -7,7 +8,7 @@ using System.Text;
 
 namespace myYSTU.Utils
 {
-    public class NetUtils : INetUtils
+    public class NetUtils
     {
 
 #if ANDROID
@@ -23,105 +24,88 @@ namespace myYSTU.Utils
 #if ANDROID
         _handler = new AndroidMessageHandler();
 #else
-        _handler = new HttpClientHandler();
+            _handler = new HttpClientHandler();
 #endif
 
-            _client = new HttpClient(_handler) { BaseAddress = new Uri("https://www.ystu.ru") };
+            _client = new HttpClient(_handler) { BaseAddress = new Uri(Links.BaseUri) };
         }
 
-        public async Task<int> Authorize(string login, string password)
+        //TODO: сделать класс статическим?
+
+        public async Task<bool> Authorize(string login, string password)
         {
-            try
+            // URL для первого запроса
+            string loginUrl = Links.AuthorizeLink;
+
+            // Создаем строку с данными для первого запроса
+            string loginFormData = $"login={login}&password={password}";
+
+            // Создаем контент запроса с типом "application/x-www-form-urlencoded" для первого запроса
+            var loginContent = new StringContent(loginFormData, Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            // Отправляем первый POST-запрос и получаем ответ
+            var loginResponse = await _client.PostAsync(loginUrl, loginContent);
+
+            var responseContent = await loginResponse.Content.ReadAsStringAsync(); //TODO: обработать переадресацию
+
+            //На Windows - возврат 302, на Android - 200
+            if (_handler.CookieContainer.Count == 0 || responseContent.Contains("Вы ввели неправильный логин или пароль. попробуйте еще раз"))
             {
-                // URL для первого запроса
-                string loginUrl = "/WPROG/auth1.php";
-
-                // Создаем строку с данными для первого запроса
-                string loginFormData = $"login={login}&password={password}";
-
-                // Создаем контент запроса с типом "application/x-www-form-urlencoded" для первого запроса
-                var loginContent = new StringContent(loginFormData, Encoding.UTF8, "application/x-www-form-urlencoded");
-
-                // Отправляем первый POST-запрос и получаем ответ
-                var loginResponse = await _client.PostAsync(loginUrl, loginContent);
-
-                var responseContent = await loginResponse.Content.ReadAsStringAsync(); //TODO: обработать переадресацию
-
-                //На Windows - возврат 302, на Android - 200
-                if (_handler.CookieContainer.Count == 0 || responseContent.Contains("Вы ввели неправильный логин или пароль. попробуйте еще раз"))
-                {
-                    return 0;
-                }
+                return false;
             }
-            catch (Exception ex)
-            {
-                return -1;
-            }
-            return 1;
+
+            return true;
         }
 
         public async Task<HtmlDocument> PostWebData(string url, StringContent stringContent = null, MultipartFormDataContent multipartFormDataContent = null)
         {
-            try
+            HttpResponseMessage response;
+            if (stringContent != null)
             {
-                HttpResponseMessage response;
-                if (stringContent != null)
-                {
-                    response = await _client.PostAsync(url, stringContent);
-                }
-                else
-                    response = await _client.PostAsync(url, multipartFormDataContent);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var responseContent = await response.Content.ReadAsByteArrayAsync();
-
-                    HtmlDocument doc = new HtmlDocument();
-
-                    //Личный кабиент имеет кодировку: windows-1251
-                    if (url.ToLower().Contains("wprog"))
-                    {
-                        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                        Encoding w1251_enc = Encoding.GetEncoding("windows-1251");
-
-                        responseContent = Encoding.Convert(w1251_enc, Encoding.UTF8, responseContent);
-                    }
-
-
-                    doc.LoadHtml(Encoding.UTF8.GetString(responseContent));
-
-                    return doc;
-                }
-                else
-                {
-                    return null;
-                }
+                response = await _client.PostAsync(url, stringContent);
             }
-            catch (Exception ex)
+            else
+                response = await _client.PostAsync(url, multipartFormDataContent);
+
+            if (response.IsSuccessStatusCode)
             {
+                var responseContent = await response.Content.ReadAsByteArrayAsync();
+
+                HtmlDocument doc = new HtmlDocument();
+
+                //Личный кабиент имеет кодировку: windows-1251
+                if (url.ToLower().Contains("wprog"))
+                {
+                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+                    Encoding w1251_enc = Encoding.GetEncoding("windows-1251");
+
+                    responseContent = Encoding.Convert(w1251_enc, Encoding.UTF8, responseContent);
+                }
+
+
+                doc.LoadHtml(Encoding.UTF8.GetString(responseContent));
+
+                return doc;
+            }
+            else
+            {
+                // ??
                 return null;
             }
         }
 
         public async Task<byte[]> GetWebData(string url)
         {
-            try
-            {
-                var lkResponse = await _client.GetAsync(url);
+            var lkResponse = await _client.GetAsync(url);
 
-                // Проверяем успешность запроса
-                if (lkResponse.IsSuccessStatusCode)
-                {
-                    return await lkResponse.Content.ReadAsByteArrayAsync();
-                }
-                else
-                {
-                    return null;
-                }
-            }
-            catch (Exception ex)
+            // Проверяем успешность запроса
+            if (lkResponse.IsSuccessStatusCode)
             {
-                //TODO: Сделать вывод что нет интернета
+                return await lkResponse.Content.ReadAsByteArrayAsync();
+            }
+            else
+            {
+                //??
                 return null;
             }
         }
@@ -130,8 +114,6 @@ namespace myYSTU.Utils
         {
             var htmlDoc = await GetWebData(url);
 
-            HtmlDocument doc = new HtmlDocument();
-            
             //Личный кабиент имеет кодировку: windows-1251
             if (url.ToLower().Contains("wprog"))
             {
@@ -141,6 +123,7 @@ namespace myYSTU.Utils
                 htmlDoc = Encoding.Convert(w1251_enc, Encoding.UTF8, htmlDoc);
             }
 
+            HtmlDocument doc = new HtmlDocument();
             doc.LoadHtml(Encoding.UTF8.GetString(htmlDoc));
 
             return doc;

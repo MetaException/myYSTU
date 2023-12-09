@@ -20,7 +20,7 @@ namespace myYSTU
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            DependencyService.Register<INetUtils, NetUtils>();
+            DependencyService.RegisterSingleton(new NetUtils());
 
 #if DEBUG
             builder.Logging.AddDebug();

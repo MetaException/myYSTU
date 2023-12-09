@@ -6,7 +6,7 @@ namespace myYSTU.Parsers
 {
     public static class TimeTableParser
     {
-        private static INetUtils _netUtil = DependencyService.Get<INetUtils>();
+        private static NetUtils _netUtil = DependencyService.Get<NetUtils>();
 
         private static string IDraspz;
         private static string idgr;

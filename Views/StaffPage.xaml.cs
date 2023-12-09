@@ -11,7 +11,21 @@ public partial class StaffPage : ContentPage
     public StaffPage()
     {
         InitializeComponent();
-        ParseAsync();
+        UpdateInfo();
+    }
+
+    private async Task UpdateInfo()
+    {
+        try
+        {
+            await ParseAsync();
+            internetError.IsVisible = false;
+        }
+        catch (HttpRequestException ex)
+        {
+            internetError.IsVisible = true;
+            //Log.Error("", ex);
+        }
     }
 
     private async Task ParseAsync()

@@ -1,15 +1,30 @@
-﻿using myYSTU.Parsers;
+﻿using myYSTU.Model;
+using myYSTU.Parsers;
 
 namespace myYSTU.Views;
 
 public partial class MainPage : ContentPage
 {
-    private Model.Person person;
+    private Person person;
 
     public MainPage()
     {
         InitializeComponent();
-        ParseAsync();
+        UpdateInfo();
+    }
+
+    private async Task UpdateInfo()
+    {
+        try
+        {
+            await ParseAsync();
+            internetError.IsVisible = false;
+        }
+        catch (HttpRequestException ex)
+        {
+            internetError.IsVisible = true;
+            //Log.Error("", ex);
+        }
     }
 
     private async Task ParseAsync()

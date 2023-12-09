@@ -11,15 +11,29 @@ public partial class GradesPage : ContentPage
 
     public GradesPage()
     {
-        Task.Run(async () => await ParseAsync()).Wait();
         InitializeComponent();
+        UpdateInfo();
+    }
+
+    private async Task UpdateInfo()
+    {
+        try
+        {
+            await ParseAsync();
+            internetError.IsVisible = false;
+        }
+        catch (HttpRequestException ex)
+        {
+            //Log.Error("", ex);
+            internetError.IsVisible = true;
+        }
         SetGradesCategories();
         UpdateGradesInfo();
     }
 
     private async Task ParseAsync()
     {
-        var gradesParser = GradesParser.ParseInfo();
+        IAsyncEnumerable<Grades> gradesParser = GradesParser.ParseInfo();
 
         await foreach (var gradeInfo in gradesParser)
         {

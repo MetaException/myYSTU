@@ -14,11 +14,27 @@ public partial class TimeTablePage : ContentPage
     private int currWeekNumber;
 
     //Добавить кнопку для возврата в текущий день
+    //TODO: добавить анимацию загрузки
+    //TODO: переделать всё так что если возникла ошибка то дальше парсинг не идёт
+
 
     public TimeTablePage()
     {
-        Task.Run(async () => await ParseAsync()).Wait();
         InitializeComponent();
+        UpdateInfo();
+    }
+    private async Task UpdateInfo()
+    {
+        try
+        {
+            await ParseAsync();
+            internetError.IsVisible = false;
+        }
+        catch (HttpRequestException ex)
+        {
+            internetError.IsVisible = true;
+            //Log.Error("", ex);
+        }
         UpdateDaysList();
     }
 
@@ -49,10 +65,21 @@ public partial class TimeTablePage : ContentPage
 
             subjectList.Clear();
 
-            var timeTableParser = TimeTableParser.ParseInfoByDay(date);
-            await foreach (var subjectInfo in timeTableParser)
+            IAsyncEnumerable<TimeTableSubject> timeTableParser = null;
+            try
             {
-                subjectList.Add(subjectInfo);
+                timeTableParser = TimeTableParser.ParseInfoByDay(date);
+                internetError.IsVisible = false;
+                await foreach (var subjectInfo in timeTableParser)
+                {
+                    subjectList.Add(subjectInfo);
+                }
+            }
+            catch (HttpRequestException ex)
+            {
+                internetError.IsVisible = true;
+                //Log.Error("", ex);
+                return;
             }
             TimeTable.ItemsSource = subjectList;
         }
@@ -64,7 +91,7 @@ public partial class TimeTablePage : ContentPage
         for (int i = 0; i < 7; i++)
         {
             var d = firstDayOfWeek.AddDays(i);
-            var rb  = new RadioButtonTemplate()
+            var rb = new RadioButtonTemplate()
             {
                 Date = d.ToString("d", new System.Globalization.CultureInfo("ru-RU")),
                 Day = d.Day,

@@ -9,60 +9,64 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <Grid
+    <VerticalStackLayout>
+        <Border x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="false">
+            <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
+        </Border>
+        <Grid
             Padding="10,0"
             VerticalOptions="Start">
-        
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
 
-        <HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Spacing="25">
-            <Button x:Name="GoBackWeek" Text="&lt;" Clicked="weekSwitchHandler" ClassId="goBackButton"/>
-            <Label x:Name="crday" VerticalOptions="Center" FontSize="Medium"/>
-            <Label x:Name="crweek" VerticalOptions="Center" FontSize="Medium"/>
-            <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="weekSwitchHandler" ClassId="goNextButton"/>
-        </HorizontalStackLayout>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <CollectionView Grid.Row="1" HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepScrollOffset">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <RadioButton Content="{Binding Day}" ClassId="{Binding Date}" IsChecked="{Binding isChecked}" CheckedChanged="timeTableUpdateHandler"/>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <HorizontalStackLayout Grid.Row="0" HorizontalOptions="Center" Spacing="25">
+                <Button x:Name="GoBackWeek" Text="&lt;" Clicked="weekSwitchHandler" ClassId="goBackButton"/>
+                <Label x:Name="crday" VerticalOptions="Center" FontSize="Medium"/>
+                <Label x:Name="crweek" VerticalOptions="Center" FontSize="Medium"/>
+                <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="weekSwitchHandler" ClassId="goNextButton"/>
+            </HorizontalStackLayout>
 
-        <CollectionView Grid.Row="2" x:Name="TimeTable" HorizontalOptions="Center" ItemsUpdatingScrollMode="KeepScrollOffset">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Frame HorizontalOptions="FillAndExpand">
-                        <Grid>
-                            <!-- в horizontalstacklayout не переносятся слова -->
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <StackLayout Grid.Column="0" Margin="0,0,10,0">
-                                <Label Text="{Binding StartTime}" FontSize="Medium"/>
-                                <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
-                            </StackLayout>
-                            <StackLayout Grid.Column="1">
-                                <Label Text="{Binding Name}" FontSize="Medium"/>
-                                <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
-                                <Label Text="{Binding Audithory}" FontSize="Small" TextColor="DarkGray"/>
-                                <Label Text="{Binding Lecturer}" FontSize="Small" TextColor="DarkGray"/>
-                            </StackLayout>
-                        </Grid>
-                    </Frame>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+            <CollectionView Grid.Row="1" HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepScrollOffset">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <RadioButton Content="{Binding Day}" ClassId="{Binding Date}" IsChecked="{Binding isChecked}" CheckedChanged="timeTableUpdateHandler"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
-    </Grid>
+            <CollectionView Grid.Row="2" x:Name="TimeTable" HorizontalOptions="Center" ItemsUpdatingScrollMode="KeepScrollOffset">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Frame HorizontalOptions="FillAndExpand">
+                            <Grid>
+                                <!-- в horizontalstacklayout не переносятся слова -->
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackLayout Grid.Column="0" Margin="0,0,10,0">
+                                    <Label Text="{Binding StartTime}" FontSize="Medium"/>
+                                    <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
+                                </StackLayout>
+                                <StackLayout Grid.Column="1">
+                                    <Label Text="{Binding Name}" FontSize="Medium"/>
+                                    <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
+                                    <Label Text="{Binding Audithory}" FontSize="Small" TextColor="DarkGray"/>
+                                    <Label Text="{Binding Lecturer}" FontSize="Small" TextColor="DarkGray"/>
+                                </StackLayout>
+                            </Grid>
+                        </Frame>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
 
+        </Grid>
+    </VerticalStackLayout>
 </ContentPage>

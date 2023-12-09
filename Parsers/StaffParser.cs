@@ -6,11 +6,11 @@ namespace myYSTU.Parsers
 {
     public static class StaffParser
     {
-        private static INetUtils _netUtil;
+        private static NetUtils _netUtil;
 
         public static async IAsyncEnumerable<ConcurrentBag<Staff>> ParseInfo()
         {
-            _netUtil = DependencyService.Get<INetUtils>();
+            _netUtil = DependencyService.Get<NetUtils>();
 
             int pageNumber = 1;
             int staffPagesCount = 2;

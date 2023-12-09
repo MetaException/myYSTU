@@ -4,13 +4,15 @@ namespace myYSTU.Views;
 
 public partial class AuthPage : ContentPage
 {
-    private readonly INetUtils _netUtil = DependencyService.Get<INetUtils>();
+    private readonly NetUtils _netUtil = DependencyService.Get<NetUtils>();
 
     public AuthPage()
     {
         InitializeComponent();
         handleAuthorization();
     }
+
+
 
     private async Task handleAuthorization(string Login = "", string Password = "")
     {
@@ -25,27 +27,37 @@ public partial class AuthPage : ContentPage
             Password = savedPassword;
         }
 
-        var authResult = await _netUtil.Authorize(Login, Password);
+        bool authResult = false;
 
-        if (authResult == 1)
+        try
+        {
+            authResult = await _netUtil.Authorize(Login, Password);
+        }
+        catch (HttpRequestException ex)
+        {
+            //Log.Error("", ex);
+
+            //TODO: Сделать оповещение на экране об ошибке (всплывающий элемент для всех окон)
+            errorLabel.Text = "Произошла ошибка / отсутствует подключение к интернету";
+            errorLabel.TextColor = Colors.Red;
+
+            LoginBtn.IsEnabled = true;
+            return;
+        }
+
+        if (authResult)
         {
             await SecureStorage.Default.SetAsync("login", Login);
             await SecureStorage.Default.SetAsync("password", Password);
 
             App.Current.MainPage = new NavigationPage(new MainPage());
         }
-        else if (authResult == 0)
+        else
         {
             SecureStorage.Default.Remove("login");
             SecureStorage.Default.Remove("password");
 
             errorLabel.Text = "Неправильный логин или пароль";
-            errorLabel.TextColor = Colors.Red;
-        }
-        else
-        {
-            //TODO: Сделать оповещение на экране об ошибке (всплывающий элемент для всех окон)
-            errorLabel.Text = "Произошла ошибка / отсутствует подключение к интернету";
             errorLabel.TextColor = Colors.Red;
         }
 
