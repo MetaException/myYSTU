@@ -1,6 +1,6 @@
 ﻿namespace myYSTU.Model
 {
-    public class TimeTableSubject
+    public class TimeTableSubject : IParsable
     {
         public string Name { get; set; }
         public string Type { get; set; }

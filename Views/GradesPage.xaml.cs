@@ -9,19 +9,32 @@ public partial class GradesPage : ContentPage
     private readonly Dictionary<int, ObservableCollection<Grades>> gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
     private readonly List<Grades> gradesCategories = new List<Grades>();
 
+    private readonly ParseManager parseManager = DependencyService.Get<ParseManager>();
+
     public GradesPage()
     {
-        Task.Run(async () => await ParseAsync()).Wait();
         InitializeComponent();
-        SetGradesCategories();
-        UpdateGradesInfo();
+        Task.Run(async () => await ParseAsync()).Wait();
+
+        //TODO: Костыль
+        if (!parseManager.isError)
+        {
+            SetGradesCategories();
+            UpdateGradesInfo();
+        }
     }
 
     private async Task ParseAsync()
     {
-        var gradesParser = GradesParser.ParseInfo();
+        var gradesParser = parseManager.ParseInfo(new GradesParser(), Links.GradesLink);
 
-        await foreach (var gradeInfo in gradesParser)
+        if (parseManager.isError)
+        {
+            internetError.IsVisible = true;
+            return;
+        }    
+
+        await foreach (Grades gradeInfo in gradesParser)
         {
             if (gradesDict.ContainsKey(gradeInfo.SemesterNumber))
             {

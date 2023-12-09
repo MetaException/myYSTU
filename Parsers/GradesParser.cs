@@ -1,21 +1,15 @@
-﻿using myYSTU.Model;
-using myYSTU.Utils;
+﻿using HtmlAgilityPack;
+using myYSTU.Model;
 
 namespace myYSTU.Parsers
 {
-    public static class GradesParser
+    public class GradesParser : IParser
     {
-
-        public static async IAsyncEnumerable<Grades> ParseInfo()
+        public async IAsyncEnumerable<IParsable> ParseInfo(HtmlDocument _htmlDoc)
         {
-            var _netUtil = DependencyService.Get<INetUtils>();
-
-            var _htmlDoc = await _netUtil.GetHtmlDoc(Links.GradesLink);
-
             var gradesTable = _htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
 
             //TODO: обработать когда нет оценок
-
             foreach (var grade in gradesTable)
             {
                 Grades subjectInfo = new Grades();

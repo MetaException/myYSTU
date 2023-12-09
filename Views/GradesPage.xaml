@@ -9,33 +9,37 @@
         </StackLayout>
     </NavigationPage.TitleView>
 
-    <Grid Padding="5" VerticalOptions="Fill">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
-        <CollectionView Grid.Row="0" HorizontalOptions="CenterAndExpand" HorizontalScrollBarVisibility="Never" x:Name="GradesCategories">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
-            </CollectionView.ItemsLayout>
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Button Clicked="ButtonCategory_Clicked" Text="{Binding Path=SemesterNumber, StringFormat='Семестр {0}'}"/>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+    <VerticalStackLayout>
+        <Border x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="false">
+            <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
+        </Border>
+        <Grid Padding="5" VerticalOptions="Fill">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <CollectionView Grid.Row="1" x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid>
-                        <!-- в horizontalstacklayout не переносятся слова -->
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0"
+            <CollectionView Grid.Row="0" HorizontalOptions="CenterAndExpand" HorizontalScrollBarVisibility="Never" x:Name="GradesCategories">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
+                </CollectionView.ItemsLayout>
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Button Clicked="ButtonCategory_Clicked" Text="{Binding Path=SemesterNumber, StringFormat='Семестр {0}'}"/>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <CollectionView Grid.Row="1" x:Name="GradesTable" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <!-- в horizontalstacklayout не переносятся слова -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0"
                                 HeightRequest="50" 
                                 WidthRequest="50"
                                 StrokeShape="RoundRectangle 70,70,70,70"
@@ -45,16 +49,16 @@
                                 StrokeThickness="2"
                                 Margin="0,5,10,5">
 
-                            <Label Text="{Binding Grade}" VerticalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
-                        </Border>
-                        <StackLayout Grid.Column="1" VerticalOptions="Center">
-                            <Label Text="{Binding Name}" FontSize="Medium"/>
-                            <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
-                        </StackLayout>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
-
-    </Grid>
+                                <Label Text="{Binding Grade}" VerticalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
+                            </Border>
+                            <StackLayout Grid.Column="1" VerticalOptions="Center">
+                                <Label Text="{Binding Name}" FontSize="Medium"/>
+                                <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
+                            </StackLayout>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
+    </VerticalStackLayout>
 </ContentPage>

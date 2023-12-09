@@ -1,6 +1,6 @@
 ﻿namespace myYSTU.Model
 {
-    public class Person
+    public class Person : IParsable
     {
         public string Name { get; set; }
         public string Status { get; set; }

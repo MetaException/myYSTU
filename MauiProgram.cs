@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
+using myYSTU.Parsers;
 using myYSTU.Utils;
 using The49.Maui.BottomSheet;
 
@@ -21,6 +22,7 @@ namespace myYSTU
                 });
 
             DependencyService.Register<INetUtils, NetUtils>();
+            DependencyService.RegisterSingleton(new ParseManager());
 
 #if DEBUG
             builder.Logging.AddDebug();

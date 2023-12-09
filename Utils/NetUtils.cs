@@ -23,7 +23,7 @@ namespace myYSTU.Utils
 #if ANDROID
         _handler = new AndroidMessageHandler();
 #else
-        _handler = new HttpClientHandler();
+            _handler = new HttpClientHandler();
 #endif
 
             _client = new HttpClient(_handler) { BaseAddress = new Uri("https://www.ystu.ru") };
@@ -130,8 +130,10 @@ namespace myYSTU.Utils
         {
             var htmlDoc = await GetWebData(url);
 
+            if (htmlDoc is null)
+                return null;
+
             HtmlDocument doc = new HtmlDocument();
-            
             //Личный кабиент имеет кодировку: windows-1251
             if (url.ToLower().Contains("wprog"))
             {
@@ -142,13 +144,13 @@ namespace myYSTU.Utils
             }
 
             doc.LoadHtml(Encoding.UTF8.GetString(htmlDoc));
-
             return doc;
         }
 
         public async Task<ImageSource> GetImage(string url)
         {
             var byteImage = await GetWebData(url);
+
             return new ByteArrayToImageSourceConverter().ConvertFrom(byteImage);
         }
     }

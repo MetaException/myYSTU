@@ -4,11 +4,11 @@ using System.Collections.Concurrent;
 
 namespace myYSTU.Parsers
 {
-    public static class StaffParser
+    public class StaffParser : IParser
     {
         private static INetUtils _netUtil;
 
-        public static async IAsyncEnumerable<ConcurrentBag<Staff>> ParseInfo()
+        public async IAsyncEnumerable<ConcurrentBag<Staff>> ParseInfo()
         {
             _netUtil = DependencyService.Get<INetUtils>();
 

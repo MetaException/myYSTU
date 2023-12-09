@@ -1,12 +1,15 @@
 using Microsoft.Datasync.Client;
 using myYSTU.Model;
 using myYSTU.Parsers;
+using System.Collections.Concurrent;
 
 namespace myYSTU.Views;
 
 public partial class StaffPage : ContentPage
 {
     private readonly ConcurrentObservableCollection<Staff> staffList = new ConcurrentObservableCollection<Staff>();
+
+    private readonly ParseManager parseManager = DependencyService.Get<ParseManager>();
 
     public StaffPage()
     {
@@ -16,7 +19,7 @@ public partial class StaffPage : ContentPage
 
     private async Task ParseAsync()
     {
-        var staffInfoParser = StaffParser.ParseInfo();
+        var staffInfoParser = parseManager.ParseInfo(new StaffParser(), Links.StaffLink);
 
         await foreach (var staffInfoList in staffInfoParser)
         {
