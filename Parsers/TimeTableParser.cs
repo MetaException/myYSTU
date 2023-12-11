@@ -6,8 +6,6 @@ namespace myYSTU.Parsers
 {
     public static class TimeTableParser
     {
-        private static NetUtils _netUtil = DependencyService.Get<NetUtils>();
-
         private static string IDraspz;
         private static string idgr;
         private static int currWeekNumber;
@@ -32,7 +30,7 @@ namespace myYSTU.Parsers
             }
 
             //Получаем расписание на семестр
-            var _htmlDoc = await _netUtil.GetHtmlDoc(timeTableLink);
+            var _htmlDoc = await NetUtils.GetHtmlDoc(timeTableLink);
 
             string currWeekString = _htmlDoc.DocumentNode.SelectSingleNode("//center[2]/table[1]").InnerText;
 
@@ -86,7 +84,7 @@ namespace myYSTU.Parsers
                 //{ new StringContent("-35"), "namegr" }
             };
 
-            var timeTableHtmlByDay = await _netUtil.PostWebData(Links.TimeTableLink, multipartFormDataContent: content);
+            var timeTableHtmlByDay = await NetUtils.PostWebData(Links.TimeTableLink, multipartFormDataContent: content);
 
             var subjectsData = timeTableHtmlByDay.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
 

@@ -4,15 +4,11 @@ namespace myYSTU.Views;
 
 public partial class AuthPage : ContentPage
 {
-    private readonly NetUtils _netUtil = DependencyService.Get<NetUtils>();
-
     public AuthPage()
     {
         InitializeComponent();
         handleAuthorization();
     }
-
-
 
     private async Task handleAuthorization(string Login = "", string Password = "")
     {
@@ -31,7 +27,7 @@ public partial class AuthPage : ContentPage
 
         try
         {
-            authResult = await _netUtil.Authorize(Login, Password);
+            authResult = await NetUtils.Authorize(Login, Password);
         }
         catch (HttpRequestException ex)
         {

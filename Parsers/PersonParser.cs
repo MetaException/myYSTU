@@ -5,11 +5,9 @@ namespace myYSTU.Parsers
 {
     public static class PersonParser
     {
-        private static NetUtils _netUtil = DependencyService.Get<NetUtils>();
-
         public static async Task<Person> ParseInfo()
         {
-            var htmlDoc = await _netUtil.GetHtmlDoc(Links.AccountInfoLink);
+            var htmlDoc = await NetUtils.GetHtmlDoc(Links.AccountInfoLink);
 
             Person student = new Person()
             {
@@ -31,11 +29,6 @@ namespace myYSTU.Parsers
             Links.TimeTableLinkParams = htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
 
             return student;
-        }
-
-        public static async Task<ImageSource> ParseAvatar(string avatarURL)
-        {
-            return await _netUtil.GetImage(avatarURL);
         }
     }
 }

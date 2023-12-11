@@ -1,5 +1,6 @@
 ﻿using myYSTU.Model;
 using myYSTU.Parsers;
+using myYSTU.Utils;
 
 namespace myYSTU.Views;
 
@@ -34,7 +35,7 @@ public partial class MainPage : ContentPage
         Fullname.Text = person.Name[..person.Name.LastIndexOf(' ')];
         GroupName.Text = person.Group;
 
-        avatar.Source = await PersonParser.ParseAvatar(person.AvatarUrl);
+        avatar.Source = await NetUtils.GetImage(person.AvatarUrl);
     }
 
     private void ProfileInfo_Tapped(object sender, TappedEventArgs e)

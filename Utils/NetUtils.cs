@@ -8,31 +8,17 @@ using System.Text;
 
 namespace myYSTU.Utils
 {
-    public class NetUtils
+    public static class NetUtils
     {
 
 #if ANDROID
-        private readonly AndroidMessageHandler _handler;
+        private static readonly AndroidMessageHandler _handler = new AndroidMessageHandler();
 #else
-        private readonly HttpClientHandler _handler;
+        private static readonly HttpClientHandler _handler = new HttpClientHandler();
 #endif
-        private readonly HttpClient _client;
+        private static readonly HttpClient _client = new HttpClient(_handler) { BaseAddress = new Uri(Links.BaseUri) };
 
-        public NetUtils()
-        {
-
-#if ANDROID
-        _handler = new AndroidMessageHandler();
-#else
-            _handler = new HttpClientHandler();
-#endif
-
-            _client = new HttpClient(_handler) { BaseAddress = new Uri(Links.BaseUri) };
-        }
-
-        //TODO: сделать класс статическим?
-
-        public async Task<bool> Authorize(string login, string password)
+        public static async Task<bool> Authorize(string login, string password)
         {
             // URL для первого запроса
             string loginUrl = Links.AuthorizeLink;
@@ -57,7 +43,7 @@ namespace myYSTU.Utils
             return true;
         }
 
-        public async Task<HtmlDocument> PostWebData(string url, StringContent stringContent = null, MultipartFormDataContent multipartFormDataContent = null)
+        public static async Task<HtmlDocument> PostWebData(string url, StringContent stringContent = null, MultipartFormDataContent multipartFormDataContent = null)
         {
             HttpResponseMessage response;
             if (stringContent != null)
@@ -94,7 +80,7 @@ namespace myYSTU.Utils
             }
         }
 
-        public async Task<byte[]> GetWebData(string url)
+        public static async Task<byte[]> GetWebData(string url)
         {
             var lkResponse = await _client.GetAsync(url);
 
@@ -110,7 +96,7 @@ namespace myYSTU.Utils
             }
         }
 
-        public async Task<HtmlDocument> GetHtmlDoc(string url)
+        public static async Task<HtmlDocument> GetHtmlDoc(string url)
         {
             var htmlDoc = await GetWebData(url);
 
@@ -129,7 +115,7 @@ namespace myYSTU.Utils
             return doc;
         }
 
-        public async Task<ImageSource> GetImage(string url)
+        public static async Task<ImageSource> GetImage(string url)
         {
             var byteImage = await GetWebData(url);
             return new ByteArrayToImageSourceConverter().ConvertFrom(byteImage);

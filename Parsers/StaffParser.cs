@@ -6,18 +6,14 @@ namespace myYSTU.Parsers
 {
     public static class StaffParser
     {
-        private static NetUtils _netUtil;
-
         public static async IAsyncEnumerable<ConcurrentBag<Staff>> ParseInfo()
         {
-            _netUtil = DependencyService.Get<NetUtils>();
-
             int pageNumber = 1;
             int staffPagesCount = 2;
 
             do
             {
-                var _htmlDoc = await _netUtil.GetHtmlDoc($"{Links.StaffLink}{pageNumber}");
+                var _htmlDoc = await NetUtils.GetHtmlDoc($"{Links.StaffLink}{pageNumber}");
 
                 if (pageNumber == 1)
                 {
@@ -48,11 +44,6 @@ namespace myYSTU.Parsers
 
                 pageNumber++;
             } while (pageNumber <= staffPagesCount);
-        }
-
-        public static async Task<ImageSource> ParseAvatar(string avatarURL)
-        {
-            return await _netUtil.GetImage(avatarURL);
         }
     }
 }

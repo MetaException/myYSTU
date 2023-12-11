@@ -1,6 +1,7 @@
 using Microsoft.Datasync.Client;
 using myYSTU.Model;
 using myYSTU.Parsers;
+using myYSTU.Utils;
 
 namespace myYSTU.Views;
 
@@ -36,7 +37,7 @@ public partial class StaffPage : ContentPage
         {
             await Parallel.ForEachAsync(staffInfoList, async (staffInfo, ct) =>
             {
-                staffInfo.Avatar = await StaffParser.ParseAvatar(staffInfo.AvatarUrl);
+                staffInfo.Avatar = await NetUtils.GetImage(staffInfo.AvatarUrl);
             });
             staffList.AddRange(staffInfoList);
             StaffTable.ItemsSource = staffList;

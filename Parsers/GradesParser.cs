@@ -8,9 +8,7 @@ namespace myYSTU.Parsers
 
         public static async IAsyncEnumerable<Grades> ParseInfo()
         {
-            var _netUtil = DependencyService.Get<NetUtils>();
-
-            var _htmlDoc = await _netUtil.GetHtmlDoc(Links.GradesLink);
+            var _htmlDoc = await NetUtils.GetHtmlDoc(Links.GradesLink);
                 
             var gradesTable = _htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
 
