@@ -49,6 +49,10 @@ public partial class TimeTablePage : ContentPage
         //Если дата системы не находится в текущей неделе, то устанавливаем первый день по умолчанию
         if (currDay > firstDayOfWeek.AddDays(7))
             currDay = firstDayOfWeek;
+
+        //Обновляем расписание
+        crday.Text = currDay.ToString();
+        crweek.Text = currWeekNumber.ToString();
     }
 
     //Выполняется при изменении выбранного дня (программно тоже считается)

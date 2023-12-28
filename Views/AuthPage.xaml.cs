@@ -23,7 +23,7 @@ public partial class AuthPage : ContentPage
             Password = savedPassword;
         }
 
-        bool authResult = false;
+        bool authResult;
 
         try
         {
