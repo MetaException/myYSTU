@@ -16,8 +16,12 @@
                 <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
             </Border>
 
-            <HorizontalStackLayout HorizontalOptions="Center">
-                <Border HeightRequest="90" 
+            <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsRunning="True"/>
+
+            <StackLayout Spacing="10" x:Name="contentGrid" IsVisible="False">
+
+                <HorizontalStackLayout HorizontalOptions="Center">
+                    <Border HeightRequest="90" 
                         WidthRequest="90"
                         StrokeShape="RoundRectangle 70,70,70,70"
                         x:Name="imgBorder"
@@ -25,33 +29,34 @@
                         StrokeThickness="2"
                         Margin="0,10,10,5">
 
-                    <Image
+                        <Image
                             Aspect="AspectFill"
                             x:Name="avatar"
                             VerticalOptions="Center"
                             HorizontalOptions="Center" 
                             MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
                             MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
-                </Border>
+                    </Border>
 
-                <StackLayout VerticalOptions="CenterAndExpand" x:Name="ProfileInfo" Margin="0, 15, 0, 0">
-                    <Label x:Name="Fullname" FontAutoScalingEnabled="True" FontSize="Title"/>
+                    <StackLayout VerticalOptions="CenterAndExpand" x:Name="ProfileInfo" Margin="0, 15, 0, 0">
+                        <Label x:Name="Fullname" FontAutoScalingEnabled="True" FontSize="Title"/>
 
-                    <Label x:Name="GroupName" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
+                        <Label x:Name="GroupName" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
 
-                    <StackLayout.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="ProfileInfo_Tapped"/>
-                    </StackLayout.GestureRecognizers>
-                </StackLayout>
+                        <StackLayout.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="ProfileInfo_Tapped"/>
+                        </StackLayout.GestureRecognizers>
+                    </StackLayout>
 
-            </HorizontalStackLayout>
+                </HorizontalStackLayout>
 
-            <Button x:Name="EnterToGradesPageButton" Text="Оценки" Clicked="EnterToGradesPageButton_Clicked"/>
-            <Button x:Name="EnterToTimeTablePageButton" Text="Расписание" Clicked="EnterToTimeTablePageButton_Clicked"/>
-            <Button x:Name="EnterToStaffPageButton" Text="Сотрудники" Clicked="EnterToStaffPageButton_Clicked"/>
+                <Button x:Name="EnterToGradesPageButton" Text="Оценки" Clicked="EnterToGradesPageButton_Clicked"/>
+                <Button x:Name="EnterToTimeTablePageButton" Text="Расписание" Clicked="EnterToTimeTablePageButton_Clicked"/>
+                <Button x:Name="EnterToStaffPageButton" Text="Сотрудники" Clicked="EnterToStaffPageButton_Clicked"/>
 
-            <Label 
+                <Label 
                 x:Name="Debug"/>
+            </StackLayout>
 
         </VerticalStackLayout>
     </ScrollView>

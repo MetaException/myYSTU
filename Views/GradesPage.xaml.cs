@@ -26,7 +26,10 @@ public partial class GradesPage : ContentPage
         {
             //Log.Error("", ex);
             internetError.IsVisible = true;
+            return;
         }
+        activityIndicator.IsVisible = false;
+        contentGrid.IsVisible = true;
         SetGradesCategories();
         UpdateGradesInfo();
     }

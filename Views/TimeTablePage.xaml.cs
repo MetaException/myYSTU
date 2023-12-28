@@ -26,7 +26,7 @@ public partial class TimeTablePage : ContentPage
     private async Task UpdateInfo()
     {
         try
-        {
+        { 
             await ParseAsync();
             internetError.IsVisible = false;
         }
@@ -34,7 +34,10 @@ public partial class TimeTablePage : ContentPage
         {
             internetError.IsVisible = true;
             //Log.Error("", ex);
+            return;
         }
+        activityIndicator.IsVisible = false;
+        contentGrid.IsVisible = true;
         UpdateDaysList();
     }
 

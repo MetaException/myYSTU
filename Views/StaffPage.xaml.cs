@@ -1,4 +1,5 @@
 using Microsoft.Datasync.Client;
+using Microsoft.Maui.Controls;
 using myYSTU.Model;
 using myYSTU.Parsers;
 using myYSTU.Utils;
@@ -26,7 +27,10 @@ public partial class StaffPage : ContentPage
         {
             internetError.IsVisible = true;
             //Log.Error("", ex);
+            return;
         }
+        activityIndicator.IsVisible = false;
+        contentGrid.IsVisible = true;
     }
 
     private async Task ParseAsync()

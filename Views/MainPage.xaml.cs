@@ -25,7 +25,10 @@ public partial class MainPage : ContentPage
         {
             internetError.IsVisible = true;
             //Log.Error("", ex);
+            return;
         }
+        activityIndicator.IsVisible = false;
+        contentGrid.IsVisible = true;
     }
 
     private async Task ParseAsync()

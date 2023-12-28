@@ -20,18 +20,26 @@
             <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
         </Border>
 
-        <SearchBar Grid.Row="1" x:Name="SearchBar" Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
+        <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsRunning="True"/>
+        <Grid Grid.Row="2" x:Name="contentGrid" IsVisible="False">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-        <CollectionView Grid.Row="2" x:Name="StaffTable" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Never" ItemsUpdatingScrollMode="KeepScrollOffset">
-            <CollectionView.ItemTemplate>
-                <DataTemplate>
-                    <Grid Padding="10">
-                        <!-- в horizontalstacklayout не переносятся слова -->
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <Border Grid.Column="0"
+            <SearchBar Grid.Row="1" x:Name="SearchBar" Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
+
+            <CollectionView Grid.Row="2" x:Name="StaffTable" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Never" ItemsUpdatingScrollMode="KeepScrollOffset">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid Padding="10">
+                            <!-- в horizontalstacklayout не переносятся слова -->
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Border Grid.Column="0"
                                 HeightRequest="50" 
                                 WidthRequest="50"
                                 StrokeShape="RoundRectangle 70,70,70,70"
@@ -42,23 +50,24 @@
                                 StrokeThickness="2"
                                 Margin="0,5,10,5">
 
-                            <Image
-                                    Aspect="AspectFill"
-                                    x:Name="staffAvatar"
-                                    VerticalOptions="Center"
-                                    HorizontalOptions="Center" 
-                                    Source="{Binding Avatar}"
-                                    MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
-                                    MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
-                        </Border>
-                        <StackLayout Grid.Column="1">
-                            <Label Text="{Binding Name}" FontSize="Medium"/>
-                            <Label Text="{Binding Post}" FontSize="Small" TextColor="DarkGray"/>
-                        </StackLayout>
-                    </Grid>
-                </DataTemplate>
-            </CollectionView.ItemTemplate>
-        </CollectionView>
+                                <Image
+                                        Aspect="AspectFill"
+                                        x:Name="staffAvatar"
+                                        VerticalOptions="Center"
+                                        HorizontalOptions="Center" 
+                                        Source="{Binding Avatar}"
+                                        MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
+                                        MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
+                            </Border>
+                            <StackLayout Grid.Column="1">
+                                <Label Text="{Binding Name}" FontSize="Medium"/>
+                                <Label Text="{Binding Post}" FontSize="Small" TextColor="DarkGray"/>
+                            </StackLayout>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Grid>
 
     </Grid>
 </ContentPage>
