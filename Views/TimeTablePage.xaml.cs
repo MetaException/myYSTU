@@ -7,26 +7,24 @@ namespace myYSTU.Views;
 public partial class TimeTablePage : ContentPage
 {
     private ObservableCollection<TimeTableSubject> subjectList = new ObservableCollection<TimeTableSubject>();
-    private ObservableCollection<RadioButtonTemplate> radioButtons = new ObservableCollection<RadioButtonTemplate>();
+    private ObservableCollection<RadioButton> radioButtons = new ObservableCollection<RadioButton>();
 
     private DateTime currDay;
     private DateTime firstDayOfWeek;
     private int currWeekNumber;
 
-    //Добавить кнопку для возврата в текущий день
-    //TODO: добавить анимацию загрузки
-    //TODO: переделать всё так что если возникла ошибка то дальше парсинг не идёт
-
+    //TODO: Добавить кнопку для возврата в текущий день
 
     public TimeTablePage()
     {
         InitializeComponent();
         UpdateInfo();
     }
-    private async Task UpdateInfo()
+
+    private async void UpdateInfo()
     {
         try
-        { 
+        {
             await ParseAsync();
             internetError.IsVisible = false;
         }
@@ -36,26 +34,51 @@ public partial class TimeTablePage : ContentPage
             //Log.Error("", ex);
             return;
         }
+        UpdateDaysList();
         activityIndicator.IsVisible = false;
         contentGrid.IsVisible = true;
-        UpdateDaysList();
     }
 
-    private async Task ParseAsync()
+    private async Task ParseAsync(string date = "")
     {
-        var weekList = await TimeTableParser.ParseWeekList();
+        if (date == "")
+        {
+            currDay = DateTime.Today.Date; //Число в системе может быть отличным от настоящей текущей даты
+            date = currDay.ToString("d");
+        }
+        else
+        {
+            currDay = DateTime.Parse(date, new System.Globalization.CultureInfo("ru-RU"));
+        }
 
-        currDay = DateTime.Today.Date; //Число в системе может быть отличным от настоящей текущей даты
-        currWeekNumber = TimeTableParser.GetCurrWeekNumber();
-        firstDayOfWeek = weekList[currWeekNumber - 1];
+        subjectList.Clear();
 
-        //Если дата системы не находится в текущей неделе, то устанавливаем первый день по умолчанию
-        if (currDay > firstDayOfWeek.AddDays(7))
-            currDay = firstDayOfWeek;
+        IAsyncEnumerable<TimeTableSubject> timeTableParser = null;
+        try
+        {
+            timeTableParser = TimeTableParser.ParseInfoByDay(date);
+            internetError.IsVisible = false;
+            await foreach (var subjectInfo in timeTableParser)
+            {
+                subjectList.Add(subjectInfo);
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            internetError.IsVisible = true;
+            //Log.Error("", ex);
+            return;
+        }
+        TimeTable.ItemsSource = subjectList;
+    }
 
-        //Обновляем расписание
-        crday.Text = currDay.ToString();
-        crweek.Text = currWeekNumber.ToString();
+    private DateTime GetFirstDayOfWeek(DateTime input)
+    {
+        // Получаем понедельник для этой недели
+        int delta = DayOfWeek.Monday - input.DayOfWeek;
+        if (delta > 0)
+            delta -= 7;
+        return input.AddDays(delta);
     }
 
     //Выполняется при изменении выбранного дня (программно тоже считается)
@@ -64,45 +87,53 @@ public partial class TimeTablePage : ContentPage
         if (e.Value)
         {
             var date = ((RadioButton)sender).ClassId;
-            currDay = DateTime.Parse(date, new System.Globalization.CultureInfo("ru-RU"));
-
-            //Обновляем расписание
-            crday.Text = date;
-            crweek.Text = currWeekNumber.ToString();
-
-            subjectList.Clear();
-
-            IAsyncEnumerable<TimeTableSubject> timeTableParser = null;
-            try
-            {
-                timeTableParser = TimeTableParser.ParseInfoByDay(date);
-                internetError.IsVisible = false;
-                await foreach (var subjectInfo in timeTableParser)
-                {
-                    subjectList.Add(subjectInfo);
-                }
-            }
-            catch (HttpRequestException ex)
-            {
-                internetError.IsVisible = true;
-                //Log.Error("", ex);
-                return;
-            }
-            TimeTable.ItemsSource = subjectList;
+            await ParseAsync(date);
         }
     }
 
     private void UpdateDaysList()
     {
+        // Определяем разницу в днях между текущей датой и 1 сентября
+        var today = DateTime.Now;
+        DateTime firstDayOfSemester;
+
+        //В Январе исп старое расписание
+        if (today.Month == 1)
+        {
+            firstDayOfSemester = new DateTime(day: 1, month: 9, year: today.Year - 1);
+        }
+        else if (today.Month >= 2 && today.Month <= 8) //В Феврале уже новое
+        {
+            //TODO: переделать всё
+            firstDayOfSemester = new DateTime(day: 1, month: 2, year: today.Year);
+        }
+        else
+        {
+            firstDayOfSemester = new DateTime(day: 1, month: 9, year: today.Year);
+        }
+
+        DateTime firstDay = GetFirstDayOfWeek(firstDayOfSemester);
+
+        int daysDifference = (int)(currDay - firstDay).TotalDays + 1;
+
+        // Определяем номер недели
+        currWeekNumber = (int)Math.Ceiling(daysDifference / 7d);
+
+        firstDayOfWeek = GetFirstDayOfWeek(currDay);
+
+        //Обновляем расписание
+        crday.Text = currDay.ToString("d");
+        crweek.Text = currWeekNumber.ToString();
+
         radioButtons.Clear();
         for (int i = 0; i < 7; i++)
         {
             var d = firstDayOfWeek.AddDays(i);
-            var rb = new RadioButtonTemplate()
+            var rb = new RadioButton()
             {
-                Date = d.ToString("d", new System.Globalization.CultureInfo("ru-RU")),
-                Day = d.Day,
-                isChecked = d.Day == currDay.Day
+                ClassId = d.ToString("d", new System.Globalization.CultureInfo("ru-RU")),
+                Content = d.Day,
+                IsChecked = d.Day == currDay.Day,
             };
             radioButtons.Add(rb);
         }

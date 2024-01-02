@@ -40,7 +40,7 @@
             <CollectionView Grid.Row="1" HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
-                        <RadioButton Content="{Binding Day}" ClassId="{Binding Date}" IsChecked="{Binding isChecked}" CheckedChanged="timeTableUpdateHandler"/>
+                        <RadioButton Content="{Binding Content}" ClassId="{Binding ClassId}" IsChecked="{Binding IsChecked}" CheckedChanged="timeTableUpdateHandler"/>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>

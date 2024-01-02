@@ -1,6 +1,5 @@
 ﻿using myYSTU.Model;
 using myYSTU.Utils;
-using System.Text.RegularExpressions;
 
 namespace myYSTU.Parsers
 {
@@ -8,7 +7,6 @@ namespace myYSTU.Parsers
     {
         private static string IDraspz;
         private static string idgr;
-        private static int currWeekNumber;
         private static string timeTableLink = Links.TimeTableLinkParams;
         
 
@@ -20,38 +18,6 @@ namespace myYSTU.Parsers
             IDraspz = timeTableLinq[..timeTableLinq.IndexOf('&')];
             timeTableLinq = timeTableLinq[(timeTableLinq.IndexOf('=') + 1)..];
             idgr = timeTableLinq[..timeTableLinq.IndexOf('&')];
-        }
-
-        public static async Task<DateTime[]> ParseWeekList()
-        {
-            if (timeTableLink == null)
-            {
-                await GetTimeTableParameters();
-            }
-
-            //Получаем расписание на семестр
-            var _htmlDoc = await NetUtils.GetHtmlDoc(timeTableLink);
-
-            string currWeekString = _htmlDoc.DocumentNode.SelectSingleNode("//center[2]/table[1]").InnerText;
-
-            currWeekNumber = int.Parse(new Regex(@"\b\d+\b").Match(currWeekString).Value);
-
-            //Получаем список неделей с датами
-            var weeks = _htmlDoc.DocumentNode.SelectNodes("//option");
-
-            List<DateTime> w = new List<DateTime>();
-
-            foreach (var week in weeks)
-            {
-                string value = week.GetAttributeValue("value", "");
-                w.Add(DateTime.Parse(value[(value.IndexOf('-') + 1)..]));
-            }
-            return w.ToArray();
-        }
-
-        public static int GetCurrWeekNumber()
-        {
-            return currWeekNumber;
         }
 
         /*
@@ -68,6 +34,7 @@ namespace myYSTU.Parsers
 
         public static async IAsyncEnumerable<TimeTableSubject> ParseInfoByDay(string date)
         {
+            //?
             if (IDraspz == null || idgr == null)
             {
                 await GetTimeTableParameters();
