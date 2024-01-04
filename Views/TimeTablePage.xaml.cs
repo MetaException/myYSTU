@@ -53,21 +53,11 @@ public partial class TimeTablePage : ContentPage
 
         subjectList.Clear();
 
-        IAsyncEnumerable<TimeTableSubject> timeTableParser = null;
-        try
+        IAsyncEnumerable<TimeTableSubject> timeTableParser = new TimeTableParser().ParseInfoByDay(date);
+        internetError.IsVisible = false;
+        await foreach (var subjectInfo in timeTableParser)
         {
-            timeTableParser = TimeTableParser.ParseInfoByDay(date);
-            internetError.IsVisible = false;
-            await foreach (var subjectInfo in timeTableParser)
-            {
-                subjectList.Add(subjectInfo);
-            }
-        }
-        catch (HttpRequestException ex)
-        {
-            internetError.IsVisible = true;
-            //Log.Error("", ex);
-            return;
+            subjectList.Add(subjectInfo);
         }
         TimeTable.ItemsSource = subjectList;
     }
@@ -87,7 +77,16 @@ public partial class TimeTablePage : ContentPage
         if (e.Value)
         {
             var date = ((RadioButton)sender).ClassId;
-            await ParseAsync(date);
+            try
+            {
+                await ParseAsync(date);
+            }
+            catch (HttpRequestException ex)
+            {
+                internetError.IsVisible = true;
+                //Log.Error("", ex);
+                return;
+            }
         }
     }
 

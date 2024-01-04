@@ -4,6 +4,10 @@
              x:Class="myYSTU.Views.AuthPage"
              Shell.NavBarIsVisible="False">
 
+    <Shell.BackButtonBehavior>
+        <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+    </Shell.BackButtonBehavior>
+
     <VerticalStackLayout
             Spacing="25"
             Padding="30,0"

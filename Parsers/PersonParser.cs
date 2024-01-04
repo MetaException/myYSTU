@@ -3,11 +3,13 @@ using myYSTU.Utils;
 
 namespace myYSTU.Parsers
 {
-    public static class PersonParser
+    public class PersonParser
     {
-        public static async Task<Person> ParseInfo()
+        private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+
+        public async Task<Person> ParseInfo()
         {
-            var htmlDoc = await NetUtils.GetHtmlDoc(Links.AccountInfoLink);
+            var htmlDoc = await _netUtils.GetHtmlDoc(Links.AccountInfoLink);
 
             Person student = new Person()
             {

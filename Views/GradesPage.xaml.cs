@@ -36,7 +36,7 @@ public partial class GradesPage : ContentPage
 
     private async Task ParseAsync()
     {
-        IAsyncEnumerable<Grades> gradesParser = GradesParser.ParseInfo();
+        IAsyncEnumerable<Grades> gradesParser = new GradesParser().ParseInfo();
 
         await foreach (var gradeInfo in gradesParser)
         {

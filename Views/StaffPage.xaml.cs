@@ -1,5 +1,4 @@
 using Microsoft.Datasync.Client;
-using Microsoft.Maui.Controls;
 using myYSTU.Model;
 using myYSTU.Parsers;
 using myYSTU.Utils;
@@ -9,6 +8,7 @@ namespace myYSTU.Views;
 public partial class StaffPage : ContentPage
 {
     private readonly ConcurrentObservableCollection<Staff> staffList = new ConcurrentObservableCollection<Staff>();
+    private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
 
     public StaffPage()
     {
@@ -35,13 +35,13 @@ public partial class StaffPage : ContentPage
 
     private async Task ParseAsync()
     {
-        var staffInfoParser = StaffParser.ParseInfo();
+        var staffInfoParser = new StaffParser().ParseInfo();
 
         await foreach (var staffInfoList in staffInfoParser)
         {
             await Parallel.ForEachAsync(staffInfoList, async (staffInfo, ct) =>
             {
-                staffInfo.Avatar = await NetUtils.GetImage(staffInfo.AvatarUrl);
+                staffInfo.Avatar = await _netUtils.GetImage(staffInfo.AvatarUrl);
             });
             staffList.AddRange(staffInfoList);
             StaffTable.ItemsSource = staffList;

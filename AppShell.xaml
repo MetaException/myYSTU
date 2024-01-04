@@ -7,7 +7,7 @@
 
     
     <ShellContent
-        ContentTemplate="{DataTemplate local:AuthPage}"
-        Route="AuthPage" />
+        ContentTemplate="{DataTemplate local:MainPage}"
+        Route="MainPage" />
 
 </Shell>

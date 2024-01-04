@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="myYSTU.Views.StaffPage">
+             x:Class="myYSTU.Views.StaffPage"
+             Shell.NavBarIsVisible="True">
 
-    <NavigationPage.TitleView>
-        <StackLayout HorizontalOptions="StartAndExpand" VerticalOptions="CenterAndExpand">
+    <Shell.TitleView>
+        <StackLayout HorizontalOptions="Start" VerticalOptions="CenterAndExpand">
             <Label Text="Сотрудники" HorizontalTextAlignment="Center" FontSize="20"/>
         </StackLayout>
-    </NavigationPage.TitleView>
+    </Shell.TitleView>
 
     <Grid VerticalOptions="FillAndExpand">
         <Grid.RowDefinitions>

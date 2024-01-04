@@ -7,6 +7,7 @@ namespace myYSTU.Views;
 public partial class MainPage : ContentPage
 {
     private Person person;
+    private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
 
     public MainPage()
     {
@@ -16,6 +17,7 @@ public partial class MainPage : ContentPage
 
     private async Task UpdateInfo()
     {
+        await _netUtils.UseSavedSession();
         try
         {
             await ParseAsync();
@@ -33,12 +35,12 @@ public partial class MainPage : ContentPage
 
     private async Task ParseAsync()
     {
-        person = await PersonParser.ParseInfo();
+        person = await new PersonParser().ParseInfo();
 
         Fullname.Text = person.Name[..person.Name.LastIndexOf(' ')];
         GroupName.Text = person.Group;
 
-        avatar.Source = await NetUtils.GetImage(person.AvatarUrl);
+        avatar.Source = await _netUtils.GetImage(person.AvatarUrl);
     }
 
     private void ProfileInfo_Tapped(object sender, TappedEventArgs e)

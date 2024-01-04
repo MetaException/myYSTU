@@ -1,104 +1,48 @@
 ﻿using CommunityToolkit.Maui.Converters;
 using HtmlAgilityPack;
 using myYSTU.Model;
+using myYSTU.Views;
 using System.Text;
-#if ANDROID
-    using Xamarin.Android.Net;
-#endif
 
 namespace myYSTU.Utils
 {
-    public static class NetUtils
+    public class NetUtils
     {
+        private readonly HttpClientHandler _handler;
+        private readonly HttpClient _client;
 
-#if ANDROID
-        private static readonly AndroidMessageHandler _handler = new AndroidMessageHandler();
-#else
-        private static readonly HttpClientHandler _handler = new HttpClientHandler();
-#endif
-        private static readonly HttpClient _client = new HttpClient(_handler) { BaseAddress = new Uri(Links.BaseUri) };
-
-        public static async Task<bool> Authorize(string login, string password)
+        public NetUtils(HttpClientHandler handler, HttpClient client)
         {
-            // URL для первого запроса
-            string loginUrl = Links.AuthorizeLink;
-
-            // Создаем строку с данными для первого запроса
-            string loginFormData = $"login={login}&password={password}";
-
-            // Создаем контент запроса с типом "application/x-www-form-urlencoded" для первого запроса
-            var loginContent = new StringContent(loginFormData, Encoding.UTF8, "application/x-www-form-urlencoded");
-
-            // Отправляем первый POST-запрос и получаем ответ
-            var loginResponse = await _client.PostAsync(loginUrl, loginContent);
-
-            var responseContent = await loginResponse.Content.ReadAsStringAsync(); //TODO: обработать переадресацию
-
-            //На Windows - возврат 302, на Android - 200
-            if (_handler.CookieContainer.Count == 0 || responseContent.Contains("Вы ввели неправильный логин или пароль. попробуйте еще раз"))
-            {
-                return false;
-            }
-
-            return true;
+            _handler = handler;
+            _client = client;
         }
 
-        public static async Task<HtmlDocument> PostWebData(string url, StringContent stringContent = null, MultipartFormDataContent multipartFormDataContent = null)
+        public async Task<byte[]> RequestWebData(string url, HttpContent content = null)
         {
-            HttpResponseMessage response;
-            if (stringContent != null)
-            {
-                response = await _client.PostAsync(url, stringContent);
-            }
-            else
-                response = await _client.PostAsync(url, multipartFormDataContent);
+            var response = content is null ? await _client.GetAsync(url) : await _client.PostAsync(url, content);
 
             if (response.IsSuccessStatusCode)
             {
-                var responseContent = await response.Content.ReadAsByteArrayAsync();
-
-                HtmlDocument doc = new HtmlDocument();
-
-                //Личный кабиент имеет кодировку: windows-1251
-                if (url.ToLower().Contains("wprog"))
+                return await response.Content.ReadAsByteArrayAsync();
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.Redirect)
+            {
+                //Если не авторизован то 302
+                if (!await UseSavedCredentials())
                 {
-                    Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-                    Encoding w1251_enc = Encoding.GetEncoding("windows-1251");
-
-                    responseContent = Encoding.Convert(w1251_enc, Encoding.UTF8, responseContent);
+                    //await App.Current.MainPage.DisplayAlert("Ошибка авторизации", "Возможно был изменён пароль учётной записи", "Авторизоваться");
+                    App.Current.MainPage = new NavigationPage(new AuthPage());
+                    return null;
                 }
 
-
-                doc.LoadHtml(Encoding.UTF8.GetString(responseContent));
-
-                return doc;
+                return await RequestWebData(url, content);
             }
-            else
-            {
-                // ??
-                return null;
-            }
+            return null;
         }
 
-        public static async Task<byte[]> GetWebData(string url)
+        public async Task<HtmlDocument> GetHtmlDoc(string url, HttpContent content = null)
         {
-            var lkResponse = await _client.GetAsync(url);
-
-            // Проверяем успешность запроса
-            if (lkResponse.IsSuccessStatusCode)
-            {
-                return await lkResponse.Content.ReadAsByteArrayAsync();
-            }
-            else
-            {
-                //??
-                return null;
-            }
-        }
-
-        public static async Task<HtmlDocument> GetHtmlDoc(string url)
-        {
-            var htmlDoc = await GetWebData(url);
+            byte[] htmlDoc = await RequestWebData(url, content);
 
             //Личный кабиент имеет кодировку: windows-1251
             if (url.ToLower().Contains("wprog"))
@@ -115,10 +59,65 @@ namespace myYSTU.Utils
             return doc;
         }
 
-        public static async Task<ImageSource> GetImage(string url)
+        public async Task<ImageSource> GetImage(string url)
         {
-            var byteImage = await GetWebData(url);
+            var byteImage = await RequestWebData(url);
             return new ByteArrayToImageSourceConverter().ConvertFrom(byteImage);
+        }
+
+        public async Task UseSavedSession()
+        {
+            //SecureStorage.Default.Remove("session_name");
+            var session_name = await SecureStorage.Default.GetAsync("session_name");
+            var session_value = await SecureStorage.Default.GetAsync("session_value");
+
+            if (session_name is null || session_value is null)
+            {
+                return;
+            }
+
+            _handler.CookieContainer.SetCookies(_client.BaseAddress, $"{session_name}={session_value}");
+        }
+
+        public async Task<bool> UseSavedCredentials()
+        {
+            //SecureStorage.Default.Remove("login");
+            var login = await SecureStorage.Default.GetAsync("login");
+            var password = await SecureStorage.Default.GetAsync("password");
+
+            if (login is null || password is null)
+            {
+                return false;
+            }
+
+            return await AuthorizeWithPassword(login, password);
+        }
+
+        public async Task<bool> AuthorizeWithPassword(string login, string password)
+        {
+            // URL для первого запроса
+            string loginUrl = Links.AuthorizeLink;
+
+            // Создаем строку с данными для первого запроса
+            string loginFormData = $"login={login}&password={password}";
+
+            // Создаем контент запроса с типом "application/x-www-form-urlencoded" для первого запроса
+            var loginContent = new StringContent(loginFormData, Encoding.UTF8, "application/x-www-form-urlencoded");
+
+            // Отправляем первый POST-запрос и получаем ответ
+            var loginResponse = await _client.PostAsync(loginUrl, loginContent);
+
+            //Неверный логин или пароль - возврат 200
+            if (_handler.CookieContainer.Count == 0 || loginResponse.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return false;
+            }
+
+            await SecureStorage.Default.SetAsync("login", login);
+            await SecureStorage.Default.SetAsync("password", password);
+            await SecureStorage.Default.SetAsync("session_name", _handler.CookieContainer.GetCookies(_client.BaseAddress)[0].Name);
+            await SecureStorage.Default.SetAsync("session_value", _handler.CookieContainer.GetCookies(_client.BaseAddress)[0].Value);
+            return true;
         }
     }
 }

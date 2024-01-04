@@ -4,30 +4,22 @@ namespace myYSTU.Views;
 
 public partial class AuthPage : ContentPage
 {
+    private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+
     public AuthPage()
     {
         InitializeComponent();
-        handleAuthorization();
     }
 
-    private async Task handleAuthorization(string Login = "", string Password = "")
+    private async Task HandleAuthorization(string Login = "", string Password = "")
     {
         LoginBtn.IsEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
-
-        string savedLogin = await SecureStorage.Default.GetAsync("login");
-        string savedPassword = await SecureStorage.Default.GetAsync("password");
-
-        if (savedLogin is not null && savedPassword is not null)
-        {
-            Login = savedLogin;
-            Password = savedPassword;
-        }
-
+        
         bool authResult;
 
         try
         {
-            authResult = await NetUtils.Authorize(Login, Password);
+            authResult = await _netUtils.AuthorizeWithPassword(Login, Password);
         }
         catch (HttpRequestException ex)
         {
@@ -43,16 +35,10 @@ public partial class AuthPage : ContentPage
 
         if (authResult)
         {
-            await SecureStorage.Default.SetAsync("login", Login);
-            await SecureStorage.Default.SetAsync("password", Password);
-
             App.Current.MainPage = new NavigationPage(new MainPage());
         }
         else
         {
-            SecureStorage.Default.Remove("login");
-            SecureStorage.Default.Remove("password");
-
             errorLabel.Text = "Неправильный логин или пароль";
             errorLabel.TextColor = Colors.Red;
         }
@@ -65,6 +51,6 @@ public partial class AuthPage : ContentPage
         string Login = LoginEntry.Text;
         string Password = PasswordEntry.Text;
 
-        await handleAuthorization(Login, Password);
+        await HandleAuthorization(Login, Password);
     }
 }

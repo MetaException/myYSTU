@@ -3,12 +3,13 @@ using myYSTU.Utils;
 
 namespace myYSTU.Parsers
 {
-    public static class GradesParser
+    public class GradesParser
     {
+        private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
 
-        public static async IAsyncEnumerable<Grades> ParseInfo()
+        public async IAsyncEnumerable<Grades> ParseInfo()
         {
-            var _htmlDoc = await NetUtils.GetHtmlDoc(Links.GradesLink);
+            var _htmlDoc = await _netUtils.GetHtmlDoc(Links.GradesLink);
                 
             var gradesTable = _htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
 

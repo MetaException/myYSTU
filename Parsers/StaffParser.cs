@@ -4,16 +4,18 @@ using System.Collections.Concurrent;
 
 namespace myYSTU.Parsers
 {
-    public static class StaffParser
+    public class StaffParser
     {
-        public static async IAsyncEnumerable<ConcurrentBag<Staff>> ParseInfo()
+        private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+
+        public async IAsyncEnumerable<ConcurrentBag<Staff>> ParseInfo()
         {
             int pageNumber = 1;
             int staffPagesCount = 2;
 
             do
             {
-                var _htmlDoc = await NetUtils.GetHtmlDoc($"{Links.StaffLink}{pageNumber}");
+                var _htmlDoc = await _netUtils.GetHtmlDoc($"{Links.StaffLink}{pageNumber}");
 
                 if (pageNumber == 1)
                 {
@@ -36,6 +38,11 @@ namespace myYSTU.Parsers
                     {
                         avatarUrl = attributeValue[attributeValue.IndexOf('/')..(attributeValue.Length - 2)];
                         staffInfo.AvatarUrl = avatarUrl;
+                    }
+                    else
+                    {
+                        //TODO: заменить на лого ЯГТУ
+                        staffInfo.AvatarUrl = "/upload/resize_cache/webp/iblock/638/neqgj65a8nu4z0y81005sc62nzb4o8r3/220_220_1/zaglushka-m.webp";
                     }
 
                     staffList.Add(staffInfo);

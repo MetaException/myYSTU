@@ -3,14 +3,15 @@ using myYSTU.Utils;
 
 namespace myYSTU.Parsers
 {
-    public static class TimeTableParser
+    public class TimeTableParser
     {
-        private static string IDraspz;
-        private static string idgr;
-        private static string timeTableLink = Links.TimeTableLinkParams;
-        
+        private string IDraspz;
+        private string idgr;
+        private string timeTableLink = Links.TimeTableLinkParams;
 
-        private static async Task GetTimeTableParameters()
+        private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+
+        private async Task GetTimeTableParameters()
         {
             //Получаем параметры для запроса расписания
             var timeTableLinq = timeTableLink[(timeTableLink.IndexOf('=') + 1)..];
@@ -32,7 +33,7 @@ namespace myYSTU.Parsers
             //{ new StringContent("-35"), "namegr" }
         };*/
 
-        public static async IAsyncEnumerable<TimeTableSubject> ParseInfoByDay(string date)
+        public async IAsyncEnumerable<TimeTableSubject> ParseInfoByDay(string date)
         {
             //?
             if (IDraspz == null || idgr == null)
@@ -51,7 +52,7 @@ namespace myYSTU.Parsers
                 //{ new StringContent("-35"), "namegr" }
             };
 
-            var timeTableHtmlByDay = await NetUtils.PostWebData(Links.TimeTableLink, multipartFormDataContent: content);
+            var timeTableHtmlByDay = await _netUtils.GetHtmlDoc(Links.TimeTableLink, content);
 
             var subjectsData = timeTableHtmlByDay.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
 
