@@ -14,7 +14,7 @@ namespace myYSTU.Parsers
             var gradesTable = _htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
 
             //TODO: обработать когда нет оценок
-
+            
             foreach (var grade in gradesTable)
             {
                 Grades subjectInfo = new Grades();

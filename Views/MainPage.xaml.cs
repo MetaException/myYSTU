@@ -1,13 +1,16 @@
 ﻿using myYSTU.Model;
 using myYSTU.Parsers;
 using myYSTU.Utils;
+using NLog;
 
 namespace myYSTU.Views;
 
 public partial class MainPage : ContentPage
 {
-    private Person person;
     private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+    private readonly ILogger _logger = DependencyService.Get<Logger>();
+
+    private Person person;
 
     public MainPage()
     {
@@ -23,10 +26,10 @@ public partial class MainPage : ContentPage
             await ParseAsync();
             internetError.IsVisible = false;
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex)
         {
             internetError.IsVisible = true;
-            //Log.Error("", ex);
+            _logger.Error(ex, "Main profile parsing error");
             return;
         }
         activityIndicator.IsVisible = false;

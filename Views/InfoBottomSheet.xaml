@@ -9,7 +9,6 @@
             VerticalOptions="Center" 
             HorizontalOptions="Center" 
             FontAttributes="Bold"
-            TextColor="Black"
             FontSize="Medium"/>
 
         <StackLayout x:Name="PersonData" BindableLayout.ItemsSource="{Binding Model.Person}">

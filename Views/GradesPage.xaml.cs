@@ -1,11 +1,14 @@
 ﻿using myYSTU.Model;
 using myYSTU.Parsers;
+using NLog;
 using System.Collections.ObjectModel;
 
 namespace myYSTU.Views;
 
 public partial class GradesPage : ContentPage
 {
+    private readonly ILogger _logger = DependencyService.Get<Logger>();
+
     private readonly Dictionary<int, ObservableCollection<Grades>> gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
     private readonly List<Grades> gradesCategories = new List<Grades>();
 
@@ -22,9 +25,9 @@ public partial class GradesPage : ContentPage
             await ParseAsync();
             internetError.IsVisible = false;
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex)
         {
-            //Log.Error("", ex);
+            _logger.Error(ex, "Grades parsing error");
             internetError.IsVisible = true;
             return;
         }
@@ -36,10 +39,11 @@ public partial class GradesPage : ContentPage
 
     private async Task ParseAsync()
     {
-        IAsyncEnumerable<Grades> gradesParser = new GradesParser().ParseInfo();
+        var gradesParser = new GradesParser().ParseInfo();
 
         await foreach (var gradeInfo in gradesParser)
         {
+            //TODO: оптимизировать
             if (gradesDict.ContainsKey(gradeInfo.SemesterNumber))
             {
                 gradesDict[gradeInfo.SemesterNumber].Add(gradeInfo);

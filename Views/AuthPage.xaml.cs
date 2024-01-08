@@ -1,10 +1,12 @@
 ﻿using myYSTU.Utils;
+using NLog;
 
 namespace myYSTU.Views;
 
 public partial class AuthPage : ContentPage
 {
     private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+    private readonly ILogger logger = DependencyService.Get<Logger>();
 
     public AuthPage()
     {
@@ -21,15 +23,13 @@ public partial class AuthPage : ContentPage
         {
             authResult = await _netUtils.AuthorizeWithPassword(Login, Password);
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex)
         {
-            //Log.Error("", ex);
-
-            //TODO: Сделать оповещение на экране об ошибке (всплывающий элемент для всех окон)
             errorLabel.Text = "Произошла ошибка / отсутствует подключение к интернету";
             errorLabel.TextColor = Colors.Red;
-
             LoginBtn.IsEnabled = true;
+
+            logger.Error(ex, "Auth error");
             return;
         }
 

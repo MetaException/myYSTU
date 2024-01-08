@@ -2,13 +2,16 @@ using Microsoft.Datasync.Client;
 using myYSTU.Model;
 using myYSTU.Parsers;
 using myYSTU.Utils;
+using NLog;
 
 namespace myYSTU.Views;
 
 public partial class StaffPage : ContentPage
 {
-    private readonly ConcurrentObservableCollection<Staff> staffList = new ConcurrentObservableCollection<Staff>();
     private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+    private readonly ILogger _logger = DependencyService.Get<Logger>();
+
+    private readonly ConcurrentObservableCollection<Staff> staffList = new ConcurrentObservableCollection<Staff>();
 
     public StaffPage()
     {
@@ -23,10 +26,10 @@ public partial class StaffPage : ContentPage
             await ParseAsync();
             internetError.IsVisible = false;
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex)
         {
             internetError.IsVisible = true;
-            //Log.Error("", ex);
+            _logger.Error(ex, "Staff parsing error");
             return;
         }
         activityIndicator.IsVisible = false;

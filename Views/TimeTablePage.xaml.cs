@@ -1,11 +1,14 @@
 ﻿using myYSTU.Model;
 using myYSTU.Parsers;
 using System.Collections.ObjectModel;
+using NLog;
 
 namespace myYSTU.Views;
 
 public partial class TimeTablePage : ContentPage
 {
+    private readonly ILogger _logger = DependencyService.Get<Logger>();
+
     private ObservableCollection<TimeTableSubject> subjectList = new ObservableCollection<TimeTableSubject>();
     private ObservableCollection<RadioButton> radioButtons = new ObservableCollection<RadioButton>();
 
@@ -28,10 +31,10 @@ public partial class TimeTablePage : ContentPage
             await ParseAsync();
             internetError.IsVisible = false;
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex)
         {
             internetError.IsVisible = true;
-            //Log.Error("", ex);
+            _logger.Error(ex, "Timetable parsing error");
             return;
         }
         UpdateDaysList();
