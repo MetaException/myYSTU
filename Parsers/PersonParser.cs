@@ -1,16 +1,17 @@
-﻿using myYSTU.Model;
-using myYSTU.Utils;
+﻿using HtmlAgilityPack;
+using myYSTU.Model;
 
 namespace myYSTU.Parsers
 {
-    public class PersonParser
+    class PersonParser : AbstractParser<Person>
     {
-        private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
-
-        public async Task<Person> ParseInfo()
+        public PersonParser(string linkToParse)
         {
-            var htmlDoc = await _netUtils.GetHtmlDoc(Links.AccountInfoLink);
+            _linkToParse = linkToParse;
+        }
 
+        protected override List<Person> ParseHtml(HtmlDocument htmlDoc)
+        {
             Person student = new Person()
             {
                 Name = htmlDoc.DocumentNode.SelectSingleNode("//h1").InnerText,
@@ -30,7 +31,7 @@ namespace myYSTU.Parsers
 
             Links.TimeTableLinkParams = htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
 
-            return student;
+            return [student];
         }
     }
 }

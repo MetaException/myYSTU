@@ -1,6 +1,6 @@
 ﻿namespace myYSTU.Model
 {
-    public class Person
+    public class Person : IAvatarModel, IModel
     {
         public string Name { get; set; }
         public string Status { get; set; }
@@ -20,7 +20,5 @@
         public string MilitaryRec { get; set; }
         public string LibaryCard { get; set; }
         public string Login { get; set; }
-        public ImageSource Avatar { get; set; }
-        public string AvatarUrl { get; set; }
     }
 }

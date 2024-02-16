@@ -1,6 +1,6 @@
 ﻿namespace myYSTU.Model
 {
-    public class Grades
+    public class Grades : IModel
     {
         public string Name { get; set; }
         public string Type { get; set; }

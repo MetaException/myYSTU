@@ -1,18 +1,22 @@
-﻿using myYSTU.Model;
-using myYSTU.Utils;
+﻿using HtmlAgilityPack;
+using myYSTU.Model;
 
 namespace myYSTU.Parsers
 {
-    public class TimeTableParser
+    public class TimeTableParser : AbstractParser<TimeTableSubject>
     {
         private string IDraspz;
         private string idgr;
-        private string timeTableLink = Links.TimeTableLinkParams;
 
-        private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
-
-        private async Task GetTimeTableParameters()
+        public TimeTableParser(string linkToParse)
         {
+            _linkToParse = linkToParse;
+        }
+
+        private void GetTimeTableParameters()
+        {
+            string timeTableLink = Links.TimeTableLinkParams;
+
             //Получаем параметры для запроса расписания
             var timeTableLinq = timeTableLink[(timeTableLink.IndexOf('=') + 1)..];
 
@@ -21,24 +25,11 @@ namespace myYSTU.Parsers
             idgr = timeTableLinq[..timeTableLinq.IndexOf('&')];
         }
 
-        /*
-        //Получение на неделю
-        var content = new MultipartFormDataContent
+        protected override HttpContent GetPostContent(string date)
         {
-            { new StringContent(date), "nned" },
-            { new StringContent("-->"), "rgrweek" },
-            //{ new StringContent("19.10.2023"), "dat1day" },
-            { new StringContent(IDraspz), "IDraspz" },
-            { new StringContent(idgr), "idgr" },
-            //{ new StringContent("-35"), "namegr" }
-        };*/
-
-        public async IAsyncEnumerable<TimeTableSubject> ParseInfoByDay(string date)
-        {
-            //?
             if (IDraspz == null || idgr == null)
             {
-                await GetTimeTableParameters();
+                GetTimeTableParameters();
             }
 
             //Получение на день
@@ -47,14 +38,31 @@ namespace myYSTU.Parsers
                 //{ new StringContent(week), "nned" },
                 { new StringContent("-->"), "rgrday" },
                 { new StringContent(date), "dat1day" },
-                { new StringContent(IDraspz), "IDraspz" },
-                { new StringContent(idgr), "idgr" },
+                { new StringContent(IDraspz!), "IDraspz" },
+                { new StringContent(idgr!), "idgr" },
                 //{ new StringContent("-35"), "namegr" }
             };
 
-            var timeTableHtmlByDay = await _netUtils.GetHtmlDoc(Links.TimeTableLink, content);
+            /*
+            //Получение на неделю
+            var content = new MultipartFormDataContent
+            {
+                { new StringContent(date), "nned" },
+                { new StringContent("-->"), "rgrweek" },
+                //{ new StringContent("19.10.2023"), "dat1day" },
+                { new StringContent(IDraspz), "IDraspz" },
+                { new StringContent(idgr), "idgr" },
+                //{ new StringContent("-35"), "namegr" }
+            };*/
 
-            var subjectsData = timeTableHtmlByDay.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
+            return content;
+        }
+
+        protected override List<TimeTableSubject> ParseHtml(HtmlDocument htmlDoc)
+        {
+            var subjectsData = htmlDoc.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
+
+            var subjects = new List<TimeTableSubject>();
 
             foreach (var t in subjectsData)
             {
@@ -65,11 +73,13 @@ namespace myYSTU.Parsers
                 subjectInfo.EndTime = interval[6..];
                 subjectInfo.Name = t.ChildNodes[1].InnerText;
                 subjectInfo.Type = t.ChildNodes[2].InnerText;
-                subjectInfo.Audithory = t.ChildNodes[3].InnerText.Trim('*',' ');
+                subjectInfo.Audithory = t.ChildNodes[3].InnerText.Trim('*', ' ');
                 subjectInfo.Lecturer = t.ChildNodes[4].InnerText.Trim();
 
-                yield return subjectInfo;
+                subjects.Add(subjectInfo);
             }
+
+            return subjects;
         }
     }
 }

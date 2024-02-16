@@ -31,7 +31,7 @@
 
             <SearchBar Grid.Row="1" x:Name="SearchBar" Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
 
-            <CollectionView Grid.Row="2" x:Name="StaffTable" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Never" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView Grid.Row="2" x:Name="StaffTable" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Always" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Grid Padding="10">

@@ -15,7 +15,7 @@ public partial class GradesPage : ContentPage
     public GradesPage()
     {
         InitializeComponent();
-        UpdateInfo();
+        _ = UpdateInfo();
     }
 
     private async Task UpdateInfo()
@@ -39,9 +39,9 @@ public partial class GradesPage : ContentPage
 
     private async Task ParseAsync()
     {
-        var gradesParser = new GradesParser().ParseInfo();
+        var gradesParser = await ParserFactory.CreateParser<Grades>().ParseInfo();
 
-        await foreach (var gradeInfo in gradesParser)
+        foreach (var gradeInfo in gradesParser)
         {
             //TODO: оптимизировать
             if (gradesDict.ContainsKey(gradeInfo.SemesterNumber))

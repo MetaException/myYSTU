@@ -1,17 +1,20 @@
-﻿using myYSTU.Model;
-using myYSTU.Utils;
+﻿using HtmlAgilityPack;
+using myYSTU.Model;
 
 namespace myYSTU.Parsers
 {
-    public class GradesParser
+    class GradesParser : AbstractParser<Grades>
     {
-        private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+        private readonly List<Grades> _grades = new List<Grades>();
 
-        public async IAsyncEnumerable<Grades> ParseInfo()
+        public GradesParser(string linkToParse)
         {
-            var _htmlDoc = await _netUtils.GetHtmlDoc(Links.GradesLink);
-                
-            var gradesTable = _htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
+            _linkToParse = linkToParse;
+        }
+
+        protected override List<Grades> ParseHtml(HtmlDocument htmlDoc)
+        { 
+            var gradesTable = htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
 
             //TODO: обработать когда нет оценок
             
@@ -35,8 +38,10 @@ namespace myYSTU.Parsers
 
                 subjectInfo.SemesterNumber = grade.SelectSingleNode("td[3]").InnerText[0] - '0';
 
-                yield return subjectInfo;
+                _grades.Add(subjectInfo);
             }
+
+            return _grades;
         }
     }
 }

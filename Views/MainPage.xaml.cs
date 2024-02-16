@@ -38,7 +38,9 @@ public partial class MainPage : ContentPage
 
     private async Task ParseAsync()
     {
-        person = await new PersonParser().ParseInfo();
+        var data = await ParserFactory.CreateParser<Person>().ParseInfo();
+
+        person = data[0];
 
         Fullname.Text = person.Name[..person.Name.LastIndexOf(' ')];
         GroupName.Text = person.Group;

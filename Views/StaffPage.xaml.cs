@@ -1,22 +1,20 @@
 using Microsoft.Datasync.Client;
 using myYSTU.Model;
 using myYSTU.Parsers;
-using myYSTU.Utils;
 using NLog;
 
 namespace myYSTU.Views;
 
 public partial class StaffPage : ContentPage
 {
-    private readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
     private readonly ILogger _logger = DependencyService.Get<Logger>();
 
-    private readonly ConcurrentObservableCollection<Staff> staffList = new ConcurrentObservableCollection<Staff>();
+    private ConcurrentObservableCollection<Staff> infoList = new ConcurrentObservableCollection<Staff>();
 
     public StaffPage()
     {
         InitializeComponent();
-        UpdateInfo();
+        _ = UpdateInfo();
     }
 
     private async Task UpdateInfo()
@@ -38,17 +36,15 @@ public partial class StaffPage : ContentPage
 
     private async Task ParseAsync()
     {
-        var staffInfoParser = new StaffParser().ParseInfo();
+        var parser = ParserFactory.CreateParser<Staff>();
+        infoList = await parser.ParallelParseInfo();
 
-        await foreach (var staffInfoList in staffInfoParser)
-        {
-            await Parallel.ForEachAsync(staffInfoList, async (staffInfo, ct) =>
-            {
-                staffInfo.Avatar = await _netUtils.GetImage(staffInfo.AvatarUrl);
-            });
-            staffList.AddRange(staffInfoList);
-            StaffTable.ItemsSource = staffList;
-        }
+        StaffTable.ItemsSource = infoList;
+
+        _ = parser.ParseAvatarsAsync(infoList);
+
+        activityIndicator.IsVisible = false;
+        contentGrid.IsVisible = true;
     }
 
     private void SearchBar_TextChanged(object sender, TextChangedEventArgs e)
@@ -57,11 +53,11 @@ public partial class StaffPage : ContentPage
 
         if (searchBar.Text == "")
         {
-            StaffTable.ItemsSource = staffList;
+            StaffTable.ItemsSource = infoList;
         }
         else
         {
-            StaffTable.ItemsSource = staffList.Where(x => x.Name.ToLower().Contains(searchBar.Text.ToLower()));
+            StaffTable.ItemsSource = infoList.Where(x => x.Name.ToLower().Contains(searchBar.Text.ToLower()));
         }
     }
 }

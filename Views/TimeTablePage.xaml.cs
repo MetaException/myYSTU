@@ -21,10 +21,10 @@ public partial class TimeTablePage : ContentPage
     public TimeTablePage()
     {
         InitializeComponent();
-        UpdateInfo();
+        _ = UpdateInfo();
     }
 
-    private async void UpdateInfo()
+    private async Task UpdateInfo()
     {
         try
         {
@@ -56,9 +56,10 @@ public partial class TimeTablePage : ContentPage
 
         subjectList.Clear();
 
-        IAsyncEnumerable<TimeTableSubject> timeTableParser = new TimeTableParser().ParseInfoByDay(date);
+        var timeTableParser = await ParserFactory.CreateParser<TimeTableSubject>().ParseInfo(date);
+
         internetError.IsVisible = false;
-        await foreach (var subjectInfo in timeTableParser)
+        foreach (var subjectInfo in timeTableParser)
         {
             subjectList.Add(subjectInfo);
         }

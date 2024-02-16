@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using myYSTU.Model;
+using myYSTU.Parsers;
 using myYSTU.Utils;
 using NLog;
 using NLog.Extensions.Logging;
@@ -31,7 +32,9 @@ namespace myYSTU
 
             var client = new HttpClient(handler) { BaseAddress = new Uri(Links.BaseUri) };
 
-            DependencyService.RegisterSingleton<NetUtils>(new NetUtils(handler, client));
+            var netUtils = new NetUtils(handler, client);
+
+            DependencyService.RegisterSingleton<NetUtils>(netUtils);
             DependencyService.RegisterSingleton(logger);
 
 #if DEBUG
