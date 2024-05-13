@@ -1,8 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
              x:Class="myYSTU.Views.AuthPage"
-             Shell.NavBarIsVisible="False">
+             Shell.NavBarIsVisible="False"
+             x:DataType="viewmodels:AuthPageViewModel">
 
     <Shell.BackButtonBehavior>
         <BackButtonBehavior IsVisible="False" IsEnabled="False" />
@@ -13,25 +15,28 @@
             Padding="30,0"
             VerticalOptions="Center">
 
-        <Label 
-                x:Name="errorLabel"/>
+        <Label x:Name="ErrorLabel" Text="{Binding ErrorLabel}" IsVisible="{Binding IsErrorLabelEnabled}" TextColor="Red" FontSize="Small" />
+        <Label x:Name="welcomeLabel" Text="{Binding WelcomeLabelText}" FontSize="Small" />
 
         <Entry
                 x:Name="LoginEntry"
                 MaxLength="20"
-                Placeholder="Логин" />
+                Placeholder="Логин" 
+                Text="{Binding Login}"/>
 
         <Entry
                 x:Name="PasswordEntry"
                 MaxLength="100"
                 Placeholder="Пароль" 
-                IsPassword="True" />
+                IsPassword="True" 
+                Text="{Binding Password}"/>
 
         <Button
                 x:Name="LoginBtn"
-                Text="Войти"
-                Clicked="OnLoginClicked"
-                HorizontalOptions="Center" />
+                Text="Авторизация" 
+                Command="{Binding LoginCommand}"
+                HorizontalOptions="Fill" 
+                IsEnabled="{Binding IsLoginButtonEnabled}"/>
 
     </VerticalStackLayout>
 

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
+             xmlns:models="clr-namespace:myYSTU.Models"
              x:Class="myYSTU.Views.StaffPage"
-             Shell.NavBarIsVisible="True">
+             Shell.NavBarIsVisible="True"
+             x:DataType="viewmodels:StaffPageViewModel">
 
     <Shell.TitleView>
         <StackLayout HorizontalOptions="Start" VerticalOptions="CenterAndExpand">
@@ -17,23 +20,24 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="false">
+        <Border Grid.Row="0" x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="{Binding IsInternetErrorVisible}">
             <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
         </Border>
 
-        <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsRunning="True"/>
-        <Grid Grid.Row="2" x:Name="contentGrid" IsVisible="False">
+        <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsVisible="{Binding IsActivityIndicatorVisible}" IsRunning="True"/>
+
+        <Grid Grid.Row="2" x:Name="contentGrid" IsVisible="{Binding IsContentGridVisible}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <SearchBar Grid.Row="1" x:Name="SearchBar" Placeholder="Поиск" TextChanged="SearchBar_TextChanged"/>
+            <SearchBar Grid.Row="1" x:Name="SearchBar" Placeholder="Поиск" Text="{Binding SearchText, Mode=TwoWay}"/>
 
-            <CollectionView Grid.Row="2" x:Name="StaffTable" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Always" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView Grid.Row="2" x:Name="StaffTable" ItemsSource="{Binding InfoList}" ItemsLayout="VerticalList" VerticalScrollBarVisibility="Always" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:Staff">
                         <Grid Padding="10">
                             <!-- в horizontalstacklayout не переносятся слова -->
                             <Grid.ColumnDefinitions>

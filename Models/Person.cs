@@ -1,8 +1,9 @@
-﻿namespace myYSTU.Model
+﻿namespace myYSTU.Models
 {
     public class Person : IAvatarModel, IModel
     {
         public string Name { get; set; }
+        public string ShortName { get; set; }
         public string Status { get; set; }
         public string Faculty { get; set; }
         public string Group { get; set; }

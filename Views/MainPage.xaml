@@ -1,9 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
+             xmlns:models="clr-namespace:myYSTU.Models"
              x:Class="myYSTU.Views.MainPage"
              Shell.NavBarIsVisible="False"
-             NavigationPage.HasNavigationBar="False">
+             NavigationPage.HasNavigationBar="False"
+             x:DataType="viewmodels:MainPageViewModel">
 
     <ScrollView>
         <VerticalStackLayout
@@ -12,16 +15,16 @@
             VerticalOptions="Fill"
             HorizontalOptions="FillAndExpand">
 
-            <Border x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="false">
+            <Border x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="{Binding IsInternetErrorVisible}">
                 <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
             </Border>
 
-            <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsRunning="True"/>
+            <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsVisible="{Binding IsActivityIndicatorVisible}" IsRunning="True"/>
 
-            <StackLayout Spacing="10" x:Name="contentGrid" IsVisible="False">
+            <StackLayout Spacing="10" x:Name="contentGrid" IsVisible="{Binding IsContentGridVisible}">
 
                 <HorizontalStackLayout HorizontalOptions="Center">
-                    <Border HeightRequest="90" 
+                    <Border HeightRequest="90"  
                         WidthRequest="90"
                         StrokeShape="RoundRectangle 70,70,70,70"
                         x:Name="imgBorder"
@@ -35,27 +38,28 @@
                             VerticalOptions="Center"
                             HorizontalOptions="Center" 
                             MaximumWidthRequest="{Binding WidthRequest, Source={x:Reference imgBorder}}"
-                            MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" />
+                            MaximumHeightRequest="{Binding HeightRequest, Source={x:Reference imgBorder}}" 
+                            Source="{Binding Avatar}"/>
                     </Border>
 
                     <StackLayout VerticalOptions="CenterAndExpand" x:Name="ProfileInfo" Margin="0, 15, 0, 0">
-                        <Label x:Name="Fullname" FontAutoScalingEnabled="True" FontSize="Title"/>
+                        <Label x:Name="Fullname" Text="{Binding Name}" FontAutoScalingEnabled="True" FontSize="Title"/>
 
-                        <Label x:Name="GroupName" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
+                        <Label x:Name="GroupName" Text="{Binding Group}" FontAutoScalingEnabled="True" TextColor="Grey" FontSize="Body" HorizontalOptions="Center"/>
 
                         <StackLayout.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="ProfileInfo_Tapped"/>
+                            <TapGestureRecognizer Command="{Binding ShowInfoButtomSheetCommand}"/>
                         </StackLayout.GestureRecognizers>
                     </StackLayout>
 
                 </HorizontalStackLayout>
 
-                <Button x:Name="EnterToGradesPageButton" Text="Оценки" Clicked="EnterToGradesPageButton_Clicked"/>
-                <Button x:Name="EnterToTimeTablePageButton" Text="Расписание" Clicked="EnterToTimeTablePageButton_Clicked"/>
-                <Button x:Name="EnterToStaffPageButton" Text="Сотрудники" Clicked="EnterToStaffPageButton_Clicked"/>
+                <Button x:Name="EnterToGradesPageButton" Text="Оценки" Command="{Binding EnterToGradesPageCommand}"/>
+                <Button x:Name="EnterToTimeTablePageButton" Text="Расписание" Command="{Binding EnterToTimeTablePageCommand}"/>
+                <Button x:Name="EnterToStaffPageButton" Text="Сотрудники" Command="{Binding EnterToStaffPageCommand}"/>
 
                 <Label 
-                x:Name="Debug"/>
+                    x:Name="Debug"/>
             </StackLayout>
 
         </VerticalStackLayout>

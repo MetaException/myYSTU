@@ -1,4 +1,4 @@
-﻿using myYSTU.Model;
+﻿using myYSTU.Models;
 
 namespace myYSTU.Parsers;
 

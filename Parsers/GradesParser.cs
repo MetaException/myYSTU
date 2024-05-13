@@ -1,5 +1,5 @@
 ﻿using HtmlAgilityPack;
-using myYSTU.Model;
+using myYSTU.Models;
 
 namespace myYSTU.Parsers
 {
@@ -7,9 +7,8 @@ namespace myYSTU.Parsers
     {
         private readonly List<Grades> _grades = new List<Grades>();
 
-        public GradesParser(string linkToParse)
+        public GradesParser(string linkToParse) : base(linkToParse)
         {
-            _linkToParse = linkToParse;
         }
 
         protected override List<Grades> ParseHtml(HtmlDocument htmlDoc)

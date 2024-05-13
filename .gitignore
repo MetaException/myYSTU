@@ -363,5 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Keystores
-*.keystore
-/ystu.keystore
+/*.keystore

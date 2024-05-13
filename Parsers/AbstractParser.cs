@@ -1,14 +1,19 @@
 ﻿using HtmlAgilityPack;
 using Microsoft.Datasync.Client;
-using myYSTU.Model;
+using myYSTU.Models;
 using myYSTU.Utils;
 
 namespace myYSTU.Parsers
 {
     public abstract class AbstractParser<T> : IParser<T> where T : IModel
     {
-        protected readonly NetUtils _netUtils = DependencyService.Get<NetUtils>();
+        protected readonly NetUtils _netUtils = Application.Current.Handler.MauiContext.Services.GetService<NetUtils>();
         protected string _linkToParse;
+
+        protected AbstractParser(string linkToParse)
+        {
+            _linkToParse = linkToParse;
+        }
 
         protected virtual HttpContent GetPostContent(string date)
         {
@@ -58,9 +63,9 @@ namespace myYSTU.Parsers
 
         public Task ParseAvatarsAsync<T>(ConcurrentObservableCollection<T> list) where T : IAvatarModel
         {
-            return Parallel.ForEachAsync(list, async (staffInfo, ct) =>
+            return Parallel.ForEachAsync(list, async (info, ct) =>
             {
-                staffInfo.Avatar = await _netUtils.GetImage(staffInfo.AvatarUrl);
+                info.Avatar = await _netUtils.GetImage(info.AvatarUrl);
             });
         }
     }

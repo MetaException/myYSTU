@@ -1,5 +1,5 @@
 ﻿using Microsoft.Datasync.Client;
-using myYSTU.Model;
+using myYSTU.Models;
 
 namespace myYSTU.Parsers
 {

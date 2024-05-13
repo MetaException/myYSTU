@@ -1,5 +1,6 @@
 ﻿using HtmlAgilityPack;
-using myYSTU.Model;
+using myYSTU.Models;
+using myYSTU.Utils;
 
 namespace myYSTU.Parsers
 {
@@ -8,9 +9,8 @@ namespace myYSTU.Parsers
         private string IDraspz;
         private string idgr;
 
-        public TimeTableParser(string linkToParse)
+        public TimeTableParser(string linkToParse) : base(linkToParse)
         {
-            _linkToParse = linkToParse;
         }
 
         private void GetTimeTableParameters()

@@ -1,13 +1,12 @@
 ﻿using HtmlAgilityPack;
-using myYSTU.Model;
+using myYSTU.Models;
 
 namespace myYSTU.Parsers
 {
     class PersonParser : AbstractParser<Person>
     {
-        public PersonParser(string linkToParse)
+        public PersonParser(string linkToParse) : base(linkToParse)
         {
-            _linkToParse = linkToParse;
         }
 
         protected override List<Person> ParseHtml(HtmlDocument htmlDoc)
@@ -28,6 +27,7 @@ namespace myYSTU.Parsers
                 Email = htmlDoc.DocumentNode.SelectSingleNode("//table[1]/tbody[1]/tr[6]/td[1]").InnerText,
                 PhoneNumber = htmlDoc.DocumentNode.SelectSingleNode("//table[1]/tbody[1]/tr[7]/td[1]").InnerText
             };
+            student.ShortName =  student.Name[..student.Name.LastIndexOf(' ')];
 
             Links.TimeTableLinkParams = htmlDoc.DocumentNode.SelectSingleNode("//div[1]/div[1]/div[4]/div[1]/font[1]/table[1]/tr[1]/td[2]/font[1]/i[1]/a[1]").GetAttributeValue("href", "");
 

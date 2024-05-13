@@ -1,15 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
+             xmlns:models="clr-namespace:myYSTU.Models"
              x:Class="myYSTU.Views.TimeTablePage"
-             Shell.NavBarIsVisible="True">
+             Shell.NavBarIsVisible="True"
+             x:DataType="viewmodels:TimeTablePageViewModel">
 
     <Shell.TitleView>
         <StackLayout HorizontalOptions="Start" VerticalOptions="CenterAndExpand">
             <Label Text="Расписание" HorizontalTextAlignment="Center" FontSize="20"/>
         </StackLayout>
     </Shell.TitleView>
-    
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
     <Grid
             VerticalOptions="Start">
 
@@ -19,12 +29,13 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="false">
+        <Border Grid.Row="0" x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="{Binding IsInternetErrorVisible}">
             <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
         </Border>
-        
-        <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsRunning="True"/>
-        <Grid Grid.Row="2" x:Name="contentGrid" IsVisible="False">
+
+        <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsVisible="{Binding IsActivityIndicatorVisible}" IsRunning="True"/>
+
+        <Grid RowSpacing="5" Grid.Row="2" x:Name="contentGrid" IsVisible="{Binding IsActivityIndicatorVisible, Converter={StaticResource InvertedBoolConverter}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -32,26 +43,33 @@
             </Grid.RowDefinitions>
 
             <HorizontalStackLayout x:Name="menuControls" Grid.Row="0" HorizontalOptions="Center" Spacing="25">
-                <Button x:Name="GoBackWeek" Text="&lt;" Clicked="weekSwitchHandler" ClassId="goBackButton"/>
-                <Label x:Name="crday" VerticalOptions="Center" FontSize="Medium"/>
-                <Label x:Name="crweek" VerticalOptions="Center" FontSize="Medium"/>
-                <Button x:Name="GoNextWeek" Text="&gt;"  Clicked="weekSwitchHandler" ClassId="goNextButton"/>
+                <Button x:Name="GoBackWeek" Text="&lt;" Command="{Binding WeekSwitchCommand}" CommandParameter="backward"/>
+                <Label x:Name="crday" Text="{Binding SelectedDay.Date, StringFormat='{0:d}'}" VerticalOptions="Center" FontSize="Medium"/>
+                <Label x:Name="crweek" Text="{Binding CurrentWeek}" VerticalOptions="Center" FontSize="Medium"/>
+                <Button x:Name="GoNextWeek" Text="&gt;"  Command="{Binding WeekSwitchCommand}" CommandParameter="forward"/>
             </HorizontalStackLayout>
 
-            <CollectionView Grid.Row="1" HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" x:Name="DaysList" ItemsLayout="HorizontalList" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView Grid.Row="1" SelectedItem="{Binding SelectedDay}" SelectionChangedCommand="{Binding TimeTableUpdateCommand}" SelectionMode="Single" HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" ItemsSource="{Binding DaysList}">
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout Orientation="Horizontal"
+                           ItemSpacing="10" />
+                </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <RadioButton Content="{Binding Content}" ClassId="{Binding ClassId}" IsChecked="{Binding IsChecked}" CheckedChanged="timeTableUpdateHandler"/>
+                    <DataTemplate x:DataType="models:TimeTableDayModel">
+                        <StackLayout>
+                            <Label HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Text="{Binding Date.Day}" FontSize="Small"/>
+                            <Label HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Text="{Binding Date, StringFormat='{0:dddd}' }" FontSize="Default"/>
+                        </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <CollectionView Grid.Row="2" x:Name="TimeTable" HorizontalOptions="Center" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView Grid.Row="2" x:Name="TimeTable" ItemsSource="{Binding SubjectList}" HorizontalOptions="Center" ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemsLayout>
                     <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate x:DataType="models:TimeTableSubject">
                         <Border Padding="10" HorizontalOptions="FillAndExpand">
                             <Border.StrokeShape>
                                 <RoundRectangle CornerRadius="20" />

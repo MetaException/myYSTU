@@ -8,8 +8,8 @@ public partial class InfoBottomSheet : BottomSheet
 	{
 		InitializeComponent();
     }
-	public void setInfo(Model.Person person)
+	public void setInfo(Models.Person person)
 	{
-		BindableLayout.SetItemsSource(PersonData, new List<Model.Person>(1) {person});
+		BindableLayout.SetItemsSource(PersonData, new List<Models.Person>(1) {person});
     }
 }

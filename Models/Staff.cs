@@ -1,4 +1,4 @@
-﻿namespace myYSTU.Model
+﻿namespace myYSTU.Models
 {
     public class Staff : IAvatarModel, IModel
     {

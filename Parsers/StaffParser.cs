@@ -1,13 +1,13 @@
 ﻿using HtmlAgilityPack;
-using myYSTU.Model;
+using myYSTU.Models;
+using myYSTU.Utils;
 
 namespace myYSTU.Parsers
 {
     public class StaffParser : AbstractParser<Staff>
     {
-        public StaffParser(string linkToParse)
+        public StaffParser(string linkToParse) : base(linkToParse)
         {
-            _linkToParse = linkToParse;
         }
 
         public async Task<int> ParseTaskCount(string linkToParsePattern)

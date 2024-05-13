@@ -1,8 +1,10 @@
 ﻿using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
-using myYSTU.Model;
+using myYSTU.Models;
 using myYSTU.Parsers;
 using myYSTU.Utils;
+using myYSTU.ViewModels;
+using myYSTU.Views;
 using NLog;
 using NLog.Extensions.Logging;
 using The49.Maui.BottomSheet;
@@ -28,15 +30,6 @@ namespace myYSTU
                     fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
-            HttpClientHandler handler = new HttpClientHandler() {AllowAutoRedirect = false};
-
-            var client = new HttpClient(handler) { BaseAddress = new Uri(Links.BaseUri) };
-
-            var netUtils = new NetUtils(handler, client);
-
-            DependencyService.RegisterSingleton<NetUtils>(netUtils);
-            DependencyService.RegisterSingleton(logger);
-
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
@@ -44,6 +37,24 @@ namespace myYSTU
             // Add NLog for Logging
             builder.Logging.ClearProviders();
             builder.Logging.AddNLog();
+
+            builder.Services.AddSingleton<NetUtils>();
+            builder.Services.AddSingleton<NLog.ILogger>(logger);
+
+            builder.Services.AddTransient<MainPage>();
+            builder.Services.AddTransient<MainPageViewModel>();
+
+            builder.Services.AddTransient<AuthPage>();
+            builder.Services.AddTransient<AuthPageViewModel>();
+
+            builder.Services.AddTransient<GradesPage>();
+            builder.Services.AddTransient<GradesPageViewModel>();
+
+            builder.Services.AddTransient<TimeTablePage>();
+            builder.Services.AddTransient<TimeTablePageViewModel>();
+
+            builder.Services.AddTransient<StaffPage>();
+            builder.Services.AddTransient<StaffPageViewModel>();
 
             return builder.Build();
         }

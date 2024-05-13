@@ -1,4 +1,4 @@
-﻿namespace myYSTU.Model
+﻿namespace myYSTU.Models
 {
     public class TimeTableSubject : IModel
     {
@@ -8,5 +8,6 @@
         public string Lecturer { get; set; }
         public string StartTime { get; set; }
         public string EndTime { get; set; }
+        public string Date { get; set; }
     }
 }

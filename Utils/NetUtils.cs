@@ -1,20 +1,35 @@
 ﻿using CommunityToolkit.Maui.Converters;
 using HtmlAgilityPack;
-using myYSTU.Model;
-using myYSTU.Views;
+using myYSTU.Models;
 using System.Text;
 
 namespace myYSTU.Utils
 {
     public class NetUtils
     {
-        private readonly HttpClientHandler _handler;
-        private readonly HttpClient _client;
-
-        public NetUtils(HttpClientHandler handler, HttpClient client)
+        public class AuthException : Exception
         {
-            _handler = handler;
-            _client = client;
+            public AuthException(string message)
+                : base(message) { }
+        }
+
+        private readonly HttpClient _client;
+        private readonly HttpClientHandler _handler;
+
+        public NetUtils()
+        {
+            _handler = new HttpClientHandler() { AllowAutoRedirect = false };
+            _client = new HttpClient(_handler) { BaseAddress = new Uri(Links.BaseUri) };
+        }
+
+        public async Task<bool> TryAuthorize()
+        {
+            return await UseSavedSession() || await AuthorizeWithSavedCredentials();
+        }
+
+        private async Task<bool> IsAuthorized()
+        {
+            return await RequestWebData(Links.AccountInfoLink) is null;
         }
 
         public async Task<byte[]> RequestWebData(string url, HttpContent content = null)
@@ -28,11 +43,10 @@ namespace myYSTU.Utils
             else if (response.StatusCode == System.Net.HttpStatusCode.Redirect)
             {
                 //Если не авторизован то 302
-                if (!await UseSavedCredentials())
+                if (!await AuthorizeWithSavedCredentials())
                 {
                     //await App.Current.MainPage.DisplayAlert("Ошибка авторизации", "Возможно был изменён пароль учётной записи", "Авторизоваться");
-                    App.Current.MainPage = new NavigationPage(new AuthPage());
-                    return null;
+                    throw new AuthException("Ошибка авторизации. Неверный логин или пароль");
                 }
 
                 return await RequestWebData(url, content);
@@ -65,23 +79,23 @@ namespace myYSTU.Utils
             return new ByteArrayToImageSourceConverter().ConvertFrom(byteImage);
         }
 
-        public async Task UseSavedSession()
+        public async Task<bool> UseSavedSession()
         {
-            //SecureStorage.Default.Remove("session_name");
             var session_name = await SecureStorage.Default.GetAsync("session_name");
             var session_value = await SecureStorage.Default.GetAsync("session_value");
 
             if (session_name is null || session_value is null)
             {
-                return;
+                return false;
             }
 
             _handler.CookieContainer.SetCookies(_client.BaseAddress, $"{session_name}={session_value}");
+
+            return await IsAuthorized();
         }
 
-        public async Task<bool> UseSavedCredentials()
+        public async Task<bool> AuthorizeWithSavedCredentials()
         {
-            //SecureStorage.Default.Remove("login");
             var login = await SecureStorage.Default.GetAsync("login");
             var password = await SecureStorage.Default.GetAsync("password");
 
