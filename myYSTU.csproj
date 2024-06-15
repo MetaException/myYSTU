@@ -57,16 +57,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.0" />
+		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
 		<PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
 		<PackageReference Include="Microsoft.Datasync.Client" Version="6.1.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.21" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.21" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.61" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.61" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="NLog.Extensions.Logging" Version="5.3.11" />
 		<PackageReference Include="NLog.Targets.MauiLog" Version="8.0.0" />
-		<PackageReference Include="Serilog" Version="3.1.1" />
+		<PackageReference Include="Serilog" Version="4.0.0" />
 		<PackageReference Include="The49.Maui.BottomSheet" Version="8.0.3" />
 	</ItemGroup>
 
