@@ -3,70 +3,82 @@ using Microsoft.Datasync.Client;
 using myYSTU.Models;
 using myYSTU.Utils;
 
-namespace myYSTU.Parsers
+namespace myYSTU.Parsers;
+
+public abstract class AbstractParser<T> : IParser<T>
 {
-    public abstract class AbstractParser<T> : IParser<T> where T : IModel
+    protected readonly NetUtils _netUtils = Application.Current.Handler.MauiContext.Services.GetService<NetUtils>();
+    protected string _linkToParse;
+
+    protected AbstractParser(string linkToParse)
     {
-        protected readonly NetUtils _netUtils = Application.Current.Handler.MauiContext.Services.GetService<NetUtils>();
-        protected string _linkToParse;
+        _linkToParse = linkToParse;
+    }
 
-        protected AbstractParser(string linkToParse)
+    protected virtual HttpContent GetPostContent(string date)
+    {
+        return null;
+    }
+
+    protected abstract IEnumerable<T> ParseHtml(HtmlDocument htmlDoc);
+
+    public async Task<IEnumerable<T>> ParseInfo(string? postContent = null)
+    {
+        HttpContent? content = null;
+        if (postContent is not null)
+            content = GetPostContent(postContent);
+
+        var htmlDoc = await _netUtils.GetHtmlDoc(_linkToParse, content);
+
+        return ParseHtml(htmlDoc);
+    }
+
+    public async Task<ConcurrentObservableCollection<T>> ParallelParseInfo(string? postContent = null)
+    {
+        HttpContent content = null;
+        if (postContent is not null)
+            content = GetPostContent(postContent);
+
+        var concurrentBag = new ConcurrentObservableCollection<T>();
+
+        var tasks = new List<Task<HtmlDocument>>();
+        for (int i = 1; i <= 5; i++)
         {
-            _linkToParse = linkToParse;
+            tasks.Add(_netUtils.GetHtmlDoc($"{_linkToParse}{i}", content));
         }
 
-        protected virtual HttpContent GetPostContent(string date)
+        while (tasks.Count > 0)
         {
-            return null;
+            var completedTask = await Task.WhenAny(tasks);
+
+            tasks.Remove(completedTask);
+
+            var htmlDoc = await completedTask;
+            var infoList = ParseHtml(htmlDoc);
+
+            concurrentBag.AddRange(infoList);
         }
+        return concurrentBag;
+    }
 
-        protected abstract List<T> ParseHtml(HtmlDocument htmlDoc);
-
-        public async Task<List<T>> ParseInfo(string postContent = null)
+    public Task ParseAvatarsAsync<TAvatarModel>(IEnumerable<TAvatarModel> list) where TAvatarModel : IAvatarModel
+    {
+        return Parallel.ForEachAsync(list, async (info, ct) =>
         {
-            HttpContent content = null;
-            if (postContent is not null)
-                content = GetPostContent(postContent);
+            info.AvatarImageSource = await _netUtils.GetImage(info.AvatarUrl);
+        });
+    }
 
-            var htmlDoc = await _netUtils.GetHtmlDoc(_linkToParse, content);
-
-            return ParseHtml(htmlDoc);
-        }
-
-        public async Task<ConcurrentObservableCollection<T>> ParallelParseInfo(string postContent = null)
+    public Task UpdateAvatarAsync(IAvatarModel model) 
+    {
+        return Task.Run(async () => 
         {
-            HttpContent content = null;
-            if (postContent is not null)
-                content = GetPostContent(postContent);
+            model.AvatarImageSource = await _netUtils.GetImage(model.AvatarUrl);
+        });
+    }
 
-            var concurrentBag = new ConcurrentObservableCollection<T>();
-
-            var tasks = new List<Task<HtmlDocument>>();
-            for (int i = 1; i <= 5; i++)
-            {
-                tasks.Add(_netUtils.GetHtmlDoc($"{_linkToParse}{i}", content));
-            }
-
-            while (tasks.Count > 0)
-            {
-                var completedTask = await Task.WhenAny(tasks);
-
-                tasks.Remove(completedTask);
-
-                var htmlDoc = await completedTask;
-                var infoList = ParseHtml(htmlDoc);
-
-                concurrentBag.AddRange(infoList);
-            }
-            return concurrentBag;
-        }
-
-        public Task ParseAvatarsAsync<T>(ConcurrentObservableCollection<T> list) where T : IAvatarModel
-        {
-            return Parallel.ForEachAsync(list, async (info, ct) =>
-            {
-                info.Avatar = await _netUtils.GetImage(info.AvatarUrl);
-            });
-        }
+    public async Task<ImageSource> GetAvatarAsync(IAvatarModel model)
+    {
+        return await Task.Run(() => _netUtils.GetImage(model.AvatarUrl));
     }
 }

@@ -1,8 +1,7 @@
-﻿namespace myYSTU.Models
+﻿namespace myYSTU.Models;
+
+public interface IAvatarModel
 {
-    public abstract class IAvatarModel
-    {
-        public ImageSource Avatar { get; set; }
-        public string AvatarUrl { get; set; }
-    }
+    public ImageSource AvatarImageSource { get; set; }
+    public string AvatarUrl { get; set; }
 }

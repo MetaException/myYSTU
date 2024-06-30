@@ -4,7 +4,7 @@ namespace myYSTU.Parsers;
 
 public static class ParserFactory
 {
-    public static IParser<T> CreateParser<T>() where T : IModel
+    public static IParser<T> CreateParser<T>()
     {
         if (typeof(T) == typeof(Grades))
         {

@@ -1,75 +1,129 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
-             xmlns:models="clr-namespace:myYSTU.Models"
-             x:Class="myYSTU.Views.GradesPage"
-             Shell.NavBarIsVisible="True"
-             x:DataType="viewmodels:GradesPageViewModel">
+<ContentPage
+    x:Class="myYSTU.Views.GradesPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:myYSTU.Models"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
+    x:DataType="viewmodels:GradesPageViewModel"
+    Shell.NavBarIsVisible="True">
 
     <Shell.TitleView>
         <StackLayout HorizontalOptions="Start" VerticalOptions="CenterAndExpand">
-            <Label Text="Оценки" HorizontalTextAlignment="Center" FontSize="20"/>
+            <Label
+                FontSize="20"
+                HorizontalTextAlignment="Center"
+                Text="Оценки" />
         </StackLayout>
     </Shell.TitleView>
 
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.Resources>
+        <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+    </ContentPage.Resources>
+
     <Grid Padding="5" VerticalOptions="Fill">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="{Binding IsInternetErrorVisible}">
-            <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
+        <Border
+            x:Name="internetError"
+            Grid.Row="0"
+            BackgroundColor="OrangeRed"
+            IsVisible="{Binding IsInternetErrorVisible}"
+            StrokeThickness="1">
+            <Label
+                HorizontalTextAlignment="Center"
+                Text="Потеряно соединение сервером"
+                VerticalOptions="Start"
+                VerticalTextAlignment="Start" />
         </Border>
 
-        <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsVisible="{Binding IsActivityIndicatorVisible}" IsRunning="True"/>
+        <ActivityIndicator
+            x:Name="activityIndicator"
+            Grid.Row="1"
+            IsRunning="True"
+            IsVisible="{Binding IsDataLoaded, Converter={StaticResource InvertedBoolConverter}}"
+            Color="LightGray" />
 
-        <Grid Grid.Row="2" x:Name="contentGrid" IsVisible="{Binding IsContentGridVisible}">
+        <Grid
+            x:Name="contentGrid"
+            Grid.Row="2"
+            IsVisible="{Binding IsDataLoaded}">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <CollectionView Grid.Row="1" HorizontalOptions="CenterAndExpand" ItemsSource="{Binding GradesCategories}" HorizontalScrollBarVisibility="Never" x:Name="GradesCategories">
+            <CollectionView
+                Grid.Row="1"
+                HorizontalOptions="Center"
+                HorizontalScrollBarVisibility="Never"
+                ItemsSource="{Binding GradesCategories}"
+                SelectedItem="{Binding SelectedSemester}"
+                SelectionChangedCommand="{Binding UpdateGradesInfoCommand}"
+                SelectionMode="Single">
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
+                    <LinearItemsLayout ItemSpacing="10" Orientation="Horizontal" />
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Grades">
-                        <Button Command="{Binding BindingContext.ButtonCategoryClickedCommand, Source={x:Reference GradesCategories}}" 
-                            CommandParameter="{Binding Text, Source={x:RelativeSource Self}}" 
-                            Text="{Binding Path=SemesterNumber, StringFormat='Семестр {0}'}"/>
+                    <DataTemplate>
+                        <StackLayout>
+                            <!--  binding . не работает в release - bug maui??  -->
+                            <Label
+                                FontSize="Small"
+                                HorizontalOptions="CenterAndExpand"
+                                Text="{Binding Source={RelativeSource Self}, Path=BindingContext, StringFormat='Семестр {0}'}"
+                                VerticalOptions="CenterAndExpand" />
+                        </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <CollectionView Grid.Row="2" x:Name="GradesTable" ItemsSource="{Binding GradesList}" ItemsLayout="VerticalList" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView
+                x:Name="GradesTable"
+                Grid.Row="2"
+                ItemsLayout="VerticalList"
+                ItemsSource="{Binding GradesList}"
+                ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Grades">
                         <Grid>
-                            <!-- в horizontalstacklayout не переносятся слова -->
+                            <!--  в horizontalstacklayout не переносятся слова  -->
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <Border Grid.Column="0"
-                                HeightRequest="50" 
-                                WidthRequest="50"
-                                StrokeShape="RoundRectangle 70,70,70,70"
+                            <Border
+                                Grid.Column="0"
+                                Margin="0,5,10,5"
+                                HeightRequest="50"
                                 HorizontalOptions="Fill"
-                                VerticalOptions="FillAndExpand"
-     
+                                StrokeShape="RoundRectangle 70,70,70,70"
                                 StrokeThickness="2"
-                                Margin="0,5,10,5">
+                                VerticalOptions="FillAndExpand"
+                                WidthRequest="50">
 
-                                <Label Text="{Binding Grade}" VerticalOptions="CenterAndExpand" FontSize="Large" HorizontalTextAlignment="Center"/>
+                                <Label
+                                    FontSize="Large"
+                                    HorizontalTextAlignment="Center"
+                                    Text="{Binding Grade}"
+                                    VerticalOptions="CenterAndExpand" />
                             </Border>
                             <StackLayout Grid.Column="1" VerticalOptions="Center">
-                                <Label Text="{Binding Name}" FontSize="Medium"/>
-                                <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
+                                <Label FontSize="Medium" Text="{Binding Name}" />
+                                <Label
+                                    FontSize="Small"
+                                    Text="{Binding Type}"
+                                    TextColor="DarkGray" />
                             </StackLayout>
                         </Grid>
                     </DataTemplate>

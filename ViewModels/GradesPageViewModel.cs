@@ -14,36 +14,37 @@ public partial class GradesPageViewModel : ObservableObject
     public GradesPageViewModel(ILogger logger)
     {
         _logger = logger;
-
-        _ = UpdateInfo();
     }
 
+    private Dictionary<int, ObservableCollection<Grades>> gradesDict = new Dictionary<int, ObservableCollection<Grades>>(); 
+
     #region ObservableProperties
+
+    [ObservableProperty]
+    private int _selectedSemester = 1;
 
     [ObservableProperty]
     private bool _isInternetErrorVisible = false;
 
     [ObservableProperty]
-    private bool _isActivityIndicatorVisible = true;
+    private bool _isDataLoaded = false;
 
     [ObservableProperty]
-    private bool _isContentGridVisible = false;
+    private IEnumerable<int> _gradesCategories;
 
     [ObservableProperty]
-    private ObservableCollection<Grades> _gradesCategories = new ObservableCollection<Grades>();
-
-    [ObservableProperty]
-    private ObservableCollection<Grades> _gradesList = new ObservableCollection<Grades>();
+    private IEnumerable<Grades> _gradesList;
     #endregion
 
-    private readonly Dictionary<int, ObservableCollection<Grades>> gradesDict = new Dictionary<int, ObservableCollection<Grades>>();
+    #region RelayCommands
 
-    private async Task UpdateInfo()
+    [RelayCommand]
+    private async Task OnAppearing()
     {
         try
         {
             await ParseAsync();
-            IsInternetErrorVisible = false;
+            IsDataLoaded = true;
         }
         catch (Exception ex)
         {
@@ -51,10 +52,16 @@ public partial class GradesPageViewModel : ObservableObject
             IsInternetErrorVisible = true;
             return;
         }
-        IsActivityIndicatorVisible = false;
-        IsContentGridVisible = true;
         UpdateGradesInfo();
     }
+    
+    [RelayCommand]
+    private void UpdateGradesInfo()
+    {
+        GradesList = gradesDict[SelectedSemester];
+    }
+
+    #endregion
 
     private async Task ParseAsync()
     {
@@ -62,7 +69,6 @@ public partial class GradesPageViewModel : ObservableObject
 
         foreach (var gradeInfo in gradesParser)
         {
-            //TODO: оптимизировать
             if (gradesDict.ContainsKey(gradeInfo.SemesterNumber))
             {
                 gradesDict[gradeInfo.SemesterNumber].Add(gradeInfo);
@@ -70,19 +76,9 @@ public partial class GradesPageViewModel : ObservableObject
             else
             {
                 gradesDict.Add(gradeInfo.SemesterNumber, new ObservableCollection<Grades> { gradeInfo });
-                GradesCategories.Add(gradeInfo);
             }
         }
-    }
 
-    private void UpdateGradesInfo(int currSemester = 1)
-    {
-        GradesList = gradesDict[currSemester];
-    }
-
-    [RelayCommand]
-    private void ButtonCategoryClicked(string sender)
-    {
-        UpdateGradesInfo(sender.Last() - '0');
+        GradesCategories = gradesDict.Keys;
     }
 }

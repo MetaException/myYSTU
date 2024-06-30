@@ -16,8 +16,6 @@ public partial class TimeTablePageViewModel : ObservableObject
     public TimeTablePageViewModel(ILogger logger)
     {
         _logger = logger;
-
-        _ = UpdateInfo();
     }
 
     #region ObservableProperties
@@ -26,68 +24,28 @@ public partial class TimeTablePageViewModel : ObservableObject
     private bool _isInternetErrorVisible = false;
 
     [ObservableProperty]
-    private bool _isActivityIndicatorVisible = true;
+    private bool _isDataLoaded = false;
 
     [ObservableProperty]
     private int _currentWeek;
 
     [ObservableProperty]
-    private TimeTableSubject _selectedSubject;
-
-    [ObservableProperty]
     private TimeTableDayModel _selectedDay;
 
     [ObservableProperty]
-    private ObservableCollection<TimeTableSubject> _subjectList;
+    private IEnumerable<TimeTableSubject> _subjectList;
 
     [ObservableProperty]
-    private ObservableCollection<TimeTableDayModel> _daysList;
+    private ObservableCollection<TimeTableDayModel> _daysList = new ObservableCollection<TimeTableDayModel>();
 
     #endregion
 
-    private async Task UpdateInfo()
+    #region RelayCommands
+
+    [RelayCommand]
+    private async Task OnAppearing()
     {
         UpdateDaysList();
-
-        try
-        {
-            await ParseAsync();
-        }
-        catch (Exception ex)
-        {
-            IsInternetErrorVisible = true;
-            _logger.Error(ex, "Timetable parsing error");
-            return;
-        }
-        IsActivityIndicatorVisible = false;
-    }
-
-    private async Task ParseAsync()
-    {
-        if (SelectedDay != null)
-        {
-            SubjectList = new ObservableCollection<TimeTableSubject>();
-
-            var temp = SelectedDay; // SelectedDay почему-то становиться null после следующей строки
-
-            var timeTableParser = await ParserFactory.CreateParser<TimeTableSubject>().ParseInfo(temp.Date.ToString("d"));
-
-            SelectedDay = temp;
-
-            foreach (var subjectInfo in timeTableParser)
-            {
-                SubjectList.Add(subjectInfo);
-            }
-        }
-    }
-
-    private DateTime GetFirstDayOfWeek(DateTime input)
-    {
-        // Получаем понедельник для этой недели
-        int delta = DayOfWeek.Monday - input.DayOfWeek;
-        if (delta > 0)
-            delta -= 7;
-        return input.AddDays(delta);
     }
 
     //Выполняется при изменении выбранного дня (программно тоже считается)
@@ -99,14 +57,57 @@ public partial class TimeTablePageViewModel : ObservableObject
             try
             {
                 await ParseAsync();
+                IsDataLoaded = true;
             }
             catch (HttpRequestException ex)
             {
                 IsInternetErrorVisible = true;
                 //Log.Error("", ex);
-                return;
             }
         }
+    }
+
+    [RelayCommand]
+    private async Task WeekSwitch(string direction)
+    {
+        int k = 1;
+        if (direction == "backward")
+            k = -1;
+
+        if (k == 1 && CurrentWeek >= 34 || k == -1 && CurrentWeek <= 1)
+            return;
+
+        foreach (var day in DaysList)
+        {
+            day.Date = day.Date.AddDays(7 * k);
+        }
+
+        //Обновляем расписание
+        CurrentWeek += k;
+
+        await ParseAsync();
+    }
+    #endregion
+
+    private async Task ParseAsync()
+    {
+        if (SelectedDay != null)
+        {
+            var temp = SelectedDay; // SelectedDay почему-то становиться null после следующей строки
+
+            SubjectList = await ParserFactory.CreateParser<TimeTableSubject>().ParseInfo(temp.Date.ToString("d"));
+
+            SelectedDay = temp;
+        }
+    }
+
+    private static DateTime GetFirstDayOfWeek(DateTime input)
+    {
+        // Получаем понедельник для этой недели
+        int delta = DayOfWeek.Monday - input.DayOfWeek;
+        if (delta > 0)
+            delta -= 7;
+        return input.AddDays(delta);
     }
 
     private void UpdateDaysList()
@@ -139,8 +140,6 @@ public partial class TimeTablePageViewModel : ObservableObject
         // Первый день этой недели
         var firstDayOfWeek = GetFirstDayOfWeek(today);
 
-        DaysList = new ObservableCollection<TimeTableDayModel>();
-
         for (int i = 0; i < 7; i++)
         {
             var newDay = new TimeTableDayModel { Date = firstDayOfWeek };
@@ -153,29 +152,5 @@ public partial class TimeTablePageViewModel : ObservableObject
 
             firstDayOfWeek = firstDayOfWeek.AddDays(1);
         }
-    }
-
-    [RelayCommand]
-    private async Task WeekSwitch(string direction)
-    {
-        int k = 1;
-        if (direction == "backward")
-            k = -1;
-
-        if (k == 1 && CurrentWeek >= 34)
-            return;
-
-        if (k == -1 && CurrentWeek <= 1)
-            return;
-
-        foreach (var day in DaysList)
-        {
-            day.Date = day.Date.AddDays(7 * k);
-        }
-
-        //Обновляем расписание
-        CurrentWeek += k;
-
-        await ParseAsync();
     }
 }

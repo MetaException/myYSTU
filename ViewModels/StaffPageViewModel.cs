@@ -1,5 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
-using Microsoft.Datasync.Client;
+using CommunityToolkit.Mvvm.Input;
 using myYSTU.Models;
 using myYSTU.Parsers;
 using NLog;
@@ -8,23 +8,7 @@ namespace myYSTU.ViewModels;
 
 public partial class StaffPageViewModel : ObservableObject
 {
-    private readonly ILogger _logger;
-
-    #region ObservableProperties
-    [ObservableProperty]
-    private ConcurrentObservableCollection<Staff> _infoList = new ConcurrentObservableCollection<Staff>();
-
-    [ObservableProperty]
-    private bool _isInternetErrorVisible = false;
-
-    [ObservableProperty]
-    private bool _isActivityIndicatorVisible = true;
-
-    [ObservableProperty]
-    private bool _isContentGridVisible = false;
-    #endregion
-
-    private ConcurrentObservableCollection<Staff> _tempList;
+    private IEnumerable<Staff> _dataList;
 
     // https://github.com/dotnet/maui/issues/8994
     private string _searchText;
@@ -40,61 +24,56 @@ public partial class StaffPageViewModel : ObservableObject
 
             if (_searchText.Length > 2)
             {
-                Task.Run(() => Search(SearchText));
+                DisplayDataList = _dataList.Where(info => info.Name.Contains(_searchText, StringComparison.OrdinalIgnoreCase));
             }
             else
-                InfoList = _tempList;
+                DisplayDataList = _dataList;
         }
     }
+
+    private readonly ILogger _logger;
 
     public StaffPageViewModel(ILogger logger)
     {
         _logger = logger;
-
-        _ = UpdateInfo();
     }
 
-    private async Task UpdateInfo()
+    #region ObservableProperties
+    [ObservableProperty]
+    private IEnumerable<Staff> _displayDataList;
+
+    [ObservableProperty]
+    private bool _isInternetErrorVisible = false;
+
+    [ObservableProperty]
+    private bool _isDataLoaded = false;
+    #endregion
+
+    #region RelayCommands
+
+    [RelayCommand]
+    private async Task OnAppearing()
     {
         try
         {
             await ParseAsync();
-            IsInternetErrorVisible = false;
+            IsDataLoaded = true;
         }
         catch (Exception ex)
         {
             IsInternetErrorVisible = true;
             _logger.Error(ex, "Staff parsing error");
-            return;
         }
-        IsActivityIndicatorVisible = false;
-        IsContentGridVisible = true;
     }
+    #endregion
 
     private async Task ParseAsync()
     {
         var parser = ParserFactory.CreateParser<Staff>();
-        InfoList = await parser.ParallelParseInfo();
 
-        _ = parser.ParseAvatarsAsync(InfoList);
+        DisplayDataList = await parser.ParallelParseInfo();
+        await parser.ParseAvatarsAsync(DisplayDataList);
 
-        _tempList = InfoList;
-
-        IsActivityIndicatorVisible = false;
-        IsContentGridVisible = true;
-    }
-
-    private void Search(string text)
-    {
-        var filtered = new ConcurrentObservableCollection<Staff>();
-        foreach (var info in _tempList)
-        {
-            if (info.Name.ToLower().Contains(text.ToLower()))
-            {
-                filtered.Add(info);
-            }
-        }
-
-        InfoList = filtered;
+        _dataList = DisplayDataList;
     }
 }

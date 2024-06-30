@@ -1,8 +1,9 @@
-﻿namespace myYSTU.Models
+﻿namespace myYSTU.Models;
+
+public class Staff : IAvatarModel
 {
-    public class Staff : IAvatarModel, IModel
-    {
-        public string Name { get; set; }
-        public string Post { get; set; }
-    }
+    public string Name { get; set; }
+    public string Post { get; set; }
+    public ImageSource AvatarImageSource { get; set; }
+    public string AvatarUrl { get; set; }
 }

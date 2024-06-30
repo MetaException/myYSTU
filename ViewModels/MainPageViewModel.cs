@@ -10,15 +10,11 @@ namespace myYSTU.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    private readonly NetUtils _netUtils;
     private readonly ILogger _logger;
 
-    public MainPageViewModel(NetUtils netUtils, ILogger logger)
+    public MainPageViewModel(ILogger logger)
     {
-        _netUtils = netUtils;
         _logger = logger;
-
-        _ = UpdateInfo();
     }
 
     #region ObservableProperties
@@ -26,65 +22,40 @@ public partial class MainPageViewModel : ObservableObject
     private bool _isInternetErrorVisible = false;
 
     [ObservableProperty]
-    private bool _isActivityIndicatorVisible = true;
+    private bool _isDataLoaded = false;
 
     [ObservableProperty]
-    private bool _isContentGridVisible = false;
-
-    [ObservableProperty]
-    private string _name;
-
-    [ObservableProperty]
-    private string _group;
-
-    [ObservableProperty]
-    private ImageSource _avatar;
+    private Person _person;
     #endregion
 
-    private Person _person;
+    #region RelayCommands
 
-    private async Task UpdateInfo()
+    [RelayCommand]
+    private async Task OnAppearing()
     {
         try
         {
             await ParseAsync();
-            IsInternetErrorVisible = false;
+            IsDataLoaded = true;
         }
         catch (NetUtils.AuthException)
         {
             await Shell.Current.GoToAsync("AuthPage");
-            return;
         }
-        catch (Exception ex)
+        catch (Exception ex) //TODO: обработать ошибки
         {
             IsInternetErrorVisible = true;
             _logger.Error(ex, "Main profile parsing error");
-            return;
         }
-        IsActivityIndicatorVisible = false;
-        IsContentGridVisible = true;
     }
 
-    private async Task ParseAsync()
-    {
-        _person = (await ParserFactory.CreateParser<Person>().ParseInfo())[0];
-
-        Name = _person.ShortName;
-        Group = _person.Group;
-
-        _ = Task.Run(async () =>
-        {
-            Avatar = await _netUtils.GetImage(_person.AvatarUrl);
-        });
-    }
-
-    [RelayCommand]
-    private void ShowInfoButtomSheet()
+    [RelayCommand] 
+    private void ShowInfoBottomSheet()
     {
         var sheet = new InfoBottomSheet(); //Пока автор библиотеки не пофиксит ошибку
         sheet.HasBackdrop = true;
         //TODO: переделать
-        sheet.setInfo(_person);
+        sheet.setInfo(Person);
         sheet.ShowAsync();
     }
 
@@ -104,5 +75,15 @@ public partial class MainPageViewModel : ObservableObject
     private void EnterToStaffPage()
     {
         Shell.Current.GoToAsync("StaffPage");
+    }
+
+    #endregion
+
+    private async Task ParseAsync()
+    {
+        var parser = ParserFactory.CreateParser<Person>();
+
+        Person = (await parser.ParseInfo()).First();
+        await parser.UpdateAvatarAsync(Person);
     }
 }

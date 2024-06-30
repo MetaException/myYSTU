@@ -2,84 +2,79 @@
 using myYSTU.Models;
 using myYSTU.Utils;
 
-namespace myYSTU.Parsers
+namespace myYSTU.Parsers;
+
+public class TimeTableParser : AbstractParser<TimeTableSubject>
 {
-    public class TimeTableParser : AbstractParser<TimeTableSubject>
+    private string IDraspz;
+    private string idgr;
+
+    public TimeTableParser(string linkToParse) : base(linkToParse)
     {
-        private string IDraspz;
-        private string idgr;
+    }
 
-        public TimeTableParser(string linkToParse) : base(linkToParse)
+    private void GetTimeTableParameters()
+    {
+        string timeTableLink = Links.TimeTableLinkParams;
+
+        //Получаем параметры для запроса расписания
+        var timeTableLinq = timeTableLink[(timeTableLink.IndexOf('=') + 1)..];
+
+        IDraspz = timeTableLinq[..timeTableLinq.IndexOf('&')];
+        timeTableLinq = timeTableLinq[(timeTableLinq.IndexOf('=') + 1)..];
+        idgr = timeTableLinq[..timeTableLinq.IndexOf('&')];
+    }
+
+    protected override HttpContent GetPostContent(string date)
+    {
+        if (IDraspz == null || idgr == null)
         {
+            GetTimeTableParameters();
         }
 
-        private void GetTimeTableParameters()
+        //Получение на день
+        var content = new MultipartFormDataContent
         {
-            string timeTableLink = Links.TimeTableLinkParams;
+            //{ new StringContent(week), "nned" },
+            { new StringContent("-->"), "rgrday" },
+            { new StringContent(date), "dat1day" },
+            { new StringContent(IDraspz!), "IDraspz" },
+            { new StringContent(idgr!), "idgr" },
+            //{ new StringContent("-35"), "namegr" }
+        };
 
-            //Получаем параметры для запроса расписания
-            var timeTableLinq = timeTableLink[(timeTableLink.IndexOf('=') + 1)..];
-
-            IDraspz = timeTableLinq[..timeTableLinq.IndexOf('&')];
-            timeTableLinq = timeTableLinq[(timeTableLinq.IndexOf('=') + 1)..];
-            idgr = timeTableLinq[..timeTableLinq.IndexOf('&')];
-        }
-
-        protected override HttpContent GetPostContent(string date)
+        /*
+        //Получение на неделю
+        var content = new MultipartFormDataContent
         {
-            if (IDraspz == null || idgr == null)
-            {
-                GetTimeTableParameters();
-            }
+            { new StringContent(date), "nned" },
+            { new StringContent("-->"), "rgrweek" },
+            //{ new StringContent("19.10.2023"), "dat1day" },
+            { new StringContent(IDraspz), "IDraspz" },
+            { new StringContent(idgr), "idgr" },
+            //{ new StringContent("-35"), "namegr" }
+        };*/
 
-            //Получение на день
-            var content = new MultipartFormDataContent
-            {
-                //{ new StringContent(week), "nned" },
-                { new StringContent("-->"), "rgrday" },
-                { new StringContent(date), "dat1day" },
-                { new StringContent(IDraspz!), "IDraspz" },
-                { new StringContent(idgr!), "idgr" },
-                //{ new StringContent("-35"), "namegr" }
-            };
+        return content;
+    }
 
-            /*
-            //Получение на неделю
-            var content = new MultipartFormDataContent
-            {
-                { new StringContent(date), "nned" },
-                { new StringContent("-->"), "rgrweek" },
-                //{ new StringContent("19.10.2023"), "dat1day" },
-                { new StringContent(IDraspz), "IDraspz" },
-                { new StringContent(idgr), "idgr" },
-                //{ new StringContent("-35"), "namegr" }
-            };*/
+    protected override IEnumerable<TimeTableSubject> ParseHtml(HtmlDocument htmlDoc)
+    {
+        var subjectsData = htmlDoc.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
 
-            return content;
-        }
-
-        protected override List<TimeTableSubject> ParseHtml(HtmlDocument htmlDoc)
+        foreach (var t in subjectsData)
         {
-            var subjectsData = htmlDoc.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
+            var subjectInfo = new TimeTableSubject();
 
-            var subjects = new List<TimeTableSubject>();
+            var interval = t.ChildNodes[0].InnerText[3..];
+            subjectInfo.StartTime = interval[..5];
+            subjectInfo.EndTime = interval[6..];
+            subjectInfo.Name = t.ChildNodes[1].InnerText;
+            subjectInfo.Type = t.ChildNodes[2].InnerText;
+            subjectInfo.Audithory = t.ChildNodes[3].InnerText.Trim('*', ' ');
+            subjectInfo.Lecturer = t.ChildNodes[4].InnerText.Trim();
 
-            foreach (var t in subjectsData)
-            {
-                var subjectInfo = new TimeTableSubject();
-
-                var interval = t.ChildNodes[0].InnerText[3..];
-                subjectInfo.StartTime = interval[..5];
-                subjectInfo.EndTime = interval[6..];
-                subjectInfo.Name = t.ChildNodes[1].InnerText;
-                subjectInfo.Type = t.ChildNodes[2].InnerText;
-                subjectInfo.Audithory = t.ChildNodes[3].InnerText.Trim('*', ' ');
-                subjectInfo.Lecturer = t.ChildNodes[4].InnerText.Trim();
-
-                subjects.Add(subjectInfo);
-            }
-
-            return subjects;
+            yield return subjectInfo;
         }
     }
 }

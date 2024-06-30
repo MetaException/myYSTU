@@ -1,18 +1,26 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
-             xmlns:models="clr-namespace:myYSTU.Models"
-             x:Class="myYSTU.Views.TimeTablePage"
-             Shell.NavBarIsVisible="True"
-             x:DataType="viewmodels:TimeTablePageViewModel">
+<ContentPage
+    x:Class="myYSTU.Views.TimeTablePage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:myYSTU.Models"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:viewmodels="clr-namespace:myYSTU.ViewModels"
+    x:DataType="viewmodels:TimeTablePageViewModel"
+    Shell.NavBarIsVisible="True">
 
     <Shell.TitleView>
         <StackLayout HorizontalOptions="Start" VerticalOptions="CenterAndExpand">
-            <Label Text="Расписание" HorizontalTextAlignment="Center" FontSize="20"/>
+            <Label
+                FontSize="20"
+                HorizontalTextAlignment="Center"
+                Text="Расписание" />
         </StackLayout>
     </Shell.TitleView>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand}" EventName="Appearing" />
+    </ContentPage.Behaviors>
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -20,53 +28,108 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-    <Grid
-            VerticalOptions="Start">
+    <Grid VerticalOptions="Start">
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border Grid.Row="0" x:Name="internetError" StrokeThickness="1" BackgroundColor="OrangeRed" IsVisible="{Binding IsInternetErrorVisible}">
-            <Label Text="Потеряно соединение сервером" VerticalOptions="Start" HorizontalTextAlignment="Center" VerticalTextAlignment="Start"/>
+        <Border
+            x:Name="internetError"
+            Grid.Row="0"
+            BackgroundColor="OrangeRed"
+            IsVisible="{Binding IsInternetErrorVisible}"
+            StrokeThickness="1">
+            <Label
+                HorizontalTextAlignment="Center"
+                Text="Потеряно соединение сервером"
+                VerticalOptions="Start"
+                VerticalTextAlignment="Start" />
         </Border>
 
-        <ActivityIndicator x:Name="activityIndicator" Grid.Row="1" Color="LightGray" IsVisible="{Binding IsActivityIndicatorVisible}" IsRunning="True"/>
+        <ActivityIndicator
+            x:Name="activityIndicator"
+            Grid.Row="1"
+            IsRunning="True"
+            IsVisible="{Binding IsDataLoaded, Converter={StaticResource InvertedBoolConverter}}"
+            Color="LightGray" />
 
-        <Grid RowSpacing="5" Grid.Row="2" x:Name="contentGrid" IsVisible="{Binding IsActivityIndicatorVisible, Converter={StaticResource InvertedBoolConverter}}">
+        <Grid
+            x:Name="contentGrid"
+            Grid.Row="2"
+            IsVisible="{Binding IsDataLoaded}"
+            RowSpacing="5">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <HorizontalStackLayout x:Name="menuControls" Grid.Row="0" HorizontalOptions="Center" Spacing="25">
-                <Button x:Name="GoBackWeek" Text="&lt;" Command="{Binding WeekSwitchCommand}" CommandParameter="backward"/>
-                <Label x:Name="crday" Text="{Binding SelectedDay.Date, StringFormat='{0:d}'}" VerticalOptions="Center" FontSize="Medium"/>
-                <Label x:Name="crweek" Text="{Binding CurrentWeek}" VerticalOptions="Center" FontSize="Medium"/>
-                <Button x:Name="GoNextWeek" Text="&gt;"  Command="{Binding WeekSwitchCommand}" CommandParameter="forward"/>
+            <HorizontalStackLayout
+                x:Name="menuControls"
+                Grid.Row="0"
+                HorizontalOptions="Center"
+                Spacing="25">
+                <Button
+                    x:Name="GoBackWeek"
+                    Command="{Binding WeekSwitchCommand}"
+                    CommandParameter="backward"
+                    Text="&lt;" />
+                <Label
+                    x:Name="crday"
+                    FontSize="Medium"
+                    Text="{Binding SelectedDay.Date, StringFormat='{0:d}'}"
+                    VerticalOptions="Center" />
+                <Label
+                    x:Name="crweek"
+                    FontSize="Medium"
+                    Text="{Binding CurrentWeek}"
+                    VerticalOptions="Center" />
+                <Button
+                    x:Name="GoNextWeek"
+                    Command="{Binding WeekSwitchCommand}"
+                    CommandParameter="forward"
+                    Text="&gt;" />
             </HorizontalStackLayout>
 
-            <CollectionView Grid.Row="1" SelectedItem="{Binding SelectedDay}" SelectionChangedCommand="{Binding TimeTableUpdateCommand}" SelectionMode="Single" HorizontalOptions="Center" HorizontalScrollBarVisibility="Never" ItemsSource="{Binding DaysList}">
+            <CollectionView
+                Grid.Row="1"
+                HorizontalOptions="Center"
+                HorizontalScrollBarVisibility="Never"
+                ItemsSource="{Binding DaysList}"
+                SelectedItem="{Binding SelectedDay}"
+                SelectionChangedCommand="{Binding TimeTableUpdateCommand}"
+                SelectionMode="Single">
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Horizontal"
-                           ItemSpacing="10" />
+                    <LinearItemsLayout ItemSpacing="10" Orientation="Horizontal" />
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:TimeTableDayModel">
                         <StackLayout>
-                            <Label HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Text="{Binding Date.Day}" FontSize="Small"/>
-                            <Label HorizontalOptions="CenterAndExpand" VerticalOptions="CenterAndExpand" Text="{Binding Date, StringFormat='{0:dddd}' }" FontSize="Default"/>
+                            <Label
+                                FontSize="Small"
+                                HorizontalOptions="CenterAndExpand"
+                                Text="{Binding Date.Day}"
+                                VerticalOptions="CenterAndExpand" />
+                            <Label
+                                FontSize="Default"
+                                HorizontalOptions="CenterAndExpand"
+                                Text="{Binding Date, StringFormat='{0:dddd}'}"
+                                VerticalOptions="CenterAndExpand" />
                         </StackLayout>
                     </DataTemplate>
                 </CollectionView.ItemTemplate>
             </CollectionView>
 
-            <CollectionView Grid.Row="2" x:Name="TimeTable" ItemsSource="{Binding SubjectList}" HorizontalOptions="Center" ItemsUpdatingScrollMode="KeepScrollOffset">
+            <CollectionView
+                Grid.Row="2"
+                HorizontalOptions="Center"
+                ItemsSource="{Binding SubjectList}"
+                ItemsUpdatingScrollMode="KeepScrollOffset">
                 <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="10"/>
+                    <LinearItemsLayout ItemSpacing="10" Orientation="Vertical" />
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:TimeTableSubject">
@@ -75,20 +138,32 @@
                                 <RoundRectangle CornerRadius="20" />
                             </Border.StrokeShape>
                             <Grid>
-                                <!-- в horizontalstacklayout не переносятся слова -->
+                                <!--  в horizontalstacklayout не переносятся слова  -->
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <StackLayout Grid.Column="0" Margin="0,0,10,0">
-                                    <Label Text="{Binding StartTime}" FontSize="Medium"/>
-                                    <Label Text="{Binding EndTime}" FontSize="Medium" TextColor="DarkGray"/>
+                                    <Label FontSize="Medium" Text="{Binding StartTime}" />
+                                    <Label
+                                        FontSize="Medium"
+                                        Text="{Binding EndTime}"
+                                        TextColor="DarkGray" />
                                 </StackLayout>
                                 <StackLayout Grid.Column="1">
-                                    <Label Text="{Binding Name}" FontSize="Medium"/>
-                                    <Label Text="{Binding Type}" FontSize="Small" TextColor="DarkGray"/>
-                                    <Label Text="{Binding Audithory}" FontSize="Small" TextColor="DarkGray"/>
-                                    <Label Text="{Binding Lecturer}" FontSize="Small" TextColor="DarkGray"/>
+                                    <Label FontSize="Medium" Text="{Binding Name}" />
+                                    <Label
+                                        FontSize="Small"
+                                        Text="{Binding Type}"
+                                        TextColor="DarkGray" />
+                                    <Label
+                                        FontSize="Small"
+                                        Text="{Binding Audithory}"
+                                        TextColor="DarkGray" />
+                                    <Label
+                                        FontSize="Small"
+                                        Text="{Binding Lecturer}"
+                                        TextColor="DarkGray" />
                                 </StackLayout>
                             </Grid>
                         </Border>
