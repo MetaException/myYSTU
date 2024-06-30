@@ -62,7 +62,7 @@ public partial class AuthPageViewModel : ObservableObject
 
         if (authResult)
         {
-            await Shell.Current.GoToAsync("MainPage");
+            await Shell.Current.GoToAsync("///MainPage");
         }
         else
         {
