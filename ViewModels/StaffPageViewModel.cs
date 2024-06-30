@@ -45,8 +45,6 @@ public partial class StaffPageViewModel : ObservableObject
     [ObservableProperty]
     private bool _isInternetErrorVisible = false;
 
-    [ObservableProperty]
-    private bool _isDataLoaded = false;
     #endregion
 
     #region RelayCommands
@@ -57,7 +55,6 @@ public partial class StaffPageViewModel : ObservableObject
         try
         {
             await ParseAsync();
-            IsDataLoaded = true;
         }
         catch (Exception ex)
         {

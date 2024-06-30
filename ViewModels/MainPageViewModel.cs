@@ -22,9 +22,6 @@ public partial class MainPageViewModel : ObservableObject
     private bool _isInternetErrorVisible = false;
 
     [ObservableProperty]
-    private bool _isDataLoaded = false;
-
-    [ObservableProperty]
     private Person _person;
     #endregion
 
@@ -36,7 +33,6 @@ public partial class MainPageViewModel : ObservableObject
         try
         {
             await ParseAsync();
-            IsDataLoaded = true;
         }
         catch (NetUtils.AuthException)
         {

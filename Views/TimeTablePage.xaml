@@ -25,6 +25,8 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+            <toolkit:IsNullConverter x:Key="IsNull" />
+            <toolkit:IsNotNullConverter x:Key="IsNotNull" />
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -50,16 +52,14 @@
         </Border>
 
         <ActivityIndicator
-            x:Name="activityIndicator"
             Grid.Row="1"
             IsRunning="True"
-            IsVisible="{Binding IsDataLoaded, Converter={StaticResource InvertedBoolConverter}}"
+            IsVisible="{Binding SelectedDay, Converter={StaticResource IsNull}}"
             Color="LightGray" />
 
         <Grid
-            x:Name="contentGrid"
             Grid.Row="2"
-            IsVisible="{Binding IsDataLoaded}"
+            IsVisible="{Binding SelectedDay, Converter={StaticResource IsNotNull}}"
             RowSpacing="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
@@ -68,7 +68,6 @@
             </Grid.RowDefinitions>
 
             <HorizontalStackLayout
-                x:Name="menuControls"
                 Grid.Row="0"
                 HorizontalOptions="Center"
                 Spacing="25">

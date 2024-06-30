@@ -15,6 +15,8 @@
 
     <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        <toolkit:IsListNullOrEmptyConverter x:Key="IsListNullOrEmpty" />
+        <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmpty" />
     </ContentPage.Resources>
 
     <Shell.TitleView>
@@ -28,7 +30,6 @@
 
     <Grid VerticalOptions="FillAndExpand">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
@@ -45,21 +46,19 @@
                 VerticalTextAlignment="Start" />
         </Border>
 
-        <ActivityIndicator
-            Grid.Row="1"
-            IsRunning="True"
-            IsVisible="{Binding IsDataLoaded, Converter={StaticResource InvertedBoolConverter}}"
-            Color="LightGray" />
-
-        <Grid
-            x:Name="contentGrid"
-            Grid.Row="2"
-            IsVisible="{Binding IsDataLoaded}">
+        <Grid Grid.Row="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
+
+            <ActivityIndicator
+                Grid.Row="2"
+                HorizontalOptions="Center"
+                IsRunning="True"
+                IsVisible="{Binding DisplayDataList, Converter={StaticResource IsListNullOrEmpty}}"
+                Color="LightGray" />
 
             <SearchBar
                 Grid.Row="1"
@@ -68,6 +67,7 @@
 
             <CollectionView
                 Grid.Row="2"
+                IsVisible="{Binding DisplayDataList, Converter={StaticResource IsListNotNullOrEmpty}}"
                 ItemsLayout="VerticalList"
                 ItemsSource="{Binding DisplayDataList}"
                 ItemsUpdatingScrollMode="KeepScrollOffset"

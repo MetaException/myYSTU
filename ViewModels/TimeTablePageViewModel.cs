@@ -24,9 +24,6 @@ public partial class TimeTablePageViewModel : ObservableObject
     private bool _isInternetErrorVisible = false;
 
     [ObservableProperty]
-    private bool _isDataLoaded = false;
-
-    [ObservableProperty]
     private int _currentWeek;
 
     [ObservableProperty]
@@ -36,7 +33,7 @@ public partial class TimeTablePageViewModel : ObservableObject
     private IEnumerable<TimeTableSubject> _subjectList;
 
     [ObservableProperty]
-    private ObservableCollection<TimeTableDayModel> _daysList = new ObservableCollection<TimeTableDayModel>();
+    private ObservableCollection<TimeTableDayModel> _daysList;
 
     #endregion
 
@@ -57,7 +54,6 @@ public partial class TimeTablePageViewModel : ObservableObject
             try
             {
                 await ParseAsync();
-                IsDataLoaded = true;
             }
             catch (HttpRequestException ex)
             {
@@ -136,6 +132,8 @@ public partial class TimeTablePageViewModel : ObservableObject
 
         // Определяем номер недели
         CurrentWeek = (int)Math.Ceiling(daysDifference / 7d);
+
+        DaysList = new ObservableCollection<TimeTableDayModel>();
 
         // Первый день этой недели
         var firstDayOfWeek = GetFirstDayOfWeek(today);

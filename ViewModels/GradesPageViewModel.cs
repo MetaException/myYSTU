@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.Input;
 using myYSTU.Models;
 using myYSTU.Parsers;
 using NLog;
-using System.Collections.ObjectModel;
 
 namespace myYSTU.ViewModels;
 
@@ -16,7 +15,7 @@ public partial class GradesPageViewModel : ObservableObject
         _logger = logger;
     }
 
-    private Dictionary<int, ObservableCollection<Grades>> gradesDict = new Dictionary<int, ObservableCollection<Grades>>(); 
+    private Dictionary<int, List<Grades>> gradesDict = new Dictionary<int, List<Grades>>(); 
 
     #region ObservableProperties
 
@@ -25,9 +24,6 @@ public partial class GradesPageViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isInternetErrorVisible = false;
-
-    [ObservableProperty]
-    private bool _isDataLoaded = false;
 
     [ObservableProperty]
     private IEnumerable<int> _gradesCategories;
@@ -44,7 +40,6 @@ public partial class GradesPageViewModel : ObservableObject
         try
         {
             await ParseAsync();
-            IsDataLoaded = true;
         }
         catch (Exception ex)
         {
@@ -75,7 +70,7 @@ public partial class GradesPageViewModel : ObservableObject
             }
             else
             {
-                gradesDict.Add(gradeInfo.SemesterNumber, new ObservableCollection<Grades> { gradeInfo });
+                gradesDict.Add(gradeInfo.SemesterNumber, new List<Grades> { gradeInfo });
             }
         }
 

@@ -1,7 +1,7 @@
 ﻿using HtmlAgilityPack;
-using Microsoft.Datasync.Client;
 using myYSTU.Models;
 using myYSTU.Utils;
+using System.Collections.Concurrent;
 
 namespace myYSTU.Parsers;
 
@@ -33,13 +33,13 @@ public abstract class AbstractParser<T> : IParser<T>
         return ParseHtml(htmlDoc);
     }
 
-    public async Task<ConcurrentObservableCollection<T>> ParallelParseInfo(string? postContent = null)
+    public async Task<ConcurrentBag<T>> ParallelParseInfo(string? postContent = null)
     {
         HttpContent content = null;
         if (postContent is not null)
             content = GetPostContent(postContent);
 
-        var concurrentBag = new ConcurrentObservableCollection<T>();
+        var concurrentBag = new ConcurrentBag<T>();
 
         var tasks = new List<Task<HtmlDocument>>();
         for (int i = 1; i <= 5; i++)
@@ -56,7 +56,10 @@ public abstract class AbstractParser<T> : IParser<T>
             var htmlDoc = await completedTask;
             var infoList = ParseHtml(htmlDoc);
 
-            concurrentBag.AddRange(infoList);
+            foreach (var info in infoList)
+            {
+                concurrentBag.Add(info);
+            }
         }
         return concurrentBag;
     }

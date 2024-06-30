@@ -24,6 +24,8 @@
 
     <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        <toolkit:IsListNullOrEmptyConverter x:Key="IsListNullOrEmpty" />
+        <toolkit:IsListNotNullOrEmptyConverter x:Key="IsListNotNullOrEmpty" />
     </ContentPage.Resources>
 
     <Grid Padding="5" VerticalOptions="Fill">
@@ -34,7 +36,6 @@
         </Grid.RowDefinitions>
 
         <Border
-            x:Name="internetError"
             Grid.Row="0"
             BackgroundColor="OrangeRed"
             IsVisible="{Binding IsInternetErrorVisible}"
@@ -47,16 +48,13 @@
         </Border>
 
         <ActivityIndicator
-            x:Name="activityIndicator"
-            Grid.Row="1"
+            Grid.Row="2"
+            HorizontalOptions="Center"
             IsRunning="True"
-            IsVisible="{Binding IsDataLoaded, Converter={StaticResource InvertedBoolConverter}}"
+            IsVisible="{Binding GradesList, Converter={StaticResource IsListNullOrEmpty}}"
             Color="LightGray" />
 
-        <Grid
-            x:Name="contentGrid"
-            Grid.Row="2"
-            IsVisible="{Binding IsDataLoaded}">
+        <Grid Grid.Row="2" IsVisible="{Binding GradesList, Converter={StaticResource IsListNotNullOrEmpty}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />

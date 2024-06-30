@@ -16,6 +16,8 @@
 
     <ContentPage.Resources>
         <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        <toolkit:IsNullConverter x:Key="IsNull" />
+        <toolkit:IsNotNullConverter x:Key="IsNotNull" />
     </ContentPage.Resources>
 
     <ScrollView>
@@ -41,13 +43,13 @@
             <ActivityIndicator
                 Grid.Row="0"
                 IsRunning="True"
-                IsVisible="{Binding IsDataLoaded, Converter={StaticResource InvertedBoolConverter}}"
+                IsVisible="{Binding Person, Converter={StaticResource IsNull}}"
                 Color="LightGray" />
 
             <HorizontalStackLayout
                 Grid.Row="0"
                 HorizontalOptions="Center"
-                IsVisible="{Binding IsDataLoaded}">
+                IsVisible="{Binding Person, Converter={StaticResource IsNotNull}}">
                 <Border
                     x:Name="imgBorder"
                     Margin="0,10,10,5"
@@ -88,7 +90,7 @@
             <StackLayout
                 Grid.Row="1"
                 Padding="10"
-                IsVisible="{Binding IsDataLoaded}"
+                IsVisible="{Binding Person, Converter={StaticResource IsNotNull}}"
                 Spacing="10">
                 <Button Command="{Binding EnterToGradesPageCommand}" Text="Оценки" />
                 <Button Command="{Binding EnterToTimeTablePageCommand}" Text="Расписание" />
