@@ -2,11 +2,12 @@
 using Microsoft.Extensions.Logging;
 using myYSTU.Models;
 using myYSTU.Parsers;
-using myYSTU.Utils;
+using myYSTU.Services.Auth;
+using myYSTU.Services.Http;
 using myYSTU.ViewModels;
 using myYSTU.Views;
-using NLog;
-using NLog.Extensions.Logging;
+using Serilog;
+using Serilog.Events;
 using The49.Maui.BottomSheet;
 
 namespace myYSTU
@@ -15,10 +16,6 @@ namespace myYSTU
     {
         public static MauiApp CreateMauiApp()
         {
-            var logger = NLog.LogManager.Setup().RegisterMauiLog()
-                             .LoadConfiguration(c => c.ForLogger().FilterMinLevel(NLog.LogLevel.Debug).WriteToMauiLog())
-                             .GetCurrentClassLogger();
-
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
@@ -33,13 +30,27 @@ namespace myYSTU
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+            var flushInterval = new TimeSpan(0, 0, 1);
+            var file = Path.Combine(FileSystem.AppDataDirectory, "myYSTU.log");
+ 
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Verbose()
+                .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                .Enrich.FromLogContext()
+                .WriteTo.File(file, flushToDiskInterval: flushInterval, encoding: System.Text.Encoding.UTF8, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 22)
+                .WriteTo.Debug()
+                .CreateLogger();
 
-            // Add NLog for Logging
-            builder.Logging.ClearProviders();
-            builder.Logging.AddNLog();
+            builder.Logging.AddSerilog(dispose: true);
 
-            builder.Services.AddSingleton<NetUtils>();
-            builder.Services.AddSingleton<NLog.ILogger>(logger);
+            var handler = new HttpClientHandler { AllowAutoRedirect = true };
+            builder.Services.AddSingleton(handler);
+            builder.Services.AddSingleton(sp => new HttpClient(handler) { BaseAddress = new Uri(Links.BaseUri) });
+
+            builder.Services.AddScoped<IHttpService, HttpService>();
+            builder.Services.AddSingleton<IAuthService, AuthService>();
+
+            builder.Services.AddTransient<LoadingPage>();
 
             builder.Services.AddTransient<MainPage>();
             builder.Services.AddTransient<MainPageViewModel>();

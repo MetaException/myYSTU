@@ -1,4 +1,6 @@
-﻿using myYSTU.Models;
+﻿using Microsoft.Extensions.Logging;
+using myYSTU.Models;
+using myYSTU.Services.Http;
 
 namespace myYSTU.Parsers;
 

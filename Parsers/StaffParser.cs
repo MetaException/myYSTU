@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
+using Serilog;
 using myYSTU.Models;
-using myYSTU.Utils;
 
 namespace myYSTU.Parsers;
 
@@ -12,17 +12,20 @@ public class StaffParser : AbstractParser<Staff>
 
     public async Task<int> ParseTaskCount(string linkToParsePattern)
     {
-        var _htmlDoc = await _netUtils.GetHtmlDoc($"{linkToParsePattern}1");
+        var _htmlDoc = await _httpService.GetHtmlDoc($"{linkToParsePattern}1");
 
         var staffCntStr = _htmlDoc.DocumentNode.SelectSingleNode("/html/body/section[2]/div/div/div[2]/span").InnerText;
         int staffPagesCount = (int)Math.Ceiling(double.Parse(staffCntStr[..(staffCntStr.IndexOf(' '))]) / 100d);
 
+        Log.Debug("[StaffParser] [ParseTaskCount] Parsed task count: {@TaskCount}", staffPagesCount);
         return staffPagesCount;
     }
 
     protected override IEnumerable<Staff> ParseHtml(HtmlDocument htmlDoc)
     {
         var staffDiv = htmlDoc.DocumentNode.SelectNodes("//a[@class='user user--big']");
+
+        Log.Debug("[StaffParser] [ParseHtml] Parsed {@Count} staff", staffDiv.Count); // Argument null exception
 
         foreach (var staff in staffDiv)
         {
@@ -43,6 +46,8 @@ public class StaffParser : AbstractParser<Staff>
                 //TODO: заменить на лого ЯГТУ
                 staffInfo.AvatarUrl = "/upload/resize_cache/webp/iblock/638/neqgj65a8nu4z0y81005sc62nzb4o8r3/220_220_1/zaglushka-m.webp";
             }
+
+            //Log.Verbose("[StaffParser] [ParseHtml] Parsed StaffInfo object: {@StaffInfo}", staffInfo);
 
             yield return staffInfo;
         }

@@ -1,6 +1,6 @@
 ﻿using HtmlAgilityPack;
+using Serilog;
 using myYSTU.Models;
-using myYSTU.Utils;
 
 namespace myYSTU.Parsers;
 
@@ -60,7 +60,9 @@ public class TimeTableParser : AbstractParser<TimeTableSubject>
 
     protected override IEnumerable<TimeTableSubject> ParseHtml(HtmlDocument htmlDoc)
     {
-        var subjectsData = htmlDoc.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1);
+        var subjectsData = htmlDoc.DocumentNode.SelectSingleNode("//table").SelectNodes("tr").SkipLast(1).ToList();
+
+        Log.Verbose("[TimeTableParser] [ParseHtml] Parsed {@Count} TimeTable subjects", subjectsData.Count);
 
         foreach (var t in subjectsData)
         {
@@ -73,6 +75,8 @@ public class TimeTableParser : AbstractParser<TimeTableSubject>
             subjectInfo.Type = t.ChildNodes[2].InnerText;
             subjectInfo.Audithory = t.ChildNodes[3].InnerText.Trim('*', ' ');
             subjectInfo.Lecturer = t.ChildNodes[4].InnerText.Trim();
+
+            //Log.Verbose("[TimeTableParser] [ParseHtml] Parsed TimeTable subject: {@SubjectInfo}", subjectInfo);
 
             yield return subjectInfo;
         }

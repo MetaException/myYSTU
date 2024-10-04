@@ -42,7 +42,7 @@
             StrokeThickness="1">
             <Label
                 HorizontalTextAlignment="Center"
-                Text="Потеряно соединение сервером"
+                Text="{Binding InternetErrorText}"
                 VerticalOptions="Start"
                 VerticalTextAlignment="Start" />
         </Border>

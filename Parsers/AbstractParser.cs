@@ -1,14 +1,14 @@
 ﻿using HtmlAgilityPack;
 using myYSTU.Models;
-using myYSTU.Utils;
+using myYSTU.Services.Http;
 using System.Collections.Concurrent;
 
 namespace myYSTU.Parsers;
 
 public abstract class AbstractParser<T> : IParser<T>
 {
-    protected readonly NetUtils _netUtils = Application.Current.Handler.MauiContext.Services.GetService<NetUtils>();
-    protected string _linkToParse;
+    protected readonly string _linkToParse;
+    protected readonly IHttpService _httpService = Application.Current.Handler.MauiContext.Services.GetService<IHttpService>();
 
     protected AbstractParser(string linkToParse)
     {
@@ -28,7 +28,7 @@ public abstract class AbstractParser<T> : IParser<T>
         if (postContent is not null)
             content = GetPostContent(postContent);
 
-        var htmlDoc = await _netUtils.GetHtmlDoc(_linkToParse, content);
+        var htmlDoc = await _httpService.GetHtmlDoc(_linkToParse, content);
 
         return ParseHtml(htmlDoc);
     }
@@ -44,7 +44,7 @@ public abstract class AbstractParser<T> : IParser<T>
         var tasks = new List<Task<HtmlDocument>>();
         for (int i = 1; i <= 5; i++)
         {
-            tasks.Add(_netUtils.GetHtmlDoc($"{_linkToParse}{i}", content));
+            tasks.Add(_httpService.GetHtmlDoc($"{_linkToParse}{i}", content));
         }
 
         while (tasks.Count > 0)
@@ -68,7 +68,7 @@ public abstract class AbstractParser<T> : IParser<T>
     {
         return Parallel.ForEachAsync(list, async (info, ct) =>
         {
-            info.AvatarImageSource = await _netUtils.GetImage(info.AvatarUrl);
+            info.AvatarImageSource = await _httpService.GetImage(info.AvatarUrl);
         });
     }
 
@@ -76,12 +76,12 @@ public abstract class AbstractParser<T> : IParser<T>
     {
         return Task.Run(async () => 
         {
-            model.AvatarImageSource = await _netUtils.GetImage(model.AvatarUrl);
+            model.AvatarImageSource = await _httpService.GetImage(model.AvatarUrl);
         });
     }
 
     public async Task<ImageSource> GetAvatarAsync(IAvatarModel model)
     {
-        return await Task.Run(() => _netUtils.GetImage(model.AvatarUrl));
+        return await Task.Run(() => _httpService.GetImage(model.AvatarUrl));
     }
 }

@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Serilog;
 using myYSTU.Models;
 using myYSTU.Parsers;
-using NLog;
 
 namespace myYSTU.ViewModels;
 
@@ -31,19 +31,15 @@ public partial class StaffPageViewModel : ObservableObject
         }
     }
 
-    private readonly ILogger _logger;
-
-    public StaffPageViewModel(ILogger logger)
-    {
-        _logger = logger;
-    }
-
     #region ObservableProperties
     [ObservableProperty]
     private IEnumerable<Staff> _displayDataList;
 
     [ObservableProperty]
     private bool _isInternetErrorVisible = false;
+
+    [ObservableProperty]
+    private string _internetErrorText;
 
     #endregion
 
@@ -52,15 +48,33 @@ public partial class StaffPageViewModel : ObservableObject
     [RelayCommand]
     private async Task OnAppearing()
     {
+        Log.Debug("[StaffPageViewModel] [OnAppearing] Staff Page is loading...");
         try
         {
             await ParseAsync();
         }
+        catch (ArgumentNullException ex)
+        {
+            Log.Error(ex, "[StaffPageViewModel] [OnAppearing] Staff profile parsing error");
+            IsInternetErrorVisible = true;
+            InternetErrorText = "Ошибка получения данных с сервера";
+            return;
+        }
+        catch (HttpRequestException ex)
+        {
+            Log.Error(ex, "[StaffPageViewModel] [OnAppearing] Staff profile parsing error");
+            IsInternetErrorVisible = true;
+            InternetErrorText = "Ошибка подключения к серверу";
+            return;
+        }
         catch (Exception ex)
         {
+            Log.Error(ex, "[StaffPageViewModel] [OnAppearing] Staff profile parsing error");
             IsInternetErrorVisible = true;
-            _logger.Error(ex, "Staff parsing error");
+            InternetErrorText = "Неизвестная ошибка";
+            return;
         }
+        Log.Debug("[StaffPageViewModel] [OnAppearing] Staff Page is loaded successfully...");
     }
     #endregion
 
@@ -68,9 +82,7 @@ public partial class StaffPageViewModel : ObservableObject
     {
         var parser = ParserFactory.CreateParser<Staff>();
 
-        DisplayDataList = await parser.ParallelParseInfo();
+        DisplayDataList = _dataList = await parser.ParallelParseInfo();
         await parser.ParseAvatarsAsync(DisplayDataList);
-
-        _dataList = DisplayDataList;
     }
 }

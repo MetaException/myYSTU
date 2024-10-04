@@ -39,14 +39,13 @@
         </Grid.RowDefinitions>
 
         <Border
-            x:Name="internetError"
             Grid.Row="0"
             BackgroundColor="OrangeRed"
             IsVisible="{Binding IsInternetErrorVisible}"
             StrokeThickness="1">
             <Label
                 HorizontalTextAlignment="Center"
-                Text="Потеряно соединение сервером"
+                Text="{Binding InternetErrorText}"
                 VerticalOptions="Start"
                 VerticalTextAlignment="Start" />
         </Border>

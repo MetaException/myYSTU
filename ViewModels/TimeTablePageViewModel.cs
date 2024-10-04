@@ -2,21 +2,14 @@
 using CommunityToolkit.Mvvm.Input;
 using myYSTU.Models;
 using myYSTU.Parsers;
-using NLog;
+using Serilog;
 using System.Collections.ObjectModel;
 
 namespace myYSTU.ViewModels;
 
 public partial class TimeTablePageViewModel : ObservableObject
 {
-    private readonly ILogger _logger;
-
     //TODO: Добавить кнопку для возврата в текущий день
-
-    public TimeTablePageViewModel(ILogger logger)
-    {
-        _logger = logger;
-    }
 
     #region ObservableProperties
 
@@ -35,6 +28,9 @@ public partial class TimeTablePageViewModel : ObservableObject
     [ObservableProperty]
     private ObservableCollection<TimeTableDayModel> _daysList;
 
+    [ObservableProperty]
+    private string _internetErrorText;
+
     #endregion
 
     #region RelayCommands
@@ -42,7 +38,9 @@ public partial class TimeTablePageViewModel : ObservableObject
     [RelayCommand]
     private async Task OnAppearing()
     {
+        Log.Debug("[TimeTablePageViewModel] [OnAppearing] TimeTable Page is loading...");
         UpdateDaysList();
+        Log.Debug("[TimeTablePageViewModel] [OnAppearing] TimeTable Page is loaded successfully...");
     }
 
     //Выполняется при изменении выбранного дня (программно тоже считается)
@@ -51,15 +49,7 @@ public partial class TimeTablePageViewModel : ObservableObject
     {
         if (SelectedDay != null)
         {
-            try
-            {
-                await ParseAsync();
-            }
-            catch (HttpRequestException ex)
-            {
-                IsInternetErrorVisible = true;
-                //Log.Error("", ex);
-            }
+            await ParseAsync();
         }
     }
 
@@ -91,7 +81,28 @@ public partial class TimeTablePageViewModel : ObservableObject
         {
             var temp = SelectedDay; // SelectedDay почему-то становиться null после следующей строки
 
-            SubjectList = await ParserFactory.CreateParser<TimeTableSubject>().ParseInfo(temp.Date.ToString("d"));
+            try
+            {
+                SubjectList = await ParserFactory.CreateParser<TimeTableSubject>().ParseInfo(temp.Date.ToString("d"));
+            }
+            catch (ArgumentNullException ex)
+            {
+                Log.Error(ex, "[TimeTablePageViewModel] [OnAppearing] TimeTable parsing error");
+                IsInternetErrorVisible = true;
+                InternetErrorText = "Ошибка получения данных с сервера";
+            }
+            catch (HttpRequestException ex)
+            {
+                Log.Error(ex, "[TimeTablePageViewModel] [OnAppearing] TimeTable parsing error");
+                IsInternetErrorVisible = true;
+                InternetErrorText = "Ошибка подключения к серверу";
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "[TimeTablePageViewModel] [OnAppearing] TimeTable parsing error");
+                IsInternetErrorVisible = true;
+                InternetErrorText = "Неизвестная ошибка";
+            }
 
             SelectedDay = temp;
         }

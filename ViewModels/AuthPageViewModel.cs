@@ -1,24 +1,20 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using myYSTU.Utils;
-using NLog;
+using myYSTU.Services.Auth;
+using Serilog;
 
 namespace myYSTU.ViewModels;
 
 public partial class AuthPageViewModel : ObservableObject
 {
-    private readonly NetUtils _netUtils;
-    private readonly ILogger _logger;
+    private readonly IAuthService _authService;
 
-    public AuthPageViewModel(NetUtils netUtils, ILogger logger)
+    public AuthPageViewModel(IAuthService authService)
     {
-        _netUtils = netUtils;
-        _logger = logger;
+        _authService = authService;
     }
 
     #region ObservableProperties
-    [ObservableProperty]
-    private bool _isLoginButtonEnabled = true;
 
     [ObservableProperty]
     private string _errorLabel;
@@ -39,33 +35,29 @@ public partial class AuthPageViewModel : ObservableObject
     [RelayCommand]
     private async Task LoginAsync()
     {
-        IsLoginButtonEnabled = false; //Выключаем, чтобы пользователь не нажал на кнопку дважды
-
         bool authResult;
 
         try
         {
-            authResult = await _netUtils.AuthorizeWithPassword(Login, Password);
+            authResult = await _authService.AuthorizeWithPassword(Login, Password);
         }
         catch (Exception ex)
         {
             IsErrorLabelEnabled = true;
             ErrorLabel = "Произошла ошибка / отсутствует подключение к интернету";
 
-            _logger.Error(ex, "Auth error");
+            Log.Error(ex, "[AuthPageViewModel] Auth error");
             return;
-        }
-        finally
-        {
-            IsLoginButtonEnabled = true;
         }
 
         if (authResult)
         {
-            await Shell.Current.GoToAsync("///MainPage");
+            Log.Debug("[AuthPageViewModel] Successfully logging in");
+            await Shell.Current.GoToAsync("/MainPage");
         }
         else
         {
+            Log.Debug("[AuthPageViewModel] Entered wrong password");
             WelcomeLabelText = "Неправильный логин или пароль";
         }
     }

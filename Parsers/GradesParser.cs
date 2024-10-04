@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Serilog;
 using myYSTU.Models;
 
 namespace myYSTU.Parsers;
@@ -13,8 +14,10 @@ class GradesParser : AbstractParser<Grades>
     { 
         var gradesTable = htmlDoc.DocumentNode.SelectSingleNode("//table[2]").SelectNodes("tr");
 
+        Log.Debug("[GradesParser] [ParseHtml] Parsed {@Count} Grades", gradesTable.Count); // Argument null exception
+
         //TODO: обработать когда нет оценок
-        
+
         foreach (var grade in gradesTable)
         {
             Grades subjectInfo = new Grades();
@@ -34,6 +37,8 @@ class GradesParser : AbstractParser<Grades>
                 subjectInfo.Grade = grade.SelectSingleNode("td[7]").InnerText.Trim();
 
             subjectInfo.SemesterNumber = grade.SelectSingleNode("td[3]").InnerText[0] - '0';
+
+            //Log.Verbose("[GradesParser] [ParseHtml] Parsed Grades object: {@Grades}", subjectInfo);
 
             yield return subjectInfo;
         }

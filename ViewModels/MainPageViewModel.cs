@@ -2,27 +2,22 @@
 using CommunityToolkit.Mvvm.Input;
 using myYSTU.Models;
 using myYSTU.Parsers;
-using myYSTU.Utils;
 using myYSTU.Views;
-using NLog;
+using Serilog;
 
 namespace myYSTU.ViewModels;
 
 public partial class MainPageViewModel : ObservableObject
 {
-    private readonly ILogger _logger;
-
-    public MainPageViewModel(ILogger logger)
-    {
-        _logger = logger;
-    }
-
     #region ObservableProperties
     [ObservableProperty]
     private bool _isInternetErrorVisible = false;
 
     [ObservableProperty]
     private Person _person;
+
+    [ObservableProperty]
+    private string _internetErrorText;
     #endregion
 
     #region RelayCommands
@@ -30,18 +25,29 @@ public partial class MainPageViewModel : ObservableObject
     [RelayCommand]
     private async Task OnAppearing()
     {
+        Log.Debug("[MainPageViewModel] [OnAppearing] Main Page is loading...");
         try
         {
             await ParseAsync();
+            Log.Debug("[MainPageViewModel] [OnAppearing] Main Page is loaded successfully...");
         }
-        catch (NetUtils.AuthException)
+        catch (HttpRequestException ex)
         {
-            await Shell.Current.GoToAsync("AuthPage");
+            Log.Error(ex, "[MainPageViewModel] [OnAppearing] Main Page parsing error");
+            InternetErrorText = "Ошибка подключения к серверу";
+            IsInternetErrorVisible = true;
+        }
+        catch (ArgumentNullException ex)
+        {
+            Log.Error(ex, "[MainPageViewModel] [OnAppearing] Main profile parsing error");
+            InternetErrorText = "Ошибка парсинга данных";
+            IsInternetErrorVisible = true;
         }
         catch (Exception ex) //TODO: обработать ошибки
         {
+            Log.Error(ex, "[MainPageViewModel] [OnAppearing] Main profile parsing error");
+            InternetErrorText = "Неизвестная ошибка";
             IsInternetErrorVisible = true;
-            _logger.Error(ex, "Main profile parsing error");
         }
     }
 

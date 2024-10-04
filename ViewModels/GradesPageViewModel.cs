@@ -2,19 +2,12 @@
 using CommunityToolkit.Mvvm.Input;
 using myYSTU.Models;
 using myYSTU.Parsers;
-using NLog;
+using Serilog;
 
 namespace myYSTU.ViewModels;
 
 public partial class GradesPageViewModel : ObservableObject
 {
-    private readonly ILogger _logger;
-
-    public GradesPageViewModel(ILogger logger)
-    {
-        _logger = logger;
-    }
-
     private Dictionary<int, List<Grades>> gradesDict = new Dictionary<int, List<Grades>>(); 
 
     #region ObservableProperties
@@ -30,6 +23,9 @@ public partial class GradesPageViewModel : ObservableObject
 
     [ObservableProperty]
     private IEnumerable<Grades> _gradesList;
+
+    [ObservableProperty]
+    private string _internetErrorText;
     #endregion
 
     #region RelayCommands
@@ -37,17 +33,34 @@ public partial class GradesPageViewModel : ObservableObject
     [RelayCommand]
     private async Task OnAppearing()
     {
+        Log.Debug("[GradesPageViewModel] [OnAppearing] Grades Page is loading...");
         try
         {
             await ParseAsync();
         }
+        catch (ArgumentNullException ex)
+        {
+            Log.Error(ex, "[GradesPageViewModel] [OnAppearing] Grades parsing error");
+            IsInternetErrorVisible = true;
+            InternetErrorText = "Ошибка получения данных с сервера";
+            return;
+        }
+        catch (HttpRequestException ex)
+        {
+            Log.Error(ex, "[GradesPageViewModel] [OnAppearing] Grades parsing error");
+            IsInternetErrorVisible = true;
+            InternetErrorText = "Ошибка подключения к серверу";
+            return;
+        }
         catch (Exception ex)
         {
-            _logger.Error(ex, "Grades parsing error");
+            Log.Error(ex, "[GradesPageViewModel] [OnAppearing] Grades parsing error");
             IsInternetErrorVisible = true;
+            InternetErrorText = "Неизвестная ошибка";
             return;
         }
         UpdateGradesInfo();
+        Log.Debug("[GradesPageViewModel] [OnAppearing] Grades Page is loaded successfully");
     }
     
     [RelayCommand]

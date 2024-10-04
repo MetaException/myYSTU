@@ -1,5 +1,4 @@
-﻿using myYSTU.Utils;
-using myYSTU.Views;
+﻿using myYSTU.Views;
 
 namespace myYSTU
 {

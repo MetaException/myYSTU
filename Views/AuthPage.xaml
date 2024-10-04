@@ -37,7 +37,6 @@
         <Button
             Command="{Binding LoginCommand}"
             HorizontalOptions="Fill"
-            IsEnabled="{Binding IsLoginButtonEnabled}"
             Text="Авторизация" />
 
     </VerticalStackLayout>
